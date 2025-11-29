@@ -343,21 +343,32 @@ main() {
 
 		GITIGNORE_ENTRIES=(
 			""
-			"# Esocontext - AI task tracking (user-specific)"
+			"# Esocontext - Framework files"
+			"docs/ai/.context/"
 			"docs/ai/tasks/"
+			""
+			"# Esocontext - Generated Artifacts (DO NOT EDIT)"
+			"CLAUDE.md"
+			"AGENTS.md"
+			"GEMINI.md"
+			".clinerules/"
+			".cursor/rules/project.mdc"
+			".windsurf/rules/project.md"
+			".antigravity/rules.md"
+			".github/copilot-instructions.md"
 		)
 
 		if [[ -f ".gitignore" ]]; then
 			# Check if already present
 			if ! grep -q "docs/ai/tasks/" ".gitignore" 2>/dev/null; then
 				printf '%s\n' "${GITIGNORE_ENTRIES[@]}" >> ".gitignore"
-				log_success "Added docs/ai/tasks/ to .gitignore"
+				log_success "Added Esocontext entries to .gitignore"
 			else
-				log_warn "docs/ai/tasks/ already in .gitignore"
+				log_warn "Esocontext entries already in .gitignore"
 			fi
 		else
 			printf '%s\n' "${GITIGNORE_ENTRIES[@]}" > ".gitignore"
-			log_success "Created .gitignore with docs/ai/tasks/"
+			log_success "Created .gitignore with Esocontext entries"
 		fi
 	else
 		log_info "Skipped .gitignore modification (--no-git)"

@@ -6,21 +6,19 @@
   Customize your project context in: docs/ai/context.md
 -->
 
-## Context Loading
+## PRIMARY DIRECTIVE
 
-Read the following file for complete project context:
+**You must read the Project Context file before proceeding.**
 
-- [Project Context](../docs/ai/context.md)
+It contains:
+1.  **Agent Registry** (Who you should be)
+2.  **Tooling Guides** (How to work)
+3.  **Coding Standards** (How to write code)
+4.  **Documentation Map** (Where to look)
 
-## Quick Reference
+### Context File Location
+- **[Project Context](../docs/ai/context.md)**
 
-This project uses Esocontext for AI context management. All documentation is centralized in the `docs/` folder.
+---
 
-### Key Locations
-
-| Purpose | Path |
-|---------|------|
-| Main context | `docs/ai/context.md` |
-| AI agents | `docs/ai/agents/` |
-| Quick refs | `docs/ai/quickrefs/` |
-| Standards | `docs/ai/.context/standards/` |
+*Load this file now to understand the project structure.*

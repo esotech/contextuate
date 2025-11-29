@@ -1,94 +1,99 @@
 # Project Context
 
 > **Purpose:** Master index for AI assistants working with this project. This is the primary entry point for all AI context.
+> **Directive:** Read this file first. It is the "Brain" of the project.
 
 ---
 
-## Quick Start
+## 1. Project Identity
 
 **Project Name:** {YOUR_PROJECT_NAME}
 
 **Description:** {Brief description of what this project does}
 
 **Tech Stack:**
-- {Language/Framework 1}
-- {Language/Framework 2}
-- {Database/Services}
+- **Languages:** {Language 1}, {Language 2}
+- **Frameworks:** {Framework 1}, {Framework 2}
+- **Infrastructure:** {Database}, {Cloud Provider}
 
 ---
 
-## Documentation Index
+## 2. Agent Framework
 
-### Architecture
-| Document | Purpose |
-|----------|---------|
-| [Architecture Overview](architecture.md) | System design and components |
-| {Add more as needed} | |
+> **Rule:** If a specialized agent exists for your task, you MUST adopt that persona and read its specific context.
 
-### Code Documentation
-| Document | Purpose |
-|----------|---------|
-| {Add class/service docs} | |
+### Agent Registry
+| Task Domain | Agent | Context File |
+|-------------|-------|--------------|
+| General Coding | Base Agent | [.context/agents/base.agent.md](.context/agents/base.agent.md) |
+| Documentation | Docs Expert | [.context/agents/documentation-expert.agent.md](.context/agents/documentation-expert.agent.md) |
+| Tool Usage | Tools Expert | [.context/agents/tools-expert.agent.md](.context/agents/tools-expert.agent.md) |
+| {Custom Domain} | {Custom Agent} | [agents/{agent}.agent.md](agents/{agent}.agent.md) |
 
-### Standards
-| Document | Purpose |
-|----------|---------|
-| [Coding Standards](.context/standards/coding-standards.md) | Code style and conventions |
-| [Behavioral Guidelines](.context/standards/behavioral-guidelines.md) | AI behavior rules |
-
-### AI-Specific
-| Document | Purpose |
-|----------|---------|
-| [Base Agent](.context/agents/base.agent.md) | Foundation for all agents |
-| [Agent Creator](.context/agents/agent-creator.agent.md) | How to create new agents |
-| [Task Workflow](.context/standards/task-workflow.md) | Multi-session task structure |
+### How to Create Agents
+If you need expertise that doesn't exist yet:
+1. Load the **Tools Expert** agent.
+2. Request: "Create a new agent for {domain}".
+3. It will use the `agent-creator.tool.md` to generate the file in `docs/ai/agents/`.
 
 ---
 
-## Project-Specific Standards
+## 3. Tooling Ecosystem
 
-### Coding Conventions
+### Framework Tools
+These tools are available to help you perform complex tasks.
 
-```{language}
-// Add your project-specific coding standards here
-// These override the defaults in .context/standards/coding-standards.md
-```
+| Tool | Purpose | Instruction Guide |
+|------|---------|-------------------|
+| **Standards Detector** | Analyze code to find patterns | [.context/tools/standards-detector.tool.md](.context/tools/standards-detector.tool.md) |
+| **Quickref Generator** | Condense docs for AI usage | [.context/tools/quickref.tool.md](.context/tools/quickref.tool.md) |
+| **Agent Creator** | Generate new agent personas | [.context/tools/agent-creator.tool.md](.context/tools/agent-creator.tool.md) |
 
-### Naming Conventions
-
-| Type | Convention | Example |
-|------|------------|---------|
-| {type} | {convention} | {example} |
-
-### File Structure
-
-```
-{project}/
-├── src/                    # Source code
-├── tests/                  # Test files
-├── docs/                   # Documentation
-│   └── ai/                 # AI-specific
-│       ├── context.md      # THIS FILE - main AI context
-│       ├── .context/       # Framework (don't modify)
-│       ├── agents/         # Custom agents
-│       ├── quickrefs/      # Quick references
-│       └── tasks/          # Task tracking (gitignored)
-└── ...
-```
+### Project Tools
+| Command | Description |
+|---------|-------------|
+| `npm test` | Run test suite |
+| `npm run build` | Build production artifacts |
+| `{custom command}` | {description} |
 
 ---
 
-## Common Patterns
+## 4. Standards & Conventions
 
-### {Pattern Category}
+### Coding Standards
+**[Coding Standards](.context/standards/coding-standards.md)**
+- **PHP:** `templates/standards/php.standards.md` (Customize in `standards/`)
+- **JS/TS:** `templates/standards/javascript.standards.md` (Customize in `standards/`)
 
-```{language}
-// Example pattern
-```
+### Behavioral Guidelines
+**[Behavioral Guidelines](.context/standards/behavioral-guidelines.md)**
+- Verified Truth: Do not speculate.
+- Minimal Intervention: Only change what is requested.
 
 ---
 
-## Key Concepts
+## 5. Documentation Strategy
+
+> **Rule:** Store knowledge where it belongs. Do not rely on chat history.
+
+| Content Type | Location |
+|--------------|----------|
+| **AI Context** | `docs/ai/` (This folder) |
+| **Source Code** | `src/` |
+| **Human Docs** | `docs/` |
+| **Architecture** | `docs/architecture/` |
+| **Services** | `docs/services/` |
+| **API** | `docs/api/` |
+
+### Multi-Session Tasks
+For complex tasks that span multiple sessions, use the **Task Workflow**:
+1. Read **[Task Workflow](.context/standards/task-workflow.md)**.
+2. Create a folder in `docs/ai/tasks/{task-name}/`.
+3. Maintain a `00-project-scope.md` and log files.
+
+---
+
+## 6. Key Concepts
 
 ### {Concept 1}
 {Explanation of important concept}
@@ -98,37 +103,8 @@
 
 ---
 
-## Getting Started
+## 7. Resources
 
-### For AI Assistants
-
-1. Read this file completely
-2. Check `docs/ai/agents/` for specialized agents
-3. Review `docs/ai/quickrefs/` for condensed references
-4. Follow task workflow for multi-session work
-
-### For Humans
-
-1. Main documentation is in `docs/`
-2. AI context lives in `docs/ai/`
-3. Don't modify `docs/ai/.context/` (framework files)
-4. Create custom agents in `docs/ai/agents/`
-
----
-
-## Environment
-
-### Development Setup
-{Instructions for setting up development environment}
-
-### Required Tools
-- {Tool 1}
-- {Tool 2}
-
----
-
-## Contact / Resources
-
-- Repository: {URL}
-- Documentation: {URL}
-- Issues: {URL}
+- **Repository:** {URL}
+- **Issue Tracker:** {URL}
+- **Staging/Prod:** {URL}
