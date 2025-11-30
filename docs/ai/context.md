@@ -25,9 +25,9 @@
 ### Agent Registry
 | Task Domain | Agent | Context File |
 |-------------|-------|--------------|
-| General Coding | Base Agent | [docs/ai/.context/agents/base.agent.md](docs/ai/.context/agents/base.agent.md) |
-| Documentation | Docs Expert | [docs/ai/.context/agents/documentation-expert.agent.md](docs/ai/.context/agents/documentation-expert.agent.md) |
-| Tool Usage | Tools Expert | [docs/ai/.context/agents/tools-expert.agent.md](docs/ai/.context/agents/tools-expert.agent.md) |
+| General Coding | Base Agent | [.context/agents/base.agent.md](.context/agents/base.agent.md) |
+| Documentation | Docs Expert | [.context/agents/documentation-expert.agent.md](.context/agents/documentation-expert.agent.md) |
+| Tool Usage | Tools Expert | [.context/agents/tools-expert.agent.md](.context/agents/tools-expert.agent.md) |
 
 ### How to Create Agents
 If you need expertise that doesn't exist yet:
@@ -44,9 +44,9 @@ These tools are available to help you perform complex tasks.
 
 | Tool | Purpose | Instruction Guide |
 |------|---------|-------------------|
-| **Standards Detector** | Analyze code to find patterns | [docs/ai/.context/tools/standards-detector.tool.md](docs/ai/.context/tools/standards-detector.tool.md) |
-| **Quickref Generator** | Condense docs for AI usage | [docs/ai/.context/tools/quickref.tool.md](docs/ai/.context/tools/quickref.tool.md) |
-| **Agent Creator** | Generate new agent personas | [docs/ai/.context/tools/agent-creator.tool.md](docs/ai/.context/tools/agent-creator.tool.md) |
+| **Standards Detector** | Analyze code to find patterns | [.context/tools/standards-detector.tool.md](.context/tools/standards-detector.tool.md) |
+| **Quickref Generator** | Condense docs for AI usage | [.context/tools/quickref.tool.md](.context/tools/quickref.tool.md) |
+| **Agent Creator** | Generate new agent personas | [.context/tools/agent-creator.tool.md](.context/tools/agent-creator.tool.md) |
 
 ### Project Tools
 | Command | Description |
@@ -59,7 +59,7 @@ These tools are available to help you perform complex tasks.
 ## 4. Standards & Conventions
 
 ### Coding Standards
-**[Coding Standards](docs/ai/.context/standards/coding-standards.md)**
+**[Coding Standards](.context/standards/coding-standards.md)**
 - **Bash:** See below.
 
 #### Bash Scripting Standards
@@ -69,7 +69,7 @@ These tools are available to help you perform complex tasks.
 - Use `[[ ... ]]` for tests.
 
 ### Behavioral Guidelines
-**[Behavioral Guidelines](docs/ai/.context/standards/behavioral-guidelines.md)**
+**[Behavioral Guidelines](.context/standards/behavioral-guidelines.md)**
 - Verified Truth: Do not speculate.
 - Minimal Intervention: Only change what is requested.
 

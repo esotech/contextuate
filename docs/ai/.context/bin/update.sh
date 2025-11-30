@@ -103,7 +103,7 @@ main() {
 
 	# Update templates - standards
 	mkdir -p "$INSTALL_DIR/templates/standards"
-	for template in php.standards.md javascript.standards.md; do
+	for template in php.standards.md javascript.standards.md python.standards.md go.standards.md java.standards.md; do
 		download_file "${ESOCONTEXT_REPO}/docs/ai/.context/templates/standards/${template}" "$INSTALL_DIR/templates/standards/${template}"
 	done
 

@@ -223,7 +223,7 @@ main() {
 		done
 
 		# Templates - standards
-		for template in php.standards.md javascript.standards.md; do
+		for template in php.standards.md javascript.standards.md python.standards.md go.standards.md java.standards.md; do
 			download_file "${ESOCONTEXT_REPO}/docs/ai/.context/templates/standards/${template}" "$INSTALL_DIR/templates/standards/${template}" "$FORCE"
 		done
 
@@ -360,7 +360,7 @@ main() {
 
 		if [[ -f ".gitignore" ]]; then
 			# Check if already present
-			if ! grep -q "docs/ai/tasks/" ".gitignore" 2>/dev/null; then
+			if ! grep -q "# Esocontext - Framework files" ".gitignore" 2>/dev/null; then
 				printf '%s\n' "${GITIGNORE_ENTRIES[@]}" >> ".gitignore"
 				log_success "Added Esocontext entries to .gitignore"
 			else

@@ -62,8 +62,12 @@ These tools are available to help you perform complex tasks.
 
 ### Coding Standards
 **[Coding Standards](.context/standards/coding-standards.md)**
-- **PHP:** `templates/standards/php.standards.md` (Customize in `standards/`)
-- **JS/TS:** `templates/standards/javascript.standards.md` (Customize in `standards/`)
+- **PHP:** `templates/standards/php.standards.md`
+- **JS/TS:** `templates/standards/javascript.standards.md`
+- **Python:** `templates/standards/python.standards.md`
+- **Go:** `templates/standards/go.standards.md`
+- **Java:** `templates/standards/java.standards.md`
+(Customize these in `standards/`)
 
 ### Behavioral Guidelines
 **[Behavioral Guidelines](.context/standards/behavioral-guidelines.md)**
