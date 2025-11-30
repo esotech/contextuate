@@ -7,14 +7,14 @@
 
 ## 1. Project Identity
 
-**Project Name:** {YOUR_PROJECT_NAME}
+**Project Name:** Esocontext Framework
 
-**Description:** {Brief description of what this project does}
+**Description:** The source repository for the Esocontext framework, a standardized system for providing context to AI coding assistants.
 
 **Tech Stack:**
-- **Languages:** {Language 1}, {Language 2}
-- **Frameworks:** {Framework 1}, {Framework 2}
-- **Infrastructure:** {Database}, {Cloud Provider}
+- **Languages:** Bash (scripts), Markdown (documentation/templates), JSON (metadata).
+- **Core Components:** `docs/ai/.context/` directory structure.
+- **Distribution:** `install.sh` and `update.sh` scripts.
 
 ---
 
@@ -28,7 +28,6 @@
 | General Coding | Base Agent | [.context/agents/base.agent.md](.context/agents/base.agent.md) |
 | Documentation | Docs Expert | [.context/agents/documentation-expert.agent.md](.context/agents/documentation-expert.agent.md) |
 | Tool Usage | Tools Expert | [.context/agents/tools-expert.agent.md](.context/agents/tools-expert.agent.md) |
-| {Custom Domain} | {Custom Agent} | [agents/{agent}.agent.md](agents/{agent}.agent.md) |
 
 ### How to Create Agents
 If you need expertise that doesn't exist yet:
@@ -52,9 +51,8 @@ These tools are available to help you perform complex tasks.
 ### Project Tools
 | Command | Description |
 |---------|-------------|
-| `npm test` | Run test suite |
-| `npm run build` | Build production artifacts |
-| `{custom command}` | {description} |
+| `docs/ai/.context/bin/install.sh` | Install framework in a target project |
+| `docs/ai/.context/bin/update.sh` | Update framework files |
 
 ---
 
@@ -62,12 +60,13 @@ These tools are available to help you perform complex tasks.
 
 ### Coding Standards
 **[Coding Standards](.context/standards/coding-standards.md)**
-- **PHP:** `templates/standards/php.standards.md`
-- **JS/TS:** `templates/standards/javascript.standards.md`
-- **Python:** `templates/standards/python.standards.md`
-- **Go:** `templates/standards/go.standards.md`
-- **Java:** `templates/standards/java.standards.md`
-(Customize these in `standards/`)
+- **Bash:** See below.
+
+#### Bash Scripting Standards
+- Use `set -e` for error handling.
+- Use snake_case for variables and functions.
+- Quote variables to prevent word splitting.
+- Use `[[ ... ]]` for tests.
 
 ### Behavioral Guidelines
 **[Behavioral Guidelines](.context/standards/behavioral-guidelines.md)**
@@ -83,15 +82,13 @@ These tools are available to help you perform complex tasks.
 | Content Type | Location |
 |--------------|----------|
 | **AI Context** | `docs/ai/` (This folder) |
-| **Source Code** | `src/` |
-| **Human Docs** | `docs/` |
-| **Architecture** | `docs/architecture/` |
-| **Services** | `docs/services/` |
-| **API** | `docs/api/` |
+| **Framework Source** | `docs/ai/.context/` |
+| **Templates** | `docs/ai/.context/templates/` |
+| **Tools** | `docs/ai/.context/tools/` |
 
 ### Multi-Session Tasks
 For complex tasks that span multiple sessions, use the **Task Workflow**:
-1. Read **[Task Workflow](.context/standards/task-workflow.md)**.
+1. Read **[Task Workflow](docs/ai/.context/standards/task-workflow.md)**.
 2. Create a folder in `docs/ai/tasks/{task-name}/`.
 3. Maintain a `00-project-scope.md` and log files.
 
@@ -99,16 +96,15 @@ For complex tasks that span multiple sessions, use the **Task Workflow**:
 
 ## 6. Key Concepts
 
-### {Concept 1}
-{Explanation of important concept}
+### The `.context` Directory
+The `docs/ai/.context/` directory is the "product". It is what gets installed into user projects. Changes here affect all users of the framework.
 
-### {Concept 2}
-{Explanation of important concept}
+### Artifacts
+Root files (`CLAUDE.md`, `AGENTS.md`) are treated as generated artifacts. They are pointers to `docs/ai/context.md` and should not be edited manually in user projects.
 
 ---
 
 ## 7. Resources
 
-- **Repository:** {URL}
-- **Issue Tracker:** {URL}
-- **Staging/Prod:** {URL}
+- **Repository:** https://github.com/esotech/esocontext
+- **Website:** https://esocontext.dev

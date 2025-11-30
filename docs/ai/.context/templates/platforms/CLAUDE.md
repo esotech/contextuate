@@ -6,4 +6,15 @@
   Customize your project context in: docs/ai/context.md
 -->
 
+## PRIMARY DIRECTIVE
+
+**You must read the Project Context file before proceeding.**
+
+It contains:
+1.  **Agent Registry** (Who you should be)
+2.  **Tooling Guides** (How to work)
+3.  **Coding Standards** (How to write code)
+4.  **Documentation Map** (Where to look)
+
+### Context File Location
 @docs/ai/context.md
