@@ -49,4 +49,4 @@ For full documentation, see [contextuate.md](https://contextuate.md) or browse t
 
 ## License
 
-[GNU General Public License v3.0](LICENSE)
+[MIT License](LICENSE)

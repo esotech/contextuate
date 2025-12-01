@@ -1,5 +1,5 @@
 {
-  "name": "contextuate",
+  "name": "@esotech/contextuate",
   "version": "1.0.0",
   "description": "**Standardized AI Context for Software Projects**",
   "main": "dist/index.js",
@@ -18,14 +18,31 @@
     "type": "git",
     "url": "git+https://github.com/esotech/contextuate.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "files": [
+    "dist",
+    "docs/ai/.context"
+  ],
+  "keywords": [
+    "ai",
+    "context",
+    "llm",
+    "agent",
+    "coding-assistant",
+    "copilot",
+    "cursor",
+    "anthropic",
+    "claude"
+  ],
+  "author": "Alexander David Conroy <alex@esotech.com> (https://github.com/geilt)",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "commonjs",
   "bugs": {
     "url": "https://github.com/esotech/contextuate/issues"
   },
-  "homepage": "https://github.com/esotech/contextuate#readme",
+  "homepage": "https://contextuate.md",
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
     "@types/inquirer": "^9.0.9",
