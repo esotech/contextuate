@@ -101,6 +101,7 @@ async function initCommand(options) {
     };
     await copyDirContents('templates/platforms');
     await copyDirContents('templates/standards');
+    await copyFile(path_1.default.join(templateSource, 'templates/contextuate.md'), path_1.default.join(installDir, 'templates/contextuate.md'));
     await copyFile(path_1.default.join(templateSource, 'templates/context.md'), path_1.default.join(installDir, 'templates/context.md'));
     await copyDirContents('agents');
     await copyDirContents('standards');
