@@ -26,5 +26,5 @@ vendor/
 *.env
 .env.*
 
-# Esocontext - AI task tracking (user-specific)
+# Contextuate - AI task tracking (user-specific)
 docs/ai/tasks/

@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 #
-# Esocontext Updater
+# Contextuate Updater
 # Updates the framework files while preserving user customizations
 #
 # Usage:
 #   ./docs/ai/.context/bin/update.sh
 #
 # Or via curl:
-#   curl -fsSL https://esocontext.dev/update.sh | bash
+#   curl -fsSL https://contextuate.dev/update.sh | bash
 #
 
 set -e
 
 # Configuration
-ESOCONTEXT_REPO="https://raw.githubusercontent.com/esotech/esocontext/main"
+CONTEXTUATE_REPO="https://raw.githubusercontent.com/esotech/contextuate/main"
 INSTALL_DIR="docs/ai/.context"
 
 # Colors
@@ -56,14 +56,14 @@ download_file() {
 main() {
 	echo ""
 	echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
-	echo -e "${BLUE}║${NC}     Esocontext Updater                 ${BLUE}║${NC}"
+	echo -e "${BLUE}║${NC}     Contextuate Updater                ${BLUE}║${NC}"
 	echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
 	echo ""
 
-	# Check if esocontext is installed
+	# Check if contextuate is installed
 	if [[ ! -d "$INSTALL_DIR" ]]; then
-		log_error "Esocontext not found. Run the installer first:"
-		echo "  curl -fsSL https://esocontext.dev/install.sh | bash"
+		log_error "Contextuate not found. Run the installer first:"
+		echo "  curl -fsSL https://contextuate.dev/install.sh | bash"
 		exit 1
 	fi
 
@@ -77,7 +77,7 @@ main() {
 	# Download latest version info
 	log_info "Checking for updates..."
 	TEMP_VERSION=$(mktemp)
-	download_file "${ESOCONTEXT_REPO}/docs/ai/.context/version.json" "$TEMP_VERSION"
+	download_file "${CONTEXTUATE_REPO}/docs/ai/.context/version.json" "$TEMP_VERSION"
 	LATEST_VERSION=$(grep -o '"version": "[^"]*"' "$TEMP_VERSION" | cut -d'"' -f4)
 	rm -f "$TEMP_VERSION"
 
@@ -92,48 +92,48 @@ main() {
 	log_info "Updating framework files..."
 
 	# Update core files (these always get updated)
-	download_file "${ESOCONTEXT_REPO}/docs/ai/.context/version.json" "$INSTALL_DIR/version.json"
-	download_file "${ESOCONTEXT_REPO}/docs/ai/.context/README.md" "$INSTALL_DIR/README.md"
+	download_file "${CONTEXTUATE_REPO}/docs/ai/.context/version.json" "$INSTALL_DIR/version.json"
+	download_file "${CONTEXTUATE_REPO}/docs/ai/.context/README.md" "$INSTALL_DIR/README.md"
 
 	# Update templates - platforms
 	mkdir -p "$INSTALL_DIR/templates/platforms"
 	for template in CLAUDE.md AGENTS.md GEMINI.md clinerules.md copilot.md cursor.mdc windsurf.md antigravity.md; do
-		download_file "${ESOCONTEXT_REPO}/docs/ai/.context/templates/platforms/${template}" "$INSTALL_DIR/templates/platforms/${template}"
+		download_file "${CONTEXTUATE_REPO}/docs/ai/.context/templates/platforms/${template}" "$INSTALL_DIR/templates/platforms/${template}"
 	done
 
 	# Update templates - standards
 	mkdir -p "$INSTALL_DIR/templates/standards"
 	for template in php.standards.md javascript.standards.md python.standards.md go.standards.md java.standards.md; do
-		download_file "${ESOCONTEXT_REPO}/docs/ai/.context/templates/standards/${template}" "$INSTALL_DIR/templates/standards/${template}"
+		download_file "${CONTEXTUATE_REPO}/docs/ai/.context/templates/standards/${template}" "$INSTALL_DIR/templates/standards/${template}"
 	done
 
 	# Update templates - root
-	download_file "${ESOCONTEXT_REPO}/docs/ai/.context/templates/context.md" "$INSTALL_DIR/templates/context.md"
+	download_file "${CONTEXTUATE_REPO}/docs/ai/.context/templates/context.md" "$INSTALL_DIR/templates/context.md"
 	log_success "Updated templates"
 
 	# Update agents
-	download_file "${ESOCONTEXT_REPO}/docs/ai/.context/agents/base.agent.md" "$INSTALL_DIR/agents/base.agent.md"
-	download_file "${ESOCONTEXT_REPO}/docs/ai/.context/agents/documentation-expert.agent.md" "$INSTALL_DIR/agents/documentation-expert.agent.md"
-	download_file "${ESOCONTEXT_REPO}/docs/ai/.context/agents/tools-expert.agent.md" "$INSTALL_DIR/agents/tools-expert.agent.md"
+	download_file "${CONTEXTUATE_REPO}/docs/ai/.context/agents/base.agent.md" "$INSTALL_DIR/agents/base.agent.md"
+	download_file "${CONTEXTUATE_REPO}/docs/ai/.context/agents/documentation-expert.agent.md" "$INSTALL_DIR/agents/documentation-expert.agent.md"
+	download_file "${CONTEXTUATE_REPO}/docs/ai/.context/agents/tools-expert.agent.md" "$INSTALL_DIR/agents/tools-expert.agent.md"
 	log_success "Updated agents"
 
 	# Update standards
-	download_file "${ESOCONTEXT_REPO}/docs/ai/.context/standards/coding-standards.md" "$INSTALL_DIR/standards/coding-standards.md"
-	download_file "${ESOCONTEXT_REPO}/docs/ai/.context/standards/behavioral-guidelines.md" "$INSTALL_DIR/standards/behavioral-guidelines.md"
-	download_file "${ESOCONTEXT_REPO}/docs/ai/.context/standards/task-workflow.md" "$INSTALL_DIR/standards/task-workflow.md"
+	download_file "${CONTEXTUATE_REPO}/docs/ai/.context/standards/coding-standards.md" "$INSTALL_DIR/standards/coding-standards.md"
+	download_file "${CONTEXTUATE_REPO}/docs/ai/.context/standards/behavioral-guidelines.md" "$INSTALL_DIR/standards/behavioral-guidelines.md"
+	download_file "${CONTEXTUATE_REPO}/docs/ai/.context/standards/task-workflow.md" "$INSTALL_DIR/standards/task-workflow.md"
 	log_success "Updated standards"
 
 	# Update bin
-	download_file "${ESOCONTEXT_REPO}/docs/ai/.context/bin/install.sh" "$INSTALL_DIR/bin/install.sh"
-	download_file "${ESOCONTEXT_REPO}/docs/ai/.context/bin/update.sh" "$INSTALL_DIR/bin/update.sh"
+	download_file "${CONTEXTUATE_REPO}/docs/ai/.context/bin/install.sh" "$INSTALL_DIR/bin/install.sh"
+	download_file "${CONTEXTUATE_REPO}/docs/ai/.context/bin/update.sh" "$INSTALL_DIR/bin/update.sh"
 	chmod +x "$INSTALL_DIR/bin/"*.sh
 	log_success "Updated bin scripts"
 
 	# Update tools
 	mkdir -p "$INSTALL_DIR/tools"
-	download_file "${ESOCONTEXT_REPO}/docs/ai/.context/tools/quickref.tool.md" "$INSTALL_DIR/tools/quickref.tool.md"
-	download_file "${ESOCONTEXT_REPO}/docs/ai/.context/tools/standards-detector.tool.md" "$INSTALL_DIR/tools/standards-detector.tool.md"
-	download_file "${ESOCONTEXT_REPO}/docs/ai/.context/tools/agent-creator.tool.md" "$INSTALL_DIR/tools/agent-creator.tool.md"
+	download_file "${CONTEXTUATE_REPO}/docs/ai/.context/tools/quickref.tool.md" "$INSTALL_DIR/tools/quickref.tool.md"
+	download_file "${CONTEXTUATE_REPO}/docs/ai/.context/tools/standards-detector.tool.md" "$INSTALL_DIR/tools/standards-detector.tool.md"
+	download_file "${CONTEXTUATE_REPO}/docs/ai/.context/tools/agent-creator.tool.md" "$INSTALL_DIR/tools/agent-creator.tool.md"
 	log_success "Updated tools"
 
 	# Update timestamp

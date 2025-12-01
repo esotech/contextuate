@@ -1,4 +1,4 @@
-# Esocontext Coding Standards
+# Contextuate Coding Standards
 
 > **Purpose:** Default coding standards for AI assistants.
 

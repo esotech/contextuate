@@ -1,4 +1,4 @@
-# Esocontext Task Workflow Standard
+# Contextuate Task Workflow Standard
 
 > **Purpose:** Standardized structure for multi-session AI tasks that persist across conversations.
 

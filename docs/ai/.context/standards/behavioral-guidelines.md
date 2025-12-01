@@ -1,6 +1,6 @@
-# Esocontext Behavioral Guidelines
+# Contextuate Behavioral Guidelines
 
-> **Purpose:** Standard behavioral guidelines for AI assistants working with Esocontext-enabled projects.
+> **Purpose:** Standard behavioral guidelines for AI assistants working with Contextuate-enabled projects.
 
 ---
 

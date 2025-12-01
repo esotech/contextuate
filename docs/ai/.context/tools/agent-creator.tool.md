@@ -1,7 +1,7 @@
 # Agent Creator Tool
 
 > **Type:** AI Tool Guide
-> **Purpose:** Create new AI agent definitions following Esocontext standards
+> **Purpose:** Create new AI agent definitions following Contextuate standards
 
 ---
 

@@ -7,9 +7,9 @@
 
 ## 1. Project Identity
 
-**Project Name:** Esocontext Framework
+**Project Name:** Contextuate Framework
 
-**Description:** The source repository for the Esocontext framework, a standardized system for providing context to AI coding assistants.
+**Description:** The source repository for the Contextuate framework, a standardized system for providing context to AI coding assistants.
 
 **Tech Stack:**
 - **Languages:** Bash (scripts), Markdown (documentation/templates), JSON (metadata).
@@ -106,5 +106,5 @@ Root files (`CLAUDE.md`, `AGENTS.md`) are treated as generated artifacts. They a
 
 ## 7. Resources
 
-- **Repository:** https://github.com/esotech/esocontext
-- **Website:** https://esocontext.dev
+- **Repository:** https://github.com/esotech/contextuate
+- **Website:** https://contextuate.dev

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 #
-# Esocontext Installer
+# Contextuate Installer
 # Standardized AI context framework for any project
 #
 # Usage:
-#   curl -fsSL https://esocontext.dev/install.sh | bash
+#   curl -fsSL https://contextuate.dev/install.sh | bash
 #
 # Or with options:
-#   curl -fsSL https://esocontext.dev/install.sh | bash -s -- [options]
+#   curl -fsSL https://contextuate.dev/install.sh | bash -s -- [options]
 #
 # Options:
 #   --force     Overwrite existing files (default: merge/skip)
@@ -18,8 +18,8 @@
 set -e
 
 # Configuration
-ESOCONTEXT_VERSION="1.0.0"
-ESOCONTEXT_REPO="https://raw.githubusercontent.com/esotech/esocontext/main"
+CONTEXTUATE_VERSION="1.0.0"
+CONTEXTUATE_REPO="https://raw.githubusercontent.com/esotech/contextuate/main"
 INSTALL_DIR="docs/ai/.context"
 
 # Colors
@@ -45,9 +45,9 @@ while [[ $# -gt 0 ]]; do
 			shift
 			;;
 		--help)
-			echo "Esocontext Installer v${ESOCONTEXT_VERSION}"
+			echo "Contextuate Installer v${CONTEXTUATE_VERSION}"
 			echo ""
-			echo "Usage: curl -fsSL https://esocontext.dev/install.sh | bash -s -- [options]"
+			echo "Usage: curl -fsSL https://contextuate.dev/install.sh | bash -s -- [options]"
 			echo ""
 			echo "Options:"
 			echo "  --force     Overwrite existing files"
@@ -126,7 +126,7 @@ download_file() {
 main() {
 	echo ""
 	echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
-	echo -e "${BLUE}║${NC}     Esocontext Installer v${ESOCONTEXT_VERSION}        ${BLUE}║${NC}"
+	echo -e "${BLUE}║${NC}     Contextuate Installer v${CONTEXTUATE_VERSION}        ${BLUE}║${NC}"
 	echo -e "${BLUE}║${NC}     AI Context Framework               ${BLUE}║${NC}"
 	echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
 	echo ""
@@ -142,7 +142,7 @@ main() {
 		fi
 	fi
 
-	log_info "Installing Esocontext framework..."
+	log_info "Installing Contextuate framework..."
 	echo ""
 
 	# Create directory structure
@@ -165,7 +165,7 @@ main() {
 	# Download or copy framework files
 	log_info "Installing framework files..."
 
-	# For local installation (when running from the esocontext repo itself)
+	# For local installation (when running from the contextuate repo itself)
 	if [[ -f "docs/ai/.context/version.json" ]]; then
 		log_info "Detected local installation source..."
 		SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -211,43 +211,43 @@ main() {
 		log_success "Copied framework files from local source"
 	else
 		# Download from remote
-		log_info "Downloading from ${ESOCONTEXT_REPO}..."
+		log_info "Downloading from ${CONTEXTUATE_REPO}..."
 
 		# Core files
-		download_file "${ESOCONTEXT_REPO}/docs/ai/.context/version.json" "$INSTALL_DIR/version.json" "$FORCE"
-		download_file "${ESOCONTEXT_REPO}/docs/ai/.context/README.md" "$INSTALL_DIR/README.md" "$FORCE"
+		download_file "${CONTEXTUATE_REPO}/docs/ai/.context/version.json" "$INSTALL_DIR/version.json" "$FORCE"
+		download_file "${CONTEXTUATE_REPO}/docs/ai/.context/README.md" "$INSTALL_DIR/README.md" "$FORCE"
 
 		# Templates - platforms
 		for template in CLAUDE.md AGENTS.md GEMINI.md clinerules.md copilot.md cursor.mdc windsurf.md antigravity.md; do
-			download_file "${ESOCONTEXT_REPO}/docs/ai/.context/templates/platforms/${template}" "$INSTALL_DIR/templates/platforms/${template}" "$FORCE"
+			download_file "${CONTEXTUATE_REPO}/docs/ai/.context/templates/platforms/${template}" "$INSTALL_DIR/templates/platforms/${template}" "$FORCE"
 		done
 
 		# Templates - standards
 		for template in php.standards.md javascript.standards.md python.standards.md go.standards.md java.standards.md; do
-			download_file "${ESOCONTEXT_REPO}/docs/ai/.context/templates/standards/${template}" "$INSTALL_DIR/templates/standards/${template}" "$FORCE"
+			download_file "${CONTEXTUATE_REPO}/docs/ai/.context/templates/standards/${template}" "$INSTALL_DIR/templates/standards/${template}" "$FORCE"
 		done
 
 		# Templates - root
-		download_file "${ESOCONTEXT_REPO}/docs/ai/.context/templates/context.md" "$INSTALL_DIR/templates/context.md" "$FORCE"
+		download_file "${CONTEXTUATE_REPO}/docs/ai/.context/templates/context.md" "$INSTALL_DIR/templates/context.md" "$FORCE"
 
 		# Agents
-		download_file "${ESOCONTEXT_REPO}/docs/ai/.context/agents/base.agent.md" "$INSTALL_DIR/agents/base.agent.md" "$FORCE"
-		download_file "${ESOCONTEXT_REPO}/docs/ai/.context/agents/documentation-expert.agent.md" "$INSTALL_DIR/agents/documentation-expert.agent.md" "$FORCE"
-		download_file "${ESOCONTEXT_REPO}/docs/ai/.context/agents/tools-expert.agent.md" "$INSTALL_DIR/agents/tools-expert.agent.md" "$FORCE"
+		download_file "${CONTEXTUATE_REPO}/docs/ai/.context/agents/base.agent.md" "$INSTALL_DIR/agents/base.agent.md" "$FORCE"
+		download_file "${CONTEXTUATE_REPO}/docs/ai/.context/agents/documentation-expert.agent.md" "$INSTALL_DIR/agents/documentation-expert.agent.md" "$FORCE"
+		download_file "${CONTEXTUATE_REPO}/docs/ai/.context/agents/tools-expert.agent.md" "$INSTALL_DIR/agents/tools-expert.agent.md" "$FORCE"
 
 		# Standards
-		download_file "${ESOCONTEXT_REPO}/docs/ai/.context/standards/coding-standards.md" "$INSTALL_DIR/standards/coding-standards.md" "$FORCE"
-		download_file "${ESOCONTEXT_REPO}/docs/ai/.context/standards/behavioral-guidelines.md" "$INSTALL_DIR/standards/behavioral-guidelines.md" "$FORCE"
-		download_file "${ESOCONTEXT_REPO}/docs/ai/.context/standards/task-workflow.md" "$INSTALL_DIR/standards/task-workflow.md" "$FORCE"
+		download_file "${CONTEXTUATE_REPO}/docs/ai/.context/standards/coding-standards.md" "$INSTALL_DIR/standards/coding-standards.md" "$FORCE"
+		download_file "${CONTEXTUATE_REPO}/docs/ai/.context/standards/behavioral-guidelines.md" "$INSTALL_DIR/standards/behavioral-guidelines.md" "$FORCE"
+		download_file "${CONTEXTUATE_REPO}/docs/ai/.context/standards/task-workflow.md" "$INSTALL_DIR/standards/task-workflow.md" "$FORCE"
 
 		# Bin
-		download_file "${ESOCONTEXT_REPO}/docs/ai/.context/bin/install.sh" "$INSTALL_DIR/bin/install.sh" "$FORCE"
-		download_file "${ESOCONTEXT_REPO}/docs/ai/.context/bin/update.sh" "$INSTALL_DIR/bin/update.sh" "$FORCE"
+		download_file "${CONTEXTUATE_REPO}/docs/ai/.context/bin/install.sh" "$INSTALL_DIR/bin/install.sh" "$FORCE"
+		download_file "${CONTEXTUATE_REPO}/docs/ai/.context/bin/update.sh" "$INSTALL_DIR/bin/update.sh" "$FORCE"
 
 		# Tools
-		download_file "${ESOCONTEXT_REPO}/docs/ai/.context/tools/quickref.tool.md" "$INSTALL_DIR/tools/quickref.tool.md" "$FORCE"
-		download_file "${ESOCONTEXT_REPO}/docs/ai/.context/tools/standards-detector.tool.md" "$INSTALL_DIR/tools/standards-detector.tool.md" "$FORCE"
-		download_file "${ESOCONTEXT_REPO}/docs/ai/.context/tools/agent-creator.tool.md" "$INSTALL_DIR/tools/agent-creator.tool.md" "$FORCE"
+		download_file "${CONTEXTUATE_REPO}/docs/ai/.context/tools/quickref.tool.md" "$INSTALL_DIR/tools/quickref.tool.md" "$FORCE"
+		download_file "${CONTEXTUATE_REPO}/docs/ai/.context/tools/standards-detector.tool.md" "$INSTALL_DIR/tools/standards-detector.tool.md" "$FORCE"
+		download_file "${CONTEXTUATE_REPO}/docs/ai/.context/tools/agent-creator.tool.md" "$INSTALL_DIR/tools/agent-creator.tool.md" "$FORCE"
 	fi
 
 	# Make scripts executable
@@ -343,11 +343,11 @@ main() {
 
 		GITIGNORE_ENTRIES=(
 			""
-			"# Esocontext - Framework files"
+			"# Contextuate - Framework files"
 			"docs/ai/.context/"
 			"docs/ai/tasks/"
 			""
-			"# Esocontext - Generated Artifacts (DO NOT EDIT)"
+			"# Contextuate - Generated Artifacts (DO NOT EDIT)"
 			"CLAUDE.md"
 			"AGENTS.md"
 			"GEMINI.md"
@@ -360,15 +360,15 @@ main() {
 
 		if [[ -f ".gitignore" ]]; then
 			# Check if already present
-			if ! grep -q "# Esocontext - Framework files" ".gitignore" 2>/dev/null; then
+			if ! grep -q "# Contextuate - Framework files" ".gitignore" 2>/dev/null; then
 				printf '%s\n' "${GITIGNORE_ENTRIES[@]}" >> ".gitignore"
-				log_success "Added Esocontext entries to .gitignore"
+				log_success "Added Contextuate entries to .gitignore"
 			else
-				log_warn "Esocontext entries already in .gitignore"
+				log_warn "Contextuate entries already in .gitignore"
 			fi
 		else
 			printf '%s\n' "${GITIGNORE_ENTRIES[@]}" > ".gitignore"
-			log_success "Created .gitignore with Esocontext entries"
+			log_success "Created .gitignore with Contextuate entries"
 		fi
 	else
 		log_info "Skipped .gitignore modification (--no-git)"
@@ -395,7 +395,7 @@ main() {
 	echo "  2. Create custom agents in ${BLUE}docs/ai/agents/${NC}"
 	echo "  3. Add quickrefs in ${BLUE}docs/ai/quickrefs/${NC}"
 	echo ""
-	echo "Documentation: https://esocontext.dev"
+	echo "Documentation: https://contextuate.dev"
 	echo ""
 }
 

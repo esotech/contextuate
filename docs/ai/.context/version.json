@@ -1,8 +1,8 @@
 {
-	"name": "esocontext",
+	"name": "contextuate",
 	"version": "1.0.0",
 	"description": "AI Context Framework - Standardized documentation for AI coding assistants",
-	"repository": "https://github.com/esotech/esocontext",
+	"repository": "https://github.com/esotech/contextuate",
 	"installed": null,
 	"updated": null
 }

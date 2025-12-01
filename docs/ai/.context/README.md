@@ -1,8 +1,8 @@
-# Esocontext Framework
+# Contextuate Framework
 
 > **DO NOT MODIFY FILES IN THIS DIRECTORY**
 >
-> This folder contains the core Esocontext framework files. These are managed by the installer and will be overwritten during updates.
+> This folder contains the core Contextuate framework files. These are managed by the installer and will be overwritten during updates.
 
 ---
 
@@ -14,7 +14,7 @@ After installation, customize your project context in `docs/ai/context.md`. AI a
 
 ## Available Tools
 
-Esocontext includes AI tool guides - markdown files that AI assistants read and follow to perform tasks. Ask your AI assistant to use these tools with natural language.
+Contextuate includes AI tool guides - markdown files that AI assistants read and follow to perform tasks. Ask your AI assistant to use these tools with natural language.
 
 ### Standards Detector
 
@@ -61,7 +61,7 @@ Creates condensed, AI-friendly references from large documentation files.
 
 ### Agent Creator
 
-Creates new AI agent definitions following Esocontext patterns.
+Creates new AI agent definitions following Contextuate patterns.
 
 **How to use:** Ask your AI assistant:
 > "Create an agent for database operations"
@@ -113,10 +113,10 @@ When AI looks up coding standards for a language:
 
 ```bash
 # Remote installation
-curl -fsSL https://esocontext.dev/install.sh | bash
+curl -fsSL https://contextuate.dev/install.sh | bash
 
 # With options
-curl -fsSL https://esocontext.dev/install.sh | bash -s -- --force
+curl -fsSL https://contextuate.dev/install.sh | bash -s -- --force
 ```
 
 **Options:**
@@ -147,6 +147,6 @@ Updates framework files while preserving your customizations.
 
 ## Support
 
-- Documentation: https://esocontext.dev
-- Repository: https://github.com/esotech/esocontext
-- Issues: https://github.com/esotech/esocontext/issues
+- Documentation: https://contextuate.dev
+- Repository: https://github.com/esotech/contextuate
+- Issues: https://github.com/esotech/contextuate/issues

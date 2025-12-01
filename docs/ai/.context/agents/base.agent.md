@@ -1,6 +1,6 @@
 # Base Agent Configuration
 
-> **Purpose:** Foundation rules that ALL AI agents inherit when working with Esocontext-enabled projects.
+> **Purpose:** Foundation rules that ALL AI agents inherit when working with Contextuate-enabled projects.
 
 ---
 

@@ -8,7 +8,7 @@
 ## When to Use This Tool
 
 Use this tool when:
-- Setting up Esocontext in an existing project
+- Setting up Contextuate in an existing project
 - User wants coding standards documented
 - Standards need to be inferred from existing code
 - Creating project-specific coding standards
