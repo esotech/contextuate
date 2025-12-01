@@ -47,6 +47,7 @@ export async function initCommand(options: { force?: boolean }) {
         'docs/ai/standards',
         'docs/ai/quickrefs',
         'docs/ai/tasks',
+        'docs/ai/commands',
     ];
 
     for (const dir of dirs) {
@@ -148,7 +149,54 @@ export async function initCommand(options: { force?: boolean }) {
     }
     console.log('');
 
-    // 5. Update .gitignore
+    // 5. Create platform-specific symlinks to centralized directories
+    console.log(chalk.blue('[INFO] Creating platform symlinks...'));
+
+    // Helper to create symlinks
+    const createSymlink = async (target: string, linkPath: string) => {
+        const linkDir = path.dirname(linkPath);
+        await fs.ensureDir(linkDir);
+
+        // Calculate relative path from link location to target
+        const relativeTarget = path.relative(linkDir, target);
+
+        // Check if symlink already exists
+        try {
+            const existingLink = await fs.readlink(linkPath);
+            if (existingLink === relativeTarget) {
+                console.log(chalk.yellow(`[WARN] Symlink exists: ${linkPath} -> ${relativeTarget}`));
+                return;
+            }
+            // Remove existing symlink if it points elsewhere
+            await fs.remove(linkPath);
+        } catch {
+            // Not a symlink or doesn't exist
+            if (fs.existsSync(linkPath)) {
+                if (options.force) {
+                    await fs.remove(linkPath);
+                } else {
+                    console.log(chalk.yellow(`[WARN] Skipped (path exists): ${linkPath}`));
+                    return;
+                }
+            }
+        }
+
+        await fs.ensureSymlink(relativeTarget, linkPath);
+        console.log(chalk.green(`[OK] Symlink: ${linkPath} -> ${relativeTarget}`));
+    };
+
+    // Define symlinks: platform-specific locations -> centralized docs/ai directories
+    const symlinks = [
+        { target: 'docs/ai/commands', link: '.claude/commands' },
+        { target: 'docs/ai/agents', link: '.claude/agents' },
+    ];
+
+    for (const symlink of symlinks) {
+        await createSymlink(symlink.target, symlink.link);
+    }
+    console.log('');
+
+    // 6. Update .gitignore
     console.log(chalk.blue('[INFO] Updating .gitignore...'));
 
     const gitignoreEntries = [
@@ -166,6 +214,9 @@ export async function initCommand(options: { force?: boolean }) {
         '.windsurf/rules/project.md',
         '.antigravity/rules.md',
         '.github/copilot-instructions.md',
+        '',
+        '# Contextuate - Platform symlinks (symlinks to docs/ai/)',
+        '.claude/',
     ];
 
     const gitignorePath = '.gitignore';

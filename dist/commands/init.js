@@ -47,6 +47,7 @@ async function initCommand(options) {
         'docs/ai/standards',
         'docs/ai/quickrefs',
         'docs/ai/tasks',
+        'docs/ai/commands',
     ];
     for (const dir of dirs) {
         await fs_extra_1.default.ensureDir(dir);
@@ -130,7 +131,49 @@ async function initCommand(options) {
         await copyFile(path_1.default.join(installDir, file.src), file.dest);
     }
     console.log('');
-    // 5. Update .gitignore
+    // 5. Create platform-specific symlinks to centralized directories
+    console.log(chalk_1.default.blue('[INFO] Creating platform symlinks...'));
+    // Helper to create symlinks
+    const createSymlink = async (target, linkPath) => {
+        const linkDir = path_1.default.dirname(linkPath);
+        await fs_extra_1.default.ensureDir(linkDir);
+        // Calculate relative path from link location to target
+        const relativeTarget = path_1.default.relative(linkDir, target);
+        // Check if symlink already exists
+        try {
+            const existingLink = await fs_extra_1.default.readlink(linkPath);
+            if (existingLink === relativeTarget) {
+                console.log(chalk_1.default.yellow(`[WARN] Symlink exists: ${linkPath} -> ${relativeTarget}`));
+                return;
+            }
+            // Remove existing symlink if it points elsewhere
+            await fs_extra_1.default.remove(linkPath);
+        }
+        catch {
+            // Not a symlink or doesn't exist
+            if (fs_extra_1.default.existsSync(linkPath)) {
+                if (options.force) {
+                    await fs_extra_1.default.remove(linkPath);
+                }
+                else {
+                    console.log(chalk_1.default.yellow(`[WARN] Skipped (path exists): ${linkPath}`));
+                    return;
+                }
+            }
+        }
+        await fs_extra_1.default.ensureSymlink(relativeTarget, linkPath);
+        console.log(chalk_1.default.green(`[OK] Symlink: ${linkPath} -> ${relativeTarget}`));
+    };
+    // Define symlinks: platform-specific locations -> centralized docs/ai directories
+    const symlinks = [
+        { target: 'docs/ai/commands', link: '.claude/commands' },
+        { target: 'docs/ai/agents', link: '.claude/agents' },
+    ];
+    for (const symlink of symlinks) {
+        await createSymlink(symlink.target, symlink.link);
+    }
+    console.log('');
+    // 6. Update .gitignore
     console.log(chalk_1.default.blue('[INFO] Updating .gitignore...'));
     const gitignoreEntries = [
         '',
@@ -147,6 +190,9 @@ async function initCommand(options) {
         '.windsurf/rules/project.md',
         '.antigravity/rules.md',
         '.github/copilot-instructions.md',
+        '',
+        '# Contextuate - Platform symlinks (symlinks to docs/ai/)',
+        '.claude/',
     ];
     const gitignorePath = '.gitignore';
     if (fs_extra_1.default.existsSync(gitignorePath)) {
