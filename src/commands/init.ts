@@ -3,6 +3,18 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
 
+// Platform definitions with metadata
+const PLATFORMS = [
+    { id: 'claude', name: 'Claude Code', src: 'templates/platforms/CLAUDE.md', dest: 'CLAUDE.md', symlinks: true },
+    { id: 'agents', name: 'Agents.ai', src: 'templates/platforms/AGENTS.md', dest: 'AGENTS.md' },
+    { id: 'gemini', name: 'Google Gemini', src: 'templates/platforms/GEMINI.md', dest: 'GEMINI.md' },
+    { id: 'cline', name: 'Cline', src: 'templates/platforms/clinerules.md', dest: '.clinerules/cline-memory-bank.md', ensureDir: '.clinerules' },
+    { id: 'copilot', name: 'GitHub Copilot', src: 'templates/platforms/copilot.md', dest: '.github/copilot-instructions.md', ensureDir: '.github' },
+    { id: 'cursor', name: 'Cursor IDE', src: 'templates/platforms/cursor.mdc', dest: '.cursor/rules/project.mdc', ensureDir: '.cursor/rules' },
+    { id: 'windsurf', name: 'Windsurf IDE', src: 'templates/platforms/windsurf.md', dest: '.windsurf/rules/project.md', ensureDir: '.windsurf/rules' },
+    { id: 'antigravity', name: 'Antigravity', src: 'templates/platforms/antigravity.md', dest: '.antigravity/rules.md', ensureDir: '.antigravity' },
+];
+
 export async function initCommand(options: { force?: boolean }) {
     console.log(chalk.blue('╔════════════════════════════════════════╗'));
     console.log(chalk.blue('║     Contextuate Installer              ║'));
@@ -31,22 +43,64 @@ export async function initCommand(options: { force?: boolean }) {
         }
     }
 
+    // Ask about platform selection
+    const { platformChoice } = await inquirer.prompt([
+        {
+            type: 'list',
+            name: 'platformChoice',
+            message: 'Which platforms would you like to install jump files for?',
+            choices: [
+                { name: 'All platforms', value: 'all' },
+                { name: 'Select specific platform(s)', value: 'select' },
+            ],
+        },
+    ]);
+
+    let selectedPlatforms: typeof PLATFORMS = [];
+
+    if (platformChoice === 'all') {
+        selectedPlatforms = PLATFORMS;
+    } else {
+        const { platforms } = await inquirer.prompt([
+            {
+                type: 'checkbox',
+                name: 'platforms',
+                message: 'Select the platforms to install:',
+                choices: PLATFORMS.map(p => ({
+                    name: p.name,
+                    value: p.id,
+                    checked: false,
+                })),
+                validate: (answer) => {
+                    if (answer.length < 1) {
+                        return 'You must select at least one platform.';
+                    }
+                    return true;
+                },
+            },
+        ]);
+
+        selectedPlatforms = PLATFORMS.filter(p => platforms.includes(p.id));
+    }
+
+    console.log('');
     console.log(chalk.blue('[INFO] Installing Contextuate framework...'));
     console.log('');
 
     // 1. Create directory structure
     console.log(chalk.blue('[INFO] Creating directory structure...'));
     const dirs = [
-        'docs/ai/.context/templates/platforms',
-        'docs/ai/.context/templates/standards',
-        'docs/ai/.context/agents',
-        'docs/ai/.context/standards',
-        'docs/ai/.context/bin',
-        'docs/ai/.context/tools',
+        'docs/ai/.contextuate/templates/platforms',
+        'docs/ai/.contextuate/templates/standards',
+        'docs/ai/.contextuate/agents',
+        'docs/ai/.contextuate/standards',
+        'docs/ai/.contextuate/bin',
+        'docs/ai/.contextuate/tools',
         'docs/ai/agents',
         'docs/ai/standards',
         'docs/ai/quickrefs',
         'docs/ai/tasks',
+        'docs/ai/commands',
     ];
 
     for (const dir of dirs) {
@@ -59,12 +113,12 @@ export async function initCommand(options: { force?: boolean }) {
     console.log(chalk.blue('[INFO] Installing framework files...'));
 
     // Define source directory (where the package is installed)
-    // In development, this is likely ../../docs/ai/.context relative to this file
+    // In development, this is likely ../../docs/ai/.contextuate relative to this file
     // In production (dist), it might be different. We need to handle both.
-    let templateSource = path.join(__dirname, '../../docs/ai/.context');
+    let templateSource = path.join(__dirname, '../../docs/ai/.contextuate');
     if (!fs.existsSync(templateSource)) {
         // Try resolving from package root if running from dist
-        templateSource = path.join(__dirname, '../../../docs/ai/.context');
+        templateSource = path.join(__dirname, '../../../docs/ai/.contextuate');
     }
 
     if (!fs.existsSync(templateSource)) {
@@ -72,7 +126,7 @@ export async function initCommand(options: { force?: boolean }) {
         return;
     }
 
-    const installDir = 'docs/ai/.context';
+    const installDir = 'docs/ai/.contextuate';
 
     // Helper to copy files
     const copyFile = async (src: string, dest: string) => {
@@ -81,7 +135,6 @@ export async function initCommand(options: { force?: boolean }) {
         const absDest = path.resolve(dest);
 
         if (absSrc === absDest) {
-            // console.log(chalk.gray(`[DEBUG] Skipped (same file): ${dest}`));
             return;
         }
 
@@ -111,6 +164,7 @@ export async function initCommand(options: { force?: boolean }) {
 
     await copyDirContents('templates/platforms');
     await copyDirContents('templates/standards');
+    await copyFile(path.join(templateSource, 'templates/contextuate.md'), path.join(installDir, 'templates/contextuate.md'));
     await copyFile(path.join(templateSource, 'templates/context.md'), path.join(installDir, 'templates/context.md'));
 
     await copyDirContents('agents');
@@ -121,52 +175,107 @@ export async function initCommand(options: { force?: boolean }) {
     console.log(chalk.green('[OK] Copied framework files'));
     console.log('');
 
-    // 3. Setup project context
+    // 3. Setup project context files
     console.log(chalk.blue('[INFO] Setting up project context...'));
+    // Copy contextuate.md (main entry point) to docs/ai/
+    await copyFile(path.join(installDir, 'templates/contextuate.md'), 'docs/ai/contextuate.md');
+    // Copy context.md (user customizable) to docs/ai/
     await copyFile(path.join(installDir, 'templates/context.md'), 'docs/ai/context.md');
     console.log('');
 
-    // 4. Generate jump files
+    // 4. Generate jump files for selected platforms
     console.log(chalk.blue('[INFO] Generating platform jump files...'));
 
-    const jumpFiles = [
-        { src: 'templates/platforms/CLAUDE.md', dest: 'CLAUDE.md' },
-        { src: 'templates/platforms/AGENTS.md', dest: 'AGENTS.md' },
-        { src: 'templates/platforms/GEMINI.md', dest: 'GEMINI.md' },
-        { src: 'templates/platforms/clinerules.md', dest: '.clinerules/cline-memory-bank.md', ensureDir: '.clinerules' },
-        { src: 'templates/platforms/copilot.md', dest: '.github/copilot-instructions.md', ensureDir: '.github' },
-        { src: 'templates/platforms/cursor.mdc', dest: '.cursor/rules/project.mdc', ensureDir: '.cursor/rules' },
-        { src: 'templates/platforms/windsurf.md', dest: '.windsurf/rules/project.md', ensureDir: '.windsurf/rules' },
-        { src: 'templates/platforms/antigravity.md', dest: '.antigravity/rules.md', ensureDir: '.antigravity' },
-    ];
-
-    for (const file of jumpFiles) {
-        if (file.ensureDir) {
-            await fs.ensureDir(file.ensureDir);
+    for (const platform of selectedPlatforms) {
+        if (platform.ensureDir) {
+            await fs.ensureDir(platform.ensureDir);
         }
-        await copyFile(path.join(installDir, file.src), file.dest);
+        await copyFile(path.join(installDir, platform.src), platform.dest);
     }
     console.log('');
 
-    // 5. Update .gitignore
+    // 5. Create platform-specific symlinks (only for platforms that need them)
+    const platformsWithSymlinks = selectedPlatforms.filter(p => p.symlinks);
+
+    if (platformsWithSymlinks.length > 0) {
+        console.log(chalk.blue('[INFO] Creating platform symlinks...'));
+
+        // Helper to create symlinks
+        const createSymlink = async (target: string, linkPath: string) => {
+            const linkDir = path.dirname(linkPath);
+            await fs.ensureDir(linkDir);
+
+            // Calculate relative path from link location to target
+            const relativeTarget = path.relative(linkDir, target);
+
+            // Check if symlink already exists
+            try {
+                const existingLink = await fs.readlink(linkPath);
+                if (existingLink === relativeTarget) {
+                    console.log(chalk.yellow(`[WARN] Symlink exists: ${linkPath} -> ${relativeTarget}`));
+                    return;
+                }
+                // Remove existing symlink if it points elsewhere
+                await fs.remove(linkPath);
+            } catch {
+                // Not a symlink or doesn't exist
+                if (fs.existsSync(linkPath)) {
+                    if (options.force) {
+                        await fs.remove(linkPath);
+                    } else {
+                        console.log(chalk.yellow(`[WARN] Skipped (path exists): ${linkPath}`));
+                        return;
+                    }
+                }
+            }
+
+            await fs.ensureSymlink(relativeTarget, linkPath);
+            console.log(chalk.green(`[OK] Symlink: ${linkPath} -> ${relativeTarget}`));
+        };
+
+        // Create symlinks for Claude Code
+        if (selectedPlatforms.some(p => p.id === 'claude')) {
+            const symlinks = [
+                { target: 'docs/ai/commands', link: '.claude/commands' },
+                { target: 'docs/ai/agents', link: '.claude/agents' },
+            ];
+
+            for (const symlink of symlinks) {
+                await createSymlink(symlink.target, symlink.link);
+            }
+        }
+        console.log('');
+    }
+
+    // 6. Update .gitignore
     console.log(chalk.blue('[INFO] Updating .gitignore...'));
 
+    // Build gitignore entries based on selected platforms
     const gitignoreEntries = [
         '',
         '# Contextuate - Framework files',
-        'docs/ai/.context/',
+        'docs/ai/.contextuate/',
+        'docs/ai/contextuate.md',
         'docs/ai/tasks/',
         '',
         '# Contextuate - Generated Artifacts (DO NOT EDIT)',
-        'CLAUDE.md',
-        'AGENTS.md',
-        'GEMINI.md',
-        '.clinerules/',
-        '.cursor/rules/project.mdc',
-        '.windsurf/rules/project.md',
-        '.antigravity/rules.md',
-        '.github/copilot-instructions.md',
     ];
+
+    // Add entries for selected platforms
+    for (const platform of selectedPlatforms) {
+        if (platform.ensureDir) {
+            gitignoreEntries.push(`${platform.ensureDir}/`);
+        } else {
+            gitignoreEntries.push(platform.dest);
+        }
+    }
+
+    // Add symlink entries if Claude is selected
+    if (selectedPlatforms.some(p => p.id === 'claude')) {
+        gitignoreEntries.push('');
+        gitignoreEntries.push('# Contextuate - Platform symlinks (symlinks to docs/ai/)');
+        gitignoreEntries.push('.claude/');
+    }
 
     const gitignorePath = '.gitignore';
     if (fs.existsSync(gitignorePath)) {
@@ -186,6 +295,11 @@ export async function initCommand(options: { force?: boolean }) {
     console.log(chalk.green('╔════════════════════════════════════════╗'));
     console.log(chalk.green('║     Installation Complete!             ║'));
     console.log(chalk.green('╚════════════════════════════════════════╝'));
+    console.log('');
+    console.log('Installed platforms:');
+    for (const platform of selectedPlatforms) {
+        console.log(`  - ${chalk.cyan(platform.name)} (${platform.dest})`);
+    }
     console.log('');
     console.log('Next steps:');
     console.log('');

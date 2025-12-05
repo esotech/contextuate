@@ -14,9 +14,9 @@ async function removeCommand(options) {
     console.log(chalk_1.default.blue('╚════════════════════════════════════════╝'));
     console.log('');
     // Define source directory for templates
-    let templateSource = path_1.default.join(__dirname, '../../docs/ai/.context');
+    let templateSource = path_1.default.join(__dirname, '../../docs/ai/.contextuate');
     if (!fs_extra_1.default.existsSync(templateSource)) {
-        templateSource = path_1.default.join(__dirname, '../../../docs/ai/.context');
+        templateSource = path_1.default.join(__dirname, '../../../docs/ai/.contextuate');
     }
     if (!fs_extra_1.default.existsSync(templateSource)) {
         console.error(chalk_1.default.red(`[ERROR] Could not find template source at ${templateSource}`));
@@ -74,5 +74,4 @@ async function removeCommand(options) {
     }
     console.log('');
     console.log(chalk_1.default.green('Cleanup complete!'));
-    console.log('');
 }

@@ -12,7 +12,7 @@ alwaysApply: true
 
 # PRIMARY DIRECTIVE
 
-**You must read the Project Context file before proceeding.**
+**You must read the Contextuate framework file before proceeding.**
 
 It contains:
 1.  **Agent Registry** (Who you should be)
@@ -21,7 +21,7 @@ It contains:
 4.  **Documentation Map** (Where to look)
 
 ### Context File Location
-- **[Project Context](../../docs/ai/context.md)**
+- **[Contextuate Framework](../../docs/ai/contextuate.md)**
 
 ---
 

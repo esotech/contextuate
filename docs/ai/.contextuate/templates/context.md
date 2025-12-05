@@ -25,9 +25,9 @@
 ### Agent Registry
 | Task Domain | Agent | Context File |
 |-------------|-------|--------------|
-| General Coding | Base Agent | [.context/agents/base.agent.md](.context/agents/base.agent.md) |
-| Documentation | Docs Expert | [.context/agents/documentation-expert.agent.md](.context/agents/documentation-expert.agent.md) |
-| Tool Usage | Tools Expert | [.context/agents/tools-expert.agent.md](.context/agents/tools-expert.agent.md) |
+| General Coding | Base Agent | [.contextuate/agents/base.agent.md](.contextuate/agents/base.agent.md) |
+| Documentation | Docs Expert | [.contextuate/agents/documentation-expert.agent.md](.contextuate/agents/documentation-expert.agent.md) |
+| Tool Usage | Tools Expert | [.contextuate/agents/tools-expert.agent.md](.contextuate/agents/tools-expert.agent.md) |
 | {Custom Domain} | {Custom Agent} | [agents/{agent}.agent.md](agents/{agent}.agent.md) |
 
 ### How to Create Agents
@@ -45,9 +45,9 @@ These tools are available to help you perform complex tasks.
 
 | Tool | Purpose | Instruction Guide |
 |------|---------|-------------------|
-| **Standards Detector** | Analyze code to find patterns | [.context/tools/standards-detector.tool.md](.context/tools/standards-detector.tool.md) |
-| **Quickref Generator** | Condense docs for AI usage | [.context/tools/quickref.tool.md](.context/tools/quickref.tool.md) |
-| **Agent Creator** | Generate new agent personas | [.context/tools/agent-creator.tool.md](.context/tools/agent-creator.tool.md) |
+| **Standards Detector** | Analyze code to find patterns | [.contextuate/tools/standards-detector.tool.md](.contextuate/tools/standards-detector.tool.md) |
+| **Quickref Generator** | Condense docs for AI usage | [.contextuate/tools/quickref.tool.md](.contextuate/tools/quickref.tool.md) |
+| **Agent Creator** | Generate new agent personas | [.contextuate/tools/agent-creator.tool.md](.contextuate/tools/agent-creator.tool.md) |
 
 ### Project Tools
 | Command | Description |
@@ -61,7 +61,7 @@ These tools are available to help you perform complex tasks.
 ## 4. Standards & Conventions
 
 ### Coding Standards
-**[Coding Standards](.context/standards/coding-standards.md)**
+**[Coding Standards](.contextuate/standards/coding-standards.md)**
 - **PHP:** `templates/standards/php.standards.md`
 - **JS/TS:** `templates/standards/javascript.standards.md`
 - **Python:** `templates/standards/python.standards.md`
@@ -70,7 +70,7 @@ These tools are available to help you perform complex tasks.
 (Customize these in `standards/`)
 
 ### Behavioral Guidelines
-**[Behavioral Guidelines](.context/standards/behavioral-guidelines.md)**
+**[Behavioral Guidelines](.contextuate/standards/behavioral-guidelines.md)**
 - Verified Truth: Do not speculate.
 - Minimal Intervention: Only change what is requested.
 
@@ -91,7 +91,7 @@ These tools are available to help you perform complex tasks.
 
 ### Multi-Session Tasks
 For complex tasks that span multiple sessions, use the **Task Workflow**:
-1. Read **[Task Workflow](.context/standards/task-workflow.md)**.
+1. Read **[Task Workflow](.contextuate/standards/task-workflow.md)**.
 2. Create a folder in `docs/ai/tasks/{task-name}/`.
 3. Maintain a `00-project-scope.md` and log files.
 

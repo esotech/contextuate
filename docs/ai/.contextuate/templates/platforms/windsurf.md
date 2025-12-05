@@ -1,4 +1,4 @@
-# Antigravity Rules
+# Windsurf Project Rules
 
 <!--
   CONTEXTUATE MANAGED FILE - DO NOT MODIFY
@@ -10,7 +10,7 @@
 
 Read the following file for complete project context:
 
-- [Project Context](docs/ai/context.md)
+- [Contextuate Framework](../../docs/ai/contextuate.md)
 
 ## Quick Reference
 
@@ -20,7 +20,8 @@ This project uses Contextuate for AI context management. All documentation is ce
 
 | Purpose | Path |
 |---------|------|
-| Main context | `docs/ai/context.md` |
+| Main context | `docs/ai/contextuate.md` |
+| Project context | `docs/ai/context.md` |
 | AI agents | `docs/ai/agents/` |
 | Quick refs | `docs/ai/quickrefs/` |
-| Standards | `docs/ai/.context/standards/` |
+| Standards | `docs/ai/.contextuate/standards/` |

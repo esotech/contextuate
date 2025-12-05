@@ -10,9 +10,9 @@ export async function removeCommand(options: { force?: boolean }) {
     console.log('');
 
     // Define source directory for templates
-    let templateSource = path.join(__dirname, '../../docs/ai/.context');
+    let templateSource = path.join(__dirname, '../../docs/ai/.contextuate');
     if (!fs.existsSync(templateSource)) {
-        templateSource = path.join(__dirname, '../../../docs/ai/.context');
+        templateSource = path.join(__dirname, '../../../docs/ai/.contextuate');
     }
 
     if (!fs.existsSync(templateSource)) {
@@ -76,5 +76,4 @@ export async function removeCommand(options: { force?: boolean }) {
 
     console.log('');
     console.log(chalk.green('Cleanup complete!'));
-    console.log('');
 }

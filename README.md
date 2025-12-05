@@ -6,13 +6,31 @@ Contextuate provides a structured "brain" for your project that AI coding assist
 
 ## Quick Start
 
-Install Contextuate in your project:
+### Installation
+
+Clone the repository and install globally:
 
 ```bash
-curl -fsSL https://contextuate.md/install.sh | bash
+git clone https://github.com/anthropics/contextuate.git
+cd contextuate
+npm install
+npm run build
+npm link
 ```
 
-This creates a `docs/ai/` directory in your project root containing the framework and templates.
+### Initialize Your Project
+
+Navigate to your project directory and run:
+
+```bash
+contextuate init
+```
+
+The interactive installer will guide you through:
+1. Selecting which AI platforms to configure (Claude Code, Cursor, Copilot, Windsurf, etc.)
+2. Creating the `docs/ai/` directory structure with framework files
+3. Generating platform-specific configuration files
+4. Setting up symlinks for supported platforms (e.g., `.claude/` for Claude Code)
 
 ## What is Contextuate?
 
