@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = require("commander");
 const init_1 = require("./commands/init");
+const remove_1 = require("./commands/remove");
 const fs_1 = require("fs");
 const path_1 = require("path");
 const program = new commander_1.Command();
@@ -24,4 +25,8 @@ program
     .description('Initialize Contextuate in the current project')
     .option('-f, --force', 'Overwrite existing files')
     .action(init_1.initCommand);
+program
+    .command('remove')
+    .description('Remove unmodified platform jump files')
+    .action(remove_1.removeCommand);
 program.parse();
