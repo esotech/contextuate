@@ -55,7 +55,7 @@ When using the `contextuate run` command, this context loading is automated base
 
 This repository contains the source for the Contextuate framework.
 
-- **`docs/ai/.context/`**: The core framework files distributed to users.
+- **`docs/ai/.contextuate/`**: The core framework files distributed to users.
   - `agents/`: Base agent definitions.
   - `templates/`: Templates for new projects.
   - `tools/`: AI tool guides.
@@ -101,7 +101,7 @@ contextuate create-agent <name> --description "Description of what it does"
 
 ## Documentation
 
-For full documentation, see [contextuate.md](https://contextuate.md) or browse the `docs/ai/.context/` directory.
+For full documentation, see [contextuate.md](https://contextuate.md) or browse the `docs/ai/.contextuate/` directory.
 
 ## License
 
