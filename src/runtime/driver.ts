@@ -14,11 +14,14 @@ export class LLMDriver {
     private toolLoader: ToolLoader;
     private activeTools: ToolDefinition[] = [];
 
-    constructor(config: DriverConfig, goal: string, cwd: string) {
+    private contextFiles: string[];
+
+    constructor(config: DriverConfig, goal: string, cwd: string, contextFiles: string[] = []) {
         this.config = config;
         this.goal = goal;
         this.cwd = cwd;
         this.toolLoader = new ToolLoader(cwd);
+        this.contextFiles = contextFiles;
     }
 
     async run(): Promise<void> {
@@ -37,6 +40,11 @@ export class LLMDriver {
             this.activeTools.forEach(t => console.log(`- ${t.name} (${t.path})`));
         } else {
             console.log(chalk.yellow('\n[INFO] No tools loaded (check agent capabilities)'));
+        }
+
+        if (this.contextFiles.length > 0) {
+            console.log(chalk.bold('\nContext Files:'));
+            this.contextFiles.forEach(f => console.log(`- ${f}`));
         }
 
         console.log('------------------------------------------------');

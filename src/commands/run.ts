@@ -22,7 +22,7 @@ import { GitManager } from '../utils/git';
 // ... imports
 import { LLMDriver } from '../runtime/driver';
 
-export async function runCommand(agentName: string, options: { dryRun?: boolean, isolation?: string, goal?: string }) {
+export async function runCommand(agentName: string, options: { dryRun?: boolean, isolation?: string, goal?: string, task?: string }) {
     console.log(chalk.blue(`[INFO] Launching Agent: ${agentName}`));
 
     if (options.goal) {
@@ -123,13 +123,52 @@ export async function runCommand(agentName: string, options: { dryRun?: boolean,
         }
     }
 
+    const extraContext: string[] = [];
+
+    if (options.task) {
+        console.log(chalk.bold('\nTask Context:'));
+        const taskPath = path.join(process.cwd(), 'docs/ai/tasks', options.task);
+        if (!fs.existsSync(taskPath)) {
+            console.error(chalk.red(`[ERROR] Task not found at: ${taskPath}`));
+            process.exit(1);
+        }
+
+        const scopeFile = path.join(taskPath, '00-project-scope.md');
+        if (fs.existsSync(scopeFile)) {
+            console.log(`- Scope: ${chalk.green('FOUND')} (${scopeFile})`);
+            config.context = config.context || {};
+            config.context.files = config.context.files || [];
+            config.context.files.push(scopeFile);
+            extraContext.push(scopeFile);
+        } else {
+            console.warn(chalk.yellow(`[WARN] Task scope not found: ${scopeFile}`));
+        }
+
+        // Find latest log
+        const logsDir = path.join(taskPath, 'logs');
+        if (fs.existsSync(logsDir)) {
+            const logFiles = await fs.readdir(logsDir);
+            const latestLog = logFiles.sort().reverse()[0];
+            if (latestLog) {
+                const logPath = path.join(logsDir, latestLog);
+                console.log(`- Latest Log: ${chalk.green('FOUND')} (${logPath})`);
+                config.context = config.context || {};
+                config.context.files = config.context.files || [];
+                config.context.files.push(logPath);
+                extraContext.push(logPath);
+            }
+        }
+    }
+
     if (config.context) {
         console.log('\nLoading Context:');
         // In a real implementation we would copy these files or process them
         // For now we just verify they exist from the perspective of the runtimeCwd
         const files = config.context.files || [];
         for (const file of files) {
-            const exists = await fs.pathExists(path.join(runtimeCwd, file));
+            // Check if absolute path (from task loading) or relative
+            const checkPath = path.isAbsolute(file) ? file : path.join(runtimeCwd, file);
+            const exists = await fs.pathExists(checkPath);
             console.log(`- ${file}: ${exists ? chalk.green('FOUND') : chalk.red('MISSING')}`);
         }
         if (config.context.directories) {
@@ -149,7 +188,8 @@ export async function runCommand(agentName: string, options: { dryRun?: boolean,
                     capabilities: config.capabilities || []
                 },
                 options.goal || 'No explicit goal provided.',
-                runtimeCwd
+                runtimeCwd,
+                (config.context?.files || []).map(f => path.isAbsolute(f) ? f : path.join(runtimeCwd, f))
             );
             await driver.run();
         } catch (e: any) {

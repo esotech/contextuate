@@ -50,6 +50,7 @@ program
     .option('--dry-run', 'Simulate execution without running logic')
     .option('--isolation <mode>', 'Isolation mode (worktree, none)', 'none')
     .option('--goal <text>', 'Goal or instructions for the agent')
+    .option('--task <name>', 'Load a task context (scope and latest log)')
     .action(runCommand);
 
 program.parse();

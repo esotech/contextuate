@@ -99,13 +99,49 @@ async function runCommand(agentName, options) {
             console.warn(chalk_1.default.yellow(`[WARN] Missing ${missingEnv.length} environment variables.`));
         }
     }
+    const extraContext = [];
+    if (options.task) {
+        console.log(chalk_1.default.bold('\nTask Context:'));
+        const taskPath = path_1.default.join(process.cwd(), 'docs/ai/tasks', options.task);
+        if (!fs_extra_1.default.existsSync(taskPath)) {
+            console.error(chalk_1.default.red(`[ERROR] Task not found at: ${taskPath}`));
+            process.exit(1);
+        }
+        const scopeFile = path_1.default.join(taskPath, '00-project-scope.md');
+        if (fs_extra_1.default.existsSync(scopeFile)) {
+            console.log(`- Scope: ${chalk_1.default.green('FOUND')} (${scopeFile})`);
+            config.context = config.context || {};
+            config.context.files = config.context.files || [];
+            config.context.files.push(scopeFile);
+            extraContext.push(scopeFile);
+        }
+        else {
+            console.warn(chalk_1.default.yellow(`[WARN] Task scope not found: ${scopeFile}`));
+        }
+        // Find latest log
+        const logsDir = path_1.default.join(taskPath, 'logs');
+        if (fs_extra_1.default.existsSync(logsDir)) {
+            const logFiles = await fs_extra_1.default.readdir(logsDir);
+            const latestLog = logFiles.sort().reverse()[0];
+            if (latestLog) {
+                const logPath = path_1.default.join(logsDir, latestLog);
+                console.log(`- Latest Log: ${chalk_1.default.green('FOUND')} (${logPath})`);
+                config.context = config.context || {};
+                config.context.files = config.context.files || [];
+                config.context.files.push(logPath);
+                extraContext.push(logPath);
+            }
+        }
+    }
     if (config.context) {
         console.log('\nLoading Context:');
         // In a real implementation we would copy these files or process them
         // For now we just verify they exist from the perspective of the runtimeCwd
         const files = config.context.files || [];
         for (const file of files) {
-            const exists = await fs_extra_1.default.pathExists(path_1.default.join(runtimeCwd, file));
+            // Check if absolute path (from task loading) or relative
+            const checkPath = path_1.default.isAbsolute(file) ? file : path_1.default.join(runtimeCwd, file);
+            const exists = await fs_extra_1.default.pathExists(checkPath);
             console.log(`- ${file}: ${exists ? chalk_1.default.green('FOUND') : chalk_1.default.red('MISSING')}`);
         }
         if (config.context.directories) {
@@ -120,7 +156,7 @@ async function runCommand(agentName, options) {
                 provider: config.provider?.type || 'mock',
                 model: config.provider?.model || 'test',
                 capabilities: config.capabilities || []
-            }, options.goal || 'No explicit goal provided.', runtimeCwd);
+            }, options.goal || 'No explicit goal provided.', runtimeCwd, (config.context?.files || []).map(f => path_1.default.isAbsolute(f) ? f : path_1.default.join(runtimeCwd, f)));
             await driver.run();
         }
         catch (e) {

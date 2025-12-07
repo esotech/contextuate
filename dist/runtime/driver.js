@@ -7,12 +7,13 @@ exports.LLMDriver = void 0;
 const chalk_1 = __importDefault(require("chalk"));
 const tools_1 = require("./tools");
 class LLMDriver {
-    constructor(config, goal, cwd) {
+    constructor(config, goal, cwd, contextFiles = []) {
         this.activeTools = [];
         this.config = config;
         this.goal = goal;
         this.cwd = cwd;
         this.toolLoader = new tools_1.ToolLoader(cwd);
+        this.contextFiles = contextFiles;
     }
     async run() {
         // Load Tools
@@ -29,6 +30,10 @@ class LLMDriver {
         }
         else {
             console.log(chalk_1.default.yellow('\n[INFO] No tools loaded (check agent capabilities)'));
+        }
+        if (this.contextFiles.length > 0) {
+            console.log(chalk_1.default.bold('\nContext Files:'));
+            this.contextFiles.forEach(f => console.log(`- ${f}`));
         }
         console.log('------------------------------------------------');
         if (this.config.provider === 'mock') {
