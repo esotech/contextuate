@@ -59,7 +59,7 @@ This repository contains the source for the Contextuate framework.
   - `agents/`: Base agent definitions.
   - `templates/`: Templates for new projects.
   - `tools/`: AI tool guides.
-  - `bin/`: Installation and update scripts.
+
 
 ## Usage
 

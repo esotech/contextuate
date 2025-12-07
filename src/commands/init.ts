@@ -138,7 +138,6 @@ export async function initCommand(options: { force?: boolean }) {
         'docs/ai/.contextuate/templates/standards',
         'docs/ai/.contextuate/agents',
         'docs/ai/.contextuate/standards',
-        'docs/ai/.contextuate/bin',
         'docs/ai/.contextuate/tools',
         'docs/ai/agents',
         'docs/ai/standards',
@@ -218,7 +217,6 @@ export async function initCommand(options: { force?: boolean }) {
 
     await copyDirContents('agents');
     await copyDirContents('standards');
-    await copyDirContents('bin');
     await copyDirContents('tools');
 
     console.log(chalk.green('[OK] Copied framework files'));

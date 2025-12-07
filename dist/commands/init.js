@@ -128,7 +128,6 @@ async function initCommand(options) {
         'docs/ai/.contextuate/templates/standards',
         'docs/ai/.contextuate/agents',
         'docs/ai/.contextuate/standards',
-        'docs/ai/.contextuate/bin',
         'docs/ai/.contextuate/tools',
         'docs/ai/agents',
         'docs/ai/standards',
@@ -195,7 +194,6 @@ async function initCommand(options) {
     await copyFile(path_1.default.join(templateSource, 'templates/context.md'), path_1.default.join(installDir, 'templates/context.md'));
     await copyDirContents('agents');
     await copyDirContents('standards');
-    await copyDirContents('bin');
     await copyDirContents('tools');
     console.log(chalk_1.default.green('[OK] Copied framework files'));
     console.log('');
