@@ -354,6 +354,10 @@ export async function initCommand(options: { force?: boolean }) {
     console.log(`  2. Create custom agents in ${chalk.blue('docs/ai/agents/')}`);
     console.log(`  3. Add quickrefs in ${chalk.blue('docs/ai/quickrefs/')}`);
     console.log('');
+    console.log('');
     console.log('Documentation: https://contextuate.md');
+    console.log('');
+    console.log(chalk.gray('Powered by Esotech.'));
+    console.log(chalk.gray('Created by Alexander Conroy (@geilt)'));
     console.log('');
 }

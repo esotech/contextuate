@@ -106,3 +106,8 @@ For full documentation, see [contextuate.md](https://contextuate.md) or browse t
 ## License
 
 [MIT License](LICENSE)
+
+## Credits
+
+Powered by **Esotech**.
+Created by **Alexander Conroy** ([@geilt](https://github.com/geilt)).
