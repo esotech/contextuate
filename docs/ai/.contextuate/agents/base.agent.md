@@ -4,6 +4,31 @@
 
 ---
 
+## Agent Definition Schema
+
+All agents in `docs/ai/agents/*.agent.md` can optionally include YAML frontmatter to define their runtime behavior.
+
+```yaml
+---
+name: "agent-name"
+description: "Brief description of what this agent does"
+version: "1.0.0"
+capabilities:
+  - "file_search"
+  - "terminal_exec"
+context:
+  files:
+    - "docs/context.md"
+    - "docs/ai/standards/coding-standards.md"
+  directories:
+    - "src/"
+env:
+  - "OPENAI_API_KEY"
+---
+```
+
+---
+
 ## Context Loading Order
 
 Every agent MUST read context in this order:
@@ -47,22 +72,22 @@ Every agent MUST read context in this order:
 
 ### Documentation Locations
 
-| Type | Location | Purpose |
-|------|----------|---------|
-| Project context | `docs/context.md` | Main entry point |
-| Project docs | `docs/` | Human + AI documentation |
-| User agents | `docs/ai/agents/` | Custom agent definitions |
-| Quick refs | `docs/ai/quickrefs/` | Condensed references |
-| Tasks | `docs/ai/tasks/` | Multi-session task tracking |
-| Framework | `docs/ai/.context/` | Core framework (read-only) |
+| Type            | Location             | Purpose                     |
+| --------------- | -------------------- | --------------------------- |
+| Project context | `docs/context.md`    | Main entry point            |
+| Project docs    | `docs/`              | Human + AI documentation    |
+| User agents     | `docs/ai/agents/`    | Custom agent definitions    |
+| Quick refs      | `docs/ai/quickrefs/` | Condensed references        |
+| Tasks           | `docs/ai/tasks/`     | Multi-session task tracking |
+| Framework       | `docs/ai/.context/`  | Core framework (read-only)  |
 
 ### Framework Standards
 
-| Standard | Location |
-|----------|----------|
-| Coding | `docs/ai/.context/standards/coding-standards.md` |
-| Behavioral | `docs/ai/.context/standards/behavioral-guidelines.md` |
-| Task workflow | `docs/ai/.context/standards/task-workflow.md` |
+| Standard      | Location                                              |
+| ------------- | ----------------------------------------------------- |
+| Coding        | `docs/ai/.context/standards/coding-standards.md`      |
+| Behavioral    | `docs/ai/.context/standards/behavioral-guidelines.md` |
+| Task workflow | `docs/ai/.context/standards/task-workflow.md`         |
 
 ---
 
@@ -70,10 +95,10 @@ Every agent MUST read context in this order:
 
 When a task requires specialized expertise, delegate to the appropriate agent:
 
-| Expertise Needed | Agent | Location |
-|------------------|-------|----------|
+| Expertise Needed    | Agent         | Location                                         |
+| ------------------- | ------------- | ------------------------------------------------ |
 | Creating new agents | Agent Creator | `docs/ai/.context/agents/agent-creator.agent.md` |
-| {Custom agents} | {Agent name} | `docs/ai/agents/{name}.agent.md` |
+| {Custom agents}     | {Agent name}  | `docs/ai/agents/{name}.agent.md`                 |
 
 Projects define their own specialized agents in `docs/ai/agents/`.
 

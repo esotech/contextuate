@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = require("commander");
 const init_1 = require("./commands/init");
 const remove_1 = require("./commands/remove");
+const run_1 = require("./commands/run");
+const create_1 = require("./commands/create");
 const fs_1 = require("fs");
 const path_1 = require("path");
 const program = new commander_1.Command();
@@ -29,4 +31,18 @@ program
     .command('remove')
     .description('Remove unmodified platform jump files')
     .action(remove_1.removeCommand);
+program
+    .command('create-agent')
+    .alias('new-agent')
+    .description('Create a new agent definition')
+    .argument('[name]', 'Name of the agent (kebab-case)')
+    .option('-d, --description <text>', 'Description of the agent')
+    .action(create_1.createAgentCommand);
+program
+    .command('run')
+    .description('Run an agent definition')
+    .argument('<agent>', 'Name of the agent to run (e.g. "documentation-expert")')
+    .option('--dry-run', 'Simulate execution without running logic')
+    .option('--isolation <mode>', 'Isolation mode (worktree, none)', 'none')
+    .action(run_1.runCommand);
 program.parse();

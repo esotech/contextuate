@@ -44,6 +44,7 @@ async function initCommand(options) {
         }
     }
     // Ask about platform selection
+    // Ask about platform selection
     const { platformChoice } = await inquirer_1.default.prompt([
         {
             type: 'list',
@@ -51,6 +52,7 @@ async function initCommand(options) {
             message: 'Which platforms would you like to install jump files for?',
             choices: [
                 { name: 'All platforms', value: 'all' },
+                { name: 'Search platform by name', value: 'search' },
                 { name: 'Select specific platform(s)', value: 'select' },
             ],
         },
@@ -58,6 +60,42 @@ async function initCommand(options) {
     let selectedPlatforms = [];
     if (platformChoice === 'all') {
         selectedPlatforms = PLATFORMS;
+    }
+    else if (platformChoice === 'search') {
+        const { searchTerm } = await inquirer_1.default.prompt([
+            {
+                type: 'input',
+                name: 'searchTerm',
+                message: 'Enter platform name to search (e.g. "gemini"):',
+                validate: (input) => input.length > 0 || 'Please enter a search term',
+            },
+        ]);
+        const term = searchTerm.toLowerCase();
+        const matches = PLATFORMS.filter(p => p.name.toLowerCase().includes(term) ||
+            p.id.toLowerCase().includes(term));
+        if (matches.length === 0) {
+            console.log(chalk_1.default.yellow(`No platforms found matching "${searchTerm}"`));
+            return;
+        }
+        const { platforms } = await inquirer_1.default.prompt([
+            {
+                type: 'checkbox',
+                name: 'platforms',
+                message: 'Select the platforms to install:',
+                choices: matches.map(p => ({
+                    name: p.name,
+                    value: p.id,
+                    checked: true,
+                })),
+                validate: (answer) => {
+                    if (answer.length < 1) {
+                        return 'You must select at least one platform.';
+                    }
+                    return true;
+                },
+            },
+        ]);
+        selectedPlatforms = PLATFORMS.filter(p => platforms.includes(p.id));
     }
     else {
         const { platforms } = await inquirer_1.default.prompt([
@@ -124,6 +162,10 @@ async function initCommand(options) {
         const absSrc = path_1.default.resolve(src);
         const absDest = path_1.default.resolve(dest);
         if (absSrc === absDest) {
+            return;
+        }
+        if (!fs_extra_1.default.existsSync(src)) {
+            console.log(chalk_1.default.red(`[ERROR] Source file missing: ${src}`));
             return;
         }
         if (fs_extra_1.default.existsSync(dest) && !options.force) {
