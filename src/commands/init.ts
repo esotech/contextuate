@@ -225,8 +225,8 @@ export async function initCommand(options: { force?: boolean }) {
 
     // 3. Setup project context files
     console.log(chalk.blue('[INFO] Setting up project context...'));
-    // Copy contextuate.md (main entry point) to docs/ai/
-    await copyFile(path.join(installDir, 'templates/contextuate.md'), 'docs/ai/contextuate.md');
+    // Copy contextuate.md (main entry point) to docs/ai/.contextuate/ (protected)
+    await copyFile(path.join(installDir, 'templates/contextuate.md'), 'docs/ai/.contextuate/contextuate.md');
     // Copy context.md (user customizable) to docs/ai/
     await copyFile(path.join(installDir, 'templates/context.md'), 'docs/ai/context.md');
     console.log('');
@@ -298,31 +298,44 @@ export async function initCommand(options: { force?: boolean }) {
     // 6. Update .gitignore
     console.log(chalk.blue('[INFO] Updating .gitignore...'));
 
+    const { addToGitignore } = await inquirer.prompt([
+        {
+            type: 'confirm',
+            name: 'addToGitignore',
+            message: 'Do you want to add Contextuate framework files to .gitignore? (Select No to commit them to git)',
+            default: true,
+        },
+    ]);
+
     // Build gitignore entries based on selected platforms
-    const gitignoreEntries = [
-        '',
-        '# Contextuate - Framework files',
-        'docs/ai/.contextuate/',
-        'docs/ai/contextuate.md',
-        'docs/ai/tasks/',
-        '',
-        '# Contextuate - Generated Artifacts (DO NOT EDIT)',
-    ];
+    const gitignoreEntries: string[] = [];
 
-    // Add entries for selected platforms
-    for (const platform of selectedPlatforms) {
-        if (platform.ensureDir) {
-            gitignoreEntries.push(`${platform.ensureDir}/`);
-        } else {
-            gitignoreEntries.push(platform.dest);
-        }
-    }
-
-    // Add symlink entries if Claude is selected
-    if (selectedPlatforms.some(p => p.id === 'claude')) {
+    if (addToGitignore) {
         gitignoreEntries.push('');
-        gitignoreEntries.push('# Contextuate - Platform symlinks (symlinks to docs/ai/)');
-        gitignoreEntries.push('.claude/');
+        gitignoreEntries.push('# Contextuate - AI task tracking (user-specific)');
+        gitignoreEntries.push('docs/ai/tasks/');
+        gitignoreEntries.push('');
+        gitignoreEntries.push('# Contextuate - Framework files');
+        gitignoreEntries.push('docs/ai/.contextuate/');
+        // contextuate.md is now inside .contextuate, so it's covered by the line above
+        gitignoreEntries.push('');
+        gitignoreEntries.push('# Contextuate - Generated Artifacts (DO NOT EDIT)');
+
+        // Add entries for selected platforms
+        for (const platform of selectedPlatforms) {
+            if (platform.ensureDir) {
+                gitignoreEntries.push(`${platform.ensureDir}/`);
+            } else {
+                gitignoreEntries.push(platform.dest);
+            }
+        }
+
+        // Add symlink entries if Claude is selected
+        if (selectedPlatforms.some(p => p.id === 'claude')) {
+            gitignoreEntries.push('');
+            gitignoreEntries.push('# Contextuate - Platform symlinks (symlinks to docs/ai/)');
+            gitignoreEntries.push('.claude/');
+        }
     }
 
     const gitignorePath = '.gitignore';

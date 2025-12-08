@@ -37,8 +37,16 @@ docs/ai/tasks/
 CLAUDE.md
 AGENTS.md
 GEMINI.md
+.claude/
 .clinerules/
 .cursor/rules/project.mdc
 .windsurf/rules/project.md
 .antigravity/rules.md
 .github/copilot-instructions.md
+
+# Allow templates to be tracked
+!docs/ai/.contextuate/templates/platforms/*.md
+!docs/ai/.contextuate/templates/platforms/.clinerules/*.md
+!docs/ai/.contextuate/templates/platforms/.cursor/rules/*.mdc
+!docs/ai/.contextuate/templates/platforms/.windsurf/rules/*.md
+!docs/ai/.contextuate/templates/platforms/.antigravity/*.md

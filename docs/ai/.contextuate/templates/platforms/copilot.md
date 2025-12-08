@@ -17,7 +17,7 @@ It contains:
 4.  **Documentation Map** (Where to look)
 
 ### Context File Location
-- **[Contextuate Framework](../docs/ai/contextuate.md)**
+- **[Contextuate Framework](../docs/ai/.contextuate/contextuate.md)**
 
 ---
 

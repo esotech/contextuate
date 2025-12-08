@@ -10,7 +10,7 @@
 
 Read the following file for complete project context:
 
-- [Contextuate Framework](../../docs/ai/contextuate.md)
+- [Contextuate Framework](../../docs/ai/.contextuate/contextuate.md)
 
 ## Quick Reference
 
@@ -18,10 +18,10 @@ This project uses Contextuate for AI context management. All documentation is ce
 
 ### Key Locations
 
-| Purpose | Path |
-|---------|------|
-| Main context | `docs/ai/contextuate.md` |
-| Project context | `docs/ai/context.md` |
-| AI agents | `docs/ai/agents/` |
-| Quick refs | `docs/ai/quickrefs/` |
-| Standards | `docs/ai/.contextuate/standards/` |
+| Purpose         | Path                                  |
+| --------------- | ------------------------------------- |
+| Main context    | `docs/ai/.contextuate/contextuate.md` |
+| Project context | `docs/ai/context.md`                  |
+| AI agents       | `docs/ai/agents/`                     |
+| Quick refs      | `docs/ai/quickrefs/`                  |
+| Standards       | `docs/ai/.contextuate/standards/`     |

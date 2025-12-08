@@ -1,4 +1,4 @@
-# Cline Memory Bank
+# Claude Code Context
 
 <!--
   CONTEXTUATE MANAGED FILE - DO NOT MODIFY
@@ -10,7 +10,7 @@
 
 Read the following file for complete project context:
 
-- [Contextuate Framework](../docs/ai/.contextuate/contextuate.md)
+- [Contextuate Framework](docs/ai/.contextuate/contextuate.md)
 
 ## Quick Reference
 

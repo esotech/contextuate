@@ -41,7 +41,8 @@ The interactive installer will guide you through:
 
 Contextuate is a directory structure and set of conventions that helps AI agents work more effectively. It turns implicit project knowledge into explicit, structured context.
 
-- **`docs/ai/context.md`**: The single entry point for all AI context.
+- **`docs/ai/.contextuate/contextuate.md`**: The framework bootstrap file. It links to everything else.
+- **`docs/ai/context.md`**: Your project-specific context (Identity, Tech Stack).
 - **`docs/ai/project-structure.md`**: Auto-generated file tree map (created by `contextuate index`).
 - **`docs/ai/agents/`**: Specialized "personas" for your AI (e.g., `documentation-expert`).
 - **`docs/ai/standards/`**: Explicit coding standards and behavioral guidelines.
@@ -50,7 +51,7 @@ Contextuate is a directory structure and set of conventions that helps AI agents
 
 ## How LLMs Use Contextuate
 
-1. **Discovery**: The AI reads `docs/ai/context.md` first. This file maps the project and links to all other resources.
+1. **Discovery**: The AI reads `docs/ai/.contextuate/contextuate.md` first. This file maps the project and links to all other resources.
 2. **Specialization**: If acting as a specific agent, it reads `docs/ai/agents/<name>.agent.md` to load specific capabilities and rules.
 3. **Execution**: The AI follows the linked standards in `docs/ai/standards/` and uses `docs/ai/quickrefs/` for technical lookups.
 4. **Memory**: If working on a long-running task, it tracks state in `docs/ai/tasks/<task-name>/` to maintain context across sessions.
@@ -71,7 +72,8 @@ This repository contains the source for the Contextuate framework.
 
 Once installed, you customize the framework for your project:
 
-1. Edit **`docs/ai/context.md`** with your project details.
+1. Edit **`docs/ai/context.md`** with your project details (Identity, Tech Stack).
+    *   *Note: `docs/ai/.contextuate/contextuate.md` is the framework entry point and typically shouldn't be edited.*
 2. Create custom agents in **`docs/ai/agents/`** (using the Agent Creator tool).
 3. Document coding standards in **`docs/ai/standards/`**.
 4. Generate quickrefs in **`docs/ai/quickrefs/`**.
