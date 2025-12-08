@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Multiverse - Contextuate</title>
+    <meta name="description"
+        content="Convert Markdown to Slack, Telegram, Discord, Google Docs, and Word formats instantly.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://contextuate.md/converter.html">
+    <meta property="og:title" content="Markdown Multiverse Converter">
+    <meta property="og:description"
+        content="Convert Markdown to Slack, Telegram, Discord, Google Docs, and Word formats instantly.">
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <!-- Using Marked for MD parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        /* Tool Specific Styles */
+        .converter-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-top: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .input-section,
+        .output-section {
+            display: flex;
+            flex-direction: column;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .input-section:focus-within,
+        .output-section:focus-within {
+            border-color: var(--accent-blue);
+        }
+
+        .panel-header {
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .editor-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 200px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            background: transparent;
+            border: none;
+            color: #e2e8f0;
+            padding: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            resize: vertical;
+            outline: none;
+            line-height: 1.6;
+            box-sizing: border-box;
+        }
+
+        .file-upload-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(13, 14, 18, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            border: 2px dashed var(--accent-blue);
+            margin: 0.5rem;
+            border-radius: 8px;
+            z-index: 10;
+        }
+
+        .drag-active .file-upload-overlay {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            /* background: rgba(0, 0, 0, 0.2); - Removed to fix nesting offset */
+            /* padding: 0 1rem; - Removed */
+            overflow-x: auto;
+            /* border-bottom: 1px solid var(--glass-border); - Removed */
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.5rem 0;
+            /* Adjusted padding for inline feel */
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+
+        .action-bar {
+            padding: 1rem;
+            border-top: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .upload-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .preview-html {
+            padding: 1rem;
+            overflow-y: auto;
+            min-height: 200px;
+            max-height: 500px;
+            color: var(--text-primary);
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        /* Platform specific previews if needed */
+        .preview-slack {
+            font-family: 'Lato', sans-serif;
+        }
+
+        /* History Controls */
+        .history-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .title-input {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            width: 200px;
+            transition: all 0.2s;
+        }
+
+        .title-input:focus {
+            border-color: var(--accent-blue);
+            outline: none;
+        }
+
+        .history-select {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: 0.4rem 2rem 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            cursor: pointer;
+            width: 150px;
+            appearance: none;
+            /* Fixed hex color for SVG because currentColor doesn't work in data URI */
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 1em;
+        }
+
+        .history-select:hover {
+            color: var(--text-primary);
+            border-color: var(--accent-blue);
+        }
+
+        /* Dropdown Options (Dark Theme) */
+        .history-select option {
+            background-color: #1e1e24;
+            /* --code-bg */
+            color: var(--text-primary);
+            padding: 0.5rem;
+        }
+
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            padding: 0.4rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .icon-btn.danger:hover {
+            background: rgba(255, 50, 50, 0.2);
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header
+        style="padding: 2rem 0; background: radial-gradient(circle at center, rgba(20, 119, 194, 0.1) 0%, transparent 70%);">
+        <div class="container">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <a href="index.html">
+                        <img src="assets/logo.png" alt="Contextuate Logo"
+                            style="height: 40px; width: auto; animation: float 6s ease-in-out infinite;">
+                    </a>
+                    <h1 style="font-size: 1.5rem; margin: 0;">Markdown Multiverse</h1>
+                </div>
+                <a href="index.html" class="btn"
+                    style="padding: 0.5rem 1rem; font-size: 0.9rem; background: rgba(255,255,255,0.1);">Back to Home</a>
+            </div>
+            <p class="tagline" style="margin-top: 1rem; font-size: 1rem;">Transform your Markdown for Slack, Discord,
+                Docs, and more.</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="converter-container">
+            <!-- Top: Input -->
+            <div class="input-section" id="drop-zone">
+                <div class="panel-header">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="text" id="doc-title" class="title-input" placeholder="Untitled Paste">
+                        <button class="icon-btn" onclick="saveToHistory()" title="Save to History">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                <polyline points="7 3 7 8 15 8"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="history-controls">
+                        <select id="history-select" class="history-select" onchange="loadHistoryItem(this.value)">
+                            <option value="">History...</option>
+                        </select>
+                        <button class="icon-btn danger" onclick="deleteHistoryItem()" title="Delete Selected">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path
+                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                </path>
+                            </svg>
+                        </button>
+                        <div style="width: 1px; height: 20px; background: var(--glass-border); margin: 0 0.5rem;"></div>
+                        <button class="upload-btn" onclick="document.getElementById('file-input').click()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            Upload
+                        </button>
+                        <input type="file" id="file-input" accept=".md,.markdown,.txt"
+                            onchange="handleFileUpload(this.files[0])">
+                    </div>
+                </div>
+                <div class="editor-container">
+                    <textarea id="input-md" placeholder="Paste your markdown here or drag & drop a file..."
+                        spellcheck="false"></textarea>
+                    <div class="file-upload-overlay">
+                        <div style="font-size: 2rem; color: var(--accent-blue); margin-bottom: 1rem;">📂</div>
+                        <div>Drop file to upload</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom: Output -->
+            <div class="output-section">
+                <!-- Bottom: Output -->
+                <div class="output-section">
+                    <div class="panel-header" style="justify-content: space-between;">
+                        <div class="tabs" style="margin-bottom: 0;">
+                            <button class="tab-btn active" onclick="switchTab('slack')">Slack</button>
+                            <button class="tab-btn" onclick="switchTab('telegram')">Telegram</button>
+                            <button class="tab-btn" onclick="switchTab('discord')">Discord</button>
+                            <button class="tab-btn" onclick="switchTab('gdocs')">Google Docs</button>
+                        </div>
+
+                        <div class="action-controls" style="display: flex; align-items: center; gap: 0.25rem;">
+                            <span id="copy-status"
+                                style="color: var(--accent-blue); font-size: 0.8rem; opacity: 0; transition: opacity 0.3s; white-space: nowrap; margin-right: 0.25rem;">Copied!</span>
+                            <button class="icon-btn" onclick="copyToClipboard()" title="Copy to Clipboard">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="editor-container" style="border-top-left-radius: 0;">
+                        <textarea id="output-text" readonly style="display: none;"></textarea>
+                        <div id="output-preview" class="preview-html" style="display: block;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const inputMd = document.getElementById('input-md');
+        const outputText = document.getElementById('output-text');
+        const outputPreview = document.getElementById('output-preview');
+        const dropZone = document.getElementById('drop-zone');
+        const docTitle = document.getElementById('doc-title');
+        const historySelect = document.getElementById('history-select');
+
+        // Initialize State
+        let currentTab = localStorage.getItem('markdown_tab') || 'slack';
+        let savedInput = localStorage.getItem('markdown_input');
+        if (savedInput) {
+            inputMd.value = savedInput;
+        }
+
+        let db; // IndexedDB instance
+
+        // --- Event Listeners ---
+
+        inputMd.addEventListener('input', () => {
+            localStorage.setItem('markdown_input', inputMd.value);
+            convert();
+        });
+
+        // Initialize UI with saved state
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set active tab button
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(currentTab === 'gdocs' ? 'google' : currentTab)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            // Run initial conversion
+            convert();
+        });
+
+        docTitle.addEventListener('input', () => {
+            // If the title changes, and it's currently selected from history, deselect it
+            if (historySelect.value !== '') {
+                historySelect.value = '';
+            }
+        });
+
+        // Drag & Drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-active'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-active'), false);
+        });
+
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const file = dt.files[0];
+            handleFileUpload(file);
+        }
+
+        function handleFileUpload(file) {
+            if (file) {
+                // Auto-fill title
+                docTitle.value = file.name.replace(/\.[^/.]+$/, ""); // remove extension
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    inputMd.value = e.target.result;
+                    convert();
+                }
+                reader.readAsText(file);
+            }
+        }
+
+        // --- Tabs ---
+
+        function switchTab(tab) {
+            currentTab = tab;
+            localStorage.setItem('markdown_tab', tab);
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            convert();
+        }
+
+        // --- Conversion Logic ---
+
+        function convert() {
+            const md = inputMd.value || '';
+            let output = '';
+            let isRichText = false;
+
+            switch (currentTab) {
+                case 'slack':
+                    output = convertToSlack(md);
+                    break;
+                case 'telegram':
+                    output = convertToTelegram(md);
+                    break;
+                case 'discord':
+                    output = convertToDiscord(md);
+                    break;
+                case 'gdocs':
+                    // GDocs handles clean HTML better without forced inline styles
+                    // Disable GFM to avoid <pre> wrapping <code> which might trigger heavy styling
+                    output = marked.parse(md, { gfm: false, breaks: true });
+                    isRichText = true;
+                    break;
+            }
+
+            if (isRichText) {
+                outputText.style.display = 'none';
+                outputPreview.style.display = 'block';
+                outputPreview.innerHTML = output;
+                // For clipboard copying later, we'll need this HTML
+                outputPreview.dataset.rawHtml = output;
+            } else {
+                outputPreview.style.display = 'none';
+                outputText.style.display = 'block';
+                outputText.value = output;
+            }
+        }
+
+        // --- Converters ---
+
+        function convertToSlack(md) {
+            let text = md;
+
+            // Strategy: Use placeholders `§§B§§` for Bold to protect it.
+            // 1. Convert Markdown Bold `**` to Placeholder.
+            // 2. Convert Markdown Italic `*` or `_` to Slack Italic `_`.
+            // 3. Convert Markdown Header `#` to Placeholder (for Bold Header).
+            // 4. Restore Placeholders to `*`.
+
+            // 1. Bold: **text** -> Placeholder
+            text = text.replace(/\*\*(.*?)\*\*/g, '§§B§§$1§§B§§');
+            text = text.replace(/__(.*?)__/g, '§§B§§$1§§B§§');
+
+            // 2. Italic: *text* or _text_ -> _text_
+            text = text.replace(/(\*|_)(.*?)\1/g, '_$2_');
+
+            // 3. Headers: # Header -> Placeholder + Header + Placeholder
+            text = text.replace(/^#+\s+(.*)$/gm, '§§B§§$1§§B§§');
+
+            // 4. Restore Bold (`*` in Slack)
+            text = text.replace(/§§B§§/g, '*');
+
+            // 5. Strike: ~~text~~ -> ~text~
+            text = text.replace(/~~(.*?)~~/g, '~$1~');
+
+            // 6. Links: [text](url) -> <url|text>
+            text = text.replace(/\[(.*?)\]\((.*?)\)/g, '<$2|$1>');
+
+            // 7. Lists
+            text = text.replace(/^\s*[\-\*]\s+/gm, '• ');
+
+            return text;
+        }
+
+        function convertToTelegram(md) {
+            // Optimized for Telegram Client pasting.
+            // 1. Protect Code Blocks & Inline Code (don't touch underscores/asterisks inside).
+            // 2. Protect snake_case (don't format _ inside words).
+            // 3. Format Headers, Bold, Italic.
+
+            let text = md;
+
+            // --- Protection ---
+            const codeBlocks = [];
+            const saveCode = (str) => {
+                const id = `§CB${codeBlocks.length}§`;
+                codeBlocks.push(str);
+                return id;
+            };
+
+            // Protect Triple Backticks
+            text = text.replace(/```([\s\S]*?)```/g, (match) => saveCode(match));
+            // Protect Single Backticks
+            text = text.replace(/`([^`]+)`/g, (match) => saveCode(match));
+
+            // Protect snake_case: replace _ inside words with placeholder
+            // Look for letter+underscore+letter
+            text = text.replace(/(\w)_(\w)/g, '$1§U§$2');
+
+            // --- Conversion ---
+
+            // 1. Headers: # Header -> **Header**
+            text = text.replace(/^#+\s+(.*)$/gm, '**$1**');
+
+            // 2. Lists: * or - -> •
+            text = text.replace(/^\s*[\-\*]\s+/gm, '• ');
+
+            // 3. Bold: **text** -> **text** (Preserve, but protect from italic regex)
+            text = text.replace(/\*\*(.*?)\*\*/g, '§§B§§$1§§B§§');
+
+            // 4. Italic: *text* or _text_ -> __text__
+            text = text.replace(/(\*|_)(.*?)\1/g, '__$2__');
+
+            // 5. Restore Bold
+            text = text.replace(/§§B§§/g, '**');
+
+            // 6. Links: [text](url) -> text (url)
+            text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1 ($2)');
+
+            // --- Restoration ---
+
+            // Restore snake_case underscores
+            text = text.replace(/§U§/g, '_');
+
+            // Restore Code Blocks (last)
+            // Note: Telegram client handles `text` as code, we just output it literally.
+            text = text.replace(/§CB(\d+)§/g, (m, id) => codeBlocks[parseInt(id)]);
+
+            return text;
+        }
+
+        function convertToDiscord(md) {
+            let text = md;
+
+            // 1. Headers: # Header -> ### Header (Discord uses # for channels commonly, but supports headers now. 
+            // Support subtext conversion:
+            text = text.replace(/^####\s+(.*)$/gm, '(-# $1)');
+
+            // Spoilers:
+            text = text.replace(/>!(.*?)!</g, '||$1||');
+
+            return text;
+        }
+
+        // --- Clipboard ---
+
+        async function copyToClipboard() {
+            const isRichText = ['gdocs'].includes(currentTab);
+
+            try {
+                if (isRichText) {
+                    // Use modern Clipboard API to write raw HTML Blob.
+                    // This bypasses the DOM entirely, ensuring NO style inheritance from the app.
+                    // It also avoids 'execCommand' permission issues in iframes.
+                    const html = outputPreview.dataset.rawHtml;
+                    const text = outputText.value;
+
+                    const htmlBlob = new Blob([html], { type: 'text/html' });
+                    const textBlob = new Blob([text], { type: 'text/plain' });
+
+                    await navigator.clipboard.write([
+                        new ClipboardItem({
+                            'text/html': htmlBlob,
+                            'text/plain': textBlob
+                        })
+                    ]);
+                } else {
+                    await navigator.clipboard.writeText(outputText.value);
+                }
+
+                const status = document.getElementById('copy-status');
+                status.style.opacity = '1';
+                setTimeout(() => status.style.opacity = '0', 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy to clipboard. Permission denied?');
+            }
+        }
+
+        // --- History Manager (IndexedDB) ---
+
+        const DB_NAME = 'MarkdownMultiverseDB';
+        const STORE_NAME = 'pastes';
+        const DB_VERSION = 1;
+
+        const initDB = () => {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                request.onerror = (event) => {
+                    console.error("DB Error", event);
+                };
+
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        const objectStore = db.createObjectStore(STORE_NAME, { keyPath: "id", autoIncrement: true });
+                        objectStore.createIndex("timestamp", "timestamp", { unique: false });
+                    }
+                };
+
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    refreshHistoryDropdown();
+                    resolve(db);
+                };
+            });
+        };
+
+        function saveToHistory() {
+            if (!db) return;
+
+            const content = inputMd.value;
+            if (!content.trim()) return;
+
+            const title = docTitle.value || "Untitled Paste " + new Date().toLocaleTimeString();
+
+            const transaction = db.transaction([STORE_NAME], "readwrite");
+            const store = transaction.objectStore(STORE_NAME);
+
+            const record = {
+                title: title,
+                content: content,
+                timestamp: new Date().getTime()
+            };
+
+            const request = store.add(record);
+
+            request.onsuccess = () => {
+                refreshHistoryDropdown();
+
+                // Visual feedback
+                const btn = document.querySelector('button[title="Save to History"]');
+                const original = btn.innerHTML;
+                btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                setTimeout(() => btn.innerHTML = original, 1500);
+            };
+        }
+
+        function refreshHistoryDropdown() {
+            if (!db) return;
+
+            const transaction = db.transaction([STORE_NAME], "readonly");
+            const store = transaction.objectStore(STORE_NAME);
+            const index = store.index("timestamp");
+
+            // Get all in reverse order
+            const request = index.openCursor(null, 'prev');
+            let items = [];
+
+            historySelect.innerHTML = '<option value="">History...</option>';
+
+            request.onsuccess = (event) => {
+                const cursor = event.target.result;
+                if (cursor) {
+                    items.push(cursor.value);
+                    cursor.continue();
+                } else {
+                    // Done
+                    items.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.id;
+                        option.textContent = item.title;
+                        historySelect.appendChild(option);
+                    });
+                }
+            };
+        }
+
+        function loadHistoryItem(id) {
+            if (!db || !id) return;
+
+            const transaction = db.transaction([STORE_NAME], "readonly");
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.get(parseInt(id));
+
+            request.onsuccess = (event) => {
+                const data = event.target.result;
+                if (data) {
+                    inputMd.value = data.content;
+                    docTitle.value = data.title;
+                    convert();
+                }
+            };
+        }
+
+        function deleteHistoryItem() {
+            const id = historySelect.value;
+            if (!db || !id) return;
+
+            if (confirm('Delete this item from history?')) {
+                const transaction = db.transaction([STORE_NAME], "readwrite");
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.delete(parseInt(id));
+
+                request.onsuccess = () => {
+                    inputMd.value = '';
+                    docTitle.value = '';
+                    convert();
+                    refreshHistoryDropdown();
+                };
+            }
+        }
+
+        // Init DB on load
+        window.addEventListener('load', initDB);
+
+    </script>
+</body>
+
+
+</html>
