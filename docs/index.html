@@ -7,6 +7,23 @@
     <title>Contextuate - Standardized AI Context for Software Projects</title>
     <meta name="description"
         content="Contextuate provides a structured 'brain' for your project that AI coding assistants can understand.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://contextuate.md/">
+    <meta property="og:title" content="Contextuate">
+    <meta property="og:description"
+        content="Standardized AI Context for Software Projects. Contextuate provides a structured 'brain' for your project that AI coding assistants can understand.">
+    <meta property="og:image" content="https://contextuate.md/assets/logo.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://contextuate.md/">
+    <meta property="twitter:title" content="Contextuate">
+    <meta property="twitter:description"
+        content="Standardized AI Context for Software Projects. Contextuate provides a structured 'brain' for your project that AI coding assistants can understand.">
+    <meta property="twitter:image" content="https://contextuate.md/assets/logo.png">
+
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/png" href="assets/logo.png">
 </head>
@@ -22,10 +39,14 @@
             <p class="tagline">Standardized AI Context for Software Projects</p>
             <div style="margin-top: 2rem;">
                 <a href="#quick-start" class="btn">Get Started</a>
-                <a href="install.sh" class="btn" style="background: rgba(255,255,255,0.1); margin-left: 1rem;">Download
-                    Installer</a>
                 <a href="https://github.com/esotech/contextuate" class="btn"
                     style="background: rgba(255,255,255,0.1); margin-left: 1rem;">View on GitHub</a>
+            </div>
+
+            <div style="margin-top: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                <p style="margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">Install via CURL</p>
+                <pre
+                    style="margin-bottom: 0; background: rgba(0,0,0,0.3); border-color: var(--accent-blue);"><code>curl -fsSL https://contextuate.md/install.sh | sh</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
             </div>
         </div>
     </header>
@@ -52,7 +73,8 @@
                 <div class="card">
                     <h3>Execution</h3>
                     <p>The AI follows the linked standards in <code>docs/ai/standards/</code> and uses
-                        <code>docs/ai/quickrefs/</code> for technical lookups.</p>
+                        <code>docs/ai/quickrefs/</code> for technical lookups.
+                    </p>
                 </div>
             </div>
         </section>

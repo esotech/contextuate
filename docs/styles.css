@@ -163,8 +163,8 @@ pre .copy-btn:hover {
 /* Feature Cards */
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
     margin: 3rem 0;
 }
 
@@ -215,12 +215,25 @@ footer {
 }
 
 @keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
 }
 
 @media (max-width: 768px) {
-    h1 { font-size: 2.5rem; }
-    .container { padding: 0 1.5rem; }
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    .container {
+        padding: 0 1.5rem;
+    }
 }
