@@ -42,6 +42,7 @@ The interactive installer will guide you through:
 Contextuate is a directory structure and set of conventions that helps AI agents work more effectively. It turns implicit project knowledge into explicit, structured context.
 
 - **`docs/ai/context.md`**: The single entry point for all AI context.
+- **`docs/ai/project-structure.md`**: Auto-generated file tree map (created by `contextuate index`).
 - **`docs/ai/agents/`**: Specialized "personas" for your AI (e.g., `documentation-expert`).
 - **`docs/ai/standards/`**: Explicit coding standards and behavioral guidelines.
 - **`docs/ai/quickrefs/`**: Condensed documentation optimized for AI token limits.
@@ -102,6 +103,38 @@ Scaffold a new agent definition:
 
 ```bash
 contextuate create-agent <name> --description "Description of what it does"
+```
+
+### Context Management
+
+#### Indexing the Project
+Generate a token-optimized map of your codebase:
+
+```bash
+contextuate index
+```
+This creating `docs/ai/project-structure.md`, which is automatically loaded by the `run` command to give agents a high-level view of the project without reading every file.
+
+#### Adding Context
+Interactively select files to add to your main context:
+
+```bash
+contextuate add-context
+```
+
+### Context Analysis
+When running an agent with `--dry-run`, Contextuate now displays a "Context Size Analysis" to help you manage token usage:
+
+```bash
+contextuate run documentation-expert --dry-run
+```
+Output:
+```
+Loading Context:
+- docs/ai/project-structure.md: FOUND (450 tokens)
+- docs/ai/context.md: FOUND (1200 tokens)
+
+Total Context Size: ~1650 tokens
 ```
 
 ## Documentation

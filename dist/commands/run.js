@@ -9,6 +9,7 @@ const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
 const gray_matter_1 = __importDefault(require("gray-matter"));
 const git_1 = require("../utils/git");
+const tokens_1 = require("../utils/tokens");
 // ... imports
 const driver_1 = require("../runtime/driver");
 async function runCommand(agentName, options) {
@@ -133,16 +134,39 @@ async function runCommand(agentName, options) {
             }
         }
     }
+    // Inject Project Structure Index if available
+    const indexFile = path_1.default.join(process.cwd(), 'docs/ai/project-structure.md');
+    if (await fs_extra_1.default.pathExists(indexFile)) {
+        console.log(`- Project Index: ${chalk_1.default.green('FOUND')} (${indexFile})`);
+        config.context = config.context || {};
+        config.context.files = config.context.files || [];
+        // Avoid duplicates
+        if (!config.context.files.includes(indexFile)) {
+            config.context.files.unshift(indexFile); // Add to beginning
+        }
+    }
     if (config.context) {
         console.log('\nLoading Context:');
         // In a real implementation we would copy these files or process them
         // For now we just verify they exist from the perspective of the runtimeCwd
         const files = config.context.files || [];
+        let totalTokens = 0;
         for (const file of files) {
             // Check if absolute path (from task loading) or relative
             const checkPath = path_1.default.isAbsolute(file) ? file : path_1.default.join(runtimeCwd, file);
             const exists = await fs_extra_1.default.pathExists(checkPath);
-            console.log(`- ${file}: ${exists ? chalk_1.default.green('FOUND') : chalk_1.default.red('MISSING')}`);
+            const status = exists ? chalk_1.default.green('FOUND') : chalk_1.default.red('MISSING');
+            let fileTokens = 0;
+            if (exists) {
+                const content = await fs_extra_1.default.readFile(checkPath, 'utf-8');
+                fileTokens = (0, tokens_1.estimateTokens)(content);
+                totalTokens += fileTokens;
+            }
+            console.log(`- ${file}: ${status} (${fileTokens} tokens)`);
+        }
+        console.log(chalk_1.default.cyan(`\nTotal Context Size: ~${totalTokens} tokens`));
+        if (totalTokens > 32000) {
+            console.log(chalk_1.default.yellow(`[WARN] Context size is quite large (>32k). Consider removing files.`));
         }
         if (config.context.directories) {
             config.context.directories.forEach(d => console.log(`- [DIR]  ${d}`));

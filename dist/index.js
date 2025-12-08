@@ -6,6 +6,8 @@ const init_1 = require("./commands/init");
 const remove_1 = require("./commands/remove");
 const run_1 = require("./commands/run");
 const create_1 = require("./commands/create");
+const index_1 = require("./commands/index");
+const context_1 = require("./commands/context");
 const fs_1 = require("fs");
 const path_1 = require("path");
 const program = new commander_1.Command();
@@ -38,6 +40,16 @@ program
     .argument('[name]', 'Name of the agent (kebab-case)')
     .option('-d, --description <text>', 'Description of the agent')
     .action(create_1.createAgentCommand);
+program
+    .command('index')
+    .description('Generate a project structure index for AI context')
+    .option('-d, --depth <number>', 'Maximum depth of the file tree', '5')
+    .option('-f, --force', 'Overwrite existing index')
+    .action(index_1.indexCommand);
+program
+    .command('add-context')
+    .description('Interactively add files to docs/ai/context.md')
+    .action(context_1.addContextCommand);
 program
     .command('run')
     .description('Run an agent definition')

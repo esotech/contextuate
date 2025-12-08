@@ -5,6 +5,8 @@ import { initCommand } from './commands/init';
 import { removeCommand } from './commands/remove';
 import { runCommand } from './commands/run';
 import { createAgentCommand } from './commands/create';
+import { indexCommand } from './commands/index';
+import { addContextCommand } from './commands/context';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -42,6 +44,18 @@ program
     .argument('[name]', 'Name of the agent (kebab-case)')
     .option('-d, --description <text>', 'Description of the agent')
     .action(createAgentCommand);
+
+program
+    .command('index')
+    .description('Generate a project structure index for AI context')
+    .option('-d, --depth <number>', 'Maximum depth of the file tree', '5')
+    .option('-f, --force', 'Overwrite existing index')
+    .action(indexCommand);
+
+program
+    .command('add-context')
+    .description('Interactively add files to docs/ai/context.md')
+    .action(addContextCommand);
 
 program
     .command('run')
