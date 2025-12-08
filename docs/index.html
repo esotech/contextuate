@@ -36,7 +36,9 @@
                 <img src="assets/logo.png" alt="Contextuate Logo" class="logo">
             </div>
             <h1>Contextuate</h1>
-            <p class="tagline">Standardized AI Context for Software Projects</p>
+            <p class="tagline">Standardized AI Context for Software Projects <span id="version-tag"
+                    style="font-size: 0.8em; opacity: 0.7; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 2px 6px; vertical-align: middle; margin-left: 8px; display: none;">v...</span>
+            </p>
             <div style="margin-top: 2rem;">
                 <a href="#quick-start" class="btn">Get Started</a>
                 <a href="https://github.com/esotech/contextuate" class="btn"
@@ -116,13 +118,40 @@ npm link</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 Esotech. Built by <a href="https://github.com/geilt">Alexander Conroy</a>.</p>
+
+            <p style="margin-bottom: 0.5rem;">
+                Created by <a href="https://github.com/geilt">Alexander Conroy</a>
+                AKA <a href="https://geilt.com">"Geilt the Architect"</a>
+                (<a href="https://x.com/geilt" target="_blank">@geilt</a>) Founder of
+                <a href="https://www.tldcrm.com" target="_blank" title="TLDCRM">
+                    <img src="assets/tldcrm.png" alt="TLDCRM" class="footer-logo"
+                        style="height: 18px; margin-top: -2px;">TLDCRM - Total Lead Domination
+                </a>
+            </p>
+            <p style="margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <a href="https://esotech.com" target="_blank" title="Esotech">
+                    Powered by<img src="assets/esotech.png" alt="Esotech" class="footer-logo"
+                        style="height: 24px;">Esotech
+                </a>
+            </p>
             <p>Released under the <a href="https://github.com/esotech/contextuate/blob/main/LICENSE">MIT License</a>.
             </p>
         </div>
     </footer>
 
     <script>
+        // Fetch version from package.json
+        fetch('https://raw.githubusercontent.com/esotech/contextuate/main/package.json')
+            .then(response => response.json())
+            .then(data => {
+                const versionTag = document.getElementById('version-tag');
+                if (data.version) {
+                    versionTag.textContent = 'v' + data.version;
+                    versionTag.style.display = 'inline-block';
+                }
+            })
+            .catch(console.error);
+
         function copyCode(button) {
             const pre = button.parentElement;
             const code = pre.querySelector('code');

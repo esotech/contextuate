@@ -195,6 +195,22 @@ footer {
     font-size: 0.9rem;
 }
 
+.footer-logo {
+    vertical-align: middle;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+    margin: 0 4px;
+}
+
+.footer-logo:hover {
+    opacity: 1;
+}
+
+footer a,
+footer a:hover {
+    text-decoration: none;
+}
+
 /* Utilities */
 .btn {
     display: inline-block;
