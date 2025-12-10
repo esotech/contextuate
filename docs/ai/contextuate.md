@@ -26,38 +26,49 @@
 > **Rule:** If a specialized agent exists for your task, you MUST adopt that persona and read its specific context.
 
 ### Agent Registry
-| Task Domain | Agent | Context File |
-|-------------|-------|--------------|
-| General Coding | Base Agent | [.contextuate/agents/base.agent.md](.contextuate/agents/base.agent.md) |
-| Documentation | Docs Expert | [.contextuate/agents/documentation-expert.agent.md](.contextuate/agents/documentation-expert.agent.md) |
-| Tools Expert | Tools Expert | [.contextuate/agents/tools-expert.agent.md](.contextuate/agents/tools-expert.agent.md) |
+| Domain              | Agent      | Definition                                                                   |
+| :------------------ | :--------- | :--------------------------------------------------------------------------- |
+| **Orchestration**   | Archon     | [.contextuate/agents/archon.agent.md](.contextuate/agents/archon.agent.md)   |
+| **Infrastructure**  | Forge      | [.contextuate/agents/forge.agent.md](.contextuate/agents/forge.agent.md)     |
+| **Data/State**      | Chronos    | [.contextuate/agents/chronos.agent.md](.contextuate/agents/chronos.agent.md) |
+| **Media**           | Vox        | [.contextuate/agents/vox.agent.md](.contextuate/agents/vox.agent.md)         |
+| **Finance**         | Ledger     | [.contextuate/agents/ledger.agent.md](.contextuate/agents/ledger.agent.md)   |
+| **Backend**         | Nexus      | [.contextuate/agents/nexus.agent.md](.contextuate/agents/nexus.agent.md)     |
+| **Frontend**        | Canvas     | [.contextuate/agents/canvas.agent.md](.contextuate/agents/canvas.agent.md)   |
+| **Version Control** | Unity      | [.contextuate/agents/unity.agent.md](.contextuate/agents/unity.agent.md)     |
+| **Documentation**   | Scribe     | [.contextuate/agents/scribe.agent.md](.contextuate/agents/scribe.agent.md)   |
+| **General Coding**  | Base Agent | [.contextuate/agents/base.agent.md](.contextuate/agents/base.agent.md)       |
 
 ### Custom Agents
 Custom agents are stored in `docs/ai/agents/`. Create new agents using the Agent Creator tool.
+
+### Standard References
+- **[Standard Agent Roles](.contextuate/standards/agent-roles.md)**: Definitions of standard expert personas (Archon, Forge, etc.).
+- **[Agentic Workflow](.contextuate/standards/agent-workflow.md)**: The orchestration protocol for multi-agent tasks.
 
 ---
 
 ## 3. Tooling Ecosystem
 
 ### Framework Tools
-| Tool | Purpose | Instruction Guide |
-|------|---------|-------------------|
+| Tool                   | Purpose                       | Instruction Guide                                                                              |
+| ---------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------- |
 | **Standards Detector** | Analyze code to find patterns | [.contextuate/tools/standards-detector.tool.md](.contextuate/tools/standards-detector.tool.md) |
-| **Quickref Generator** | Condense docs for AI usage | [.contextuate/tools/quickref.tool.md](.contextuate/tools/quickref.tool.md) |
-| **Agent Creator** | Generate new agent personas | [.contextuate/tools/agent-creator.tool.md](.contextuate/tools/agent-creator.tool.md) |
+| **Quickref Generator** | Condense docs for AI usage    | [.contextuate/tools/quickref.tool.md](.contextuate/tools/quickref.tool.md)                     |
+| **Agent Creator**      | Generate new agent personas   | [.contextuate/tools/agent-creator.tool.md](.contextuate/tools/agent-creator.tool.md)           |
 
 ---
 
 ## 4. Standards & Conventions
 
 ### Coding Standards
-| Language | Standards File |
-|----------|----------------|
-| PHP | [.contextuate/templates/standards/php.standards.md](.contextuate/templates/standards/php.standards.md) |
+| Language              | Standards File                                                                                                       |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| PHP                   | [.contextuate/templates/standards/php.standards.md](.contextuate/templates/standards/php.standards.md)               |
 | JavaScript/TypeScript | [.contextuate/templates/standards/javascript.standards.md](.contextuate/templates/standards/javascript.standards.md) |
-| Python | [.contextuate/templates/standards/python.standards.md](.contextuate/templates/standards/python.standards.md) |
-| Go | [.contextuate/templates/standards/go.standards.md](.contextuate/templates/standards/go.standards.md) |
-| Java | [.contextuate/templates/standards/java.standards.md](.contextuate/templates/standards/java.standards.md) |
+| Python                | [.contextuate/templates/standards/python.standards.md](.contextuate/templates/standards/python.standards.md)         |
+| Go                    | [.contextuate/templates/standards/go.standards.md](.contextuate/templates/standards/go.standards.md)                 |
+| Java                  | [.contextuate/templates/standards/java.standards.md](.contextuate/templates/standards/java.standards.md)             |
 
 Custom standards can be added in `docs/ai/standards/`.
 
@@ -72,14 +83,14 @@ Custom standards can be added in `docs/ai/standards/`.
 
 > **Rule:** Store knowledge where it belongs. Do not rely on chat history.
 
-| Content Type | Location |
-|--------------|----------|
-| **AI Context** | `docs/ai/` |
-| **Custom Agents** | `docs/ai/agents/` |
-| **Custom Standards** | `docs/ai/standards/` |
-| **Quick References** | `docs/ai/quickrefs/` |
-| **Multi-Session Tasks** | `docs/ai/tasks/` |
-| **Custom Commands** | `docs/ai/commands/` |
+| Content Type            | Location             |
+| ----------------------- | -------------------- |
+| **AI Context**          | `docs/ai/`           |
+| **Custom Agents**       | `docs/ai/agents/`    |
+| **Custom Standards**    | `docs/ai/standards/` |
+| **Quick References**    | `docs/ai/quickrefs/` |
+| **Multi-Session Tasks** | `docs/ai/tasks/`     |
+| **Custom Commands**     | `docs/ai/commands/`  |
 
 ### Multi-Session Tasks
 For complex tasks that span multiple sessions:

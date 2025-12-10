@@ -11,12 +11,23 @@ Use this workflow when:
 - Multiple phases of work required
 - Need to track progress over time
 - Collaborating with multiple AI agents/platforms
+- **Complex Orchestration**: For multi-agent teams, see [Agentic Workflow](agent-workflow.md)
 - Complex project requiring documentation
 
 Don't use for:
 - Simple, single-session tasks
 - Quick questions or lookups
 - Minor code changes
+
+---
+
+## Agentic Orchestration
+
+For complex tasks requiring specialized roles (Archon, Chronos, etc.), this Task Workflow serves as the **Session Governance** layer.
+
+*   **Relationship**: The `task.md` file becomes the "Shared State" (or blackboard) for the Agentic Workflow.
+*   **Orchestrator**: The **Archon** agent manages the `task.md` file, while sub-agents focus on their specific files.
+*   **Reference**: See **[Agentic Workflow Standard](agent-workflow.md)** for the full dispatch protocol.
 
 ---
 
@@ -69,10 +80,10 @@ docs/ai/tasks/{task-name}/
 
 ## Phases
 
-| Phase | Description | Status |
-|-------|-------------|--------|
-| 1 | {Phase 1 name} | {Pending/Active/Complete} |
-| 2 | {Phase 2 name} | {Pending/Active/Complete} |
+| Phase | Description    | Status                    |
+| ----- | -------------- | ------------------------- |
+| 1     | {Phase 1 name} | {Pending/Active/Complete} |
+| 2     | {Phase 2 name} | {Pending/Active/Complete} |
 
 ## Constraints
 
