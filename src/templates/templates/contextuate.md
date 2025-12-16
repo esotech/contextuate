@@ -38,11 +38,11 @@ For example, if you need to create a new agent, read `docs/ai/.contextuate/tools
 > **Rule:** If a specialized agent exists for your task, you MUST adopt that persona and read its specific context.
 
 ### Agent Registry
-| Task Domain    | Agent        | Context File                                                                                           |
-| -------------- | ------------ | ------------------------------------------------------------------------------------------------------ |
-| General Coding | Base Agent   | [.contextuate/agents/base.agent.md](.contextuate/agents/base.agent.md)                                 |
-| Documentation  | Docs Expert  | [.contextuate/agents/documentation-expert.agent.md](.contextuate/agents/documentation-expert.agent.md) |
-| Tools Expert   | Tools Expert | [.contextuate/agents/tools-expert.agent.md](.contextuate/agents/tools-expert.agent.md)                 |
+| Task Domain    | Agent        | Context File                                                                             |
+| -------------- | ------------ | ---------------------------------------------------------------------------------------- |
+| General Coding | Base Agent   | [.contextuate/agents/base.md](.contextuate/agents/base.md)                               |
+| Documentation  | Docs Expert  | [.contextuate/agents/documentation-expert.md](.contextuate/agents/documentation-expert.md) |
+| Tools Expert   | Tools Expert | [.contextuate/agents/tools-expert.md](.contextuate/agents/tools-expert.md)               |
 
 ### Custom Agents
 Custom agents are stored in `docs/ai/agents/`. Create new agents using the Agent Creator tool.

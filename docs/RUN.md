@@ -14,7 +14,7 @@ contextuate run <agent-name> [options]
 
 ### Arguments
 
-*   `<agent-name>`: The name of the agent to run. This corresponds to a file named `<agent-name>.agent.md` located in `docs/ai/agents/`.
+*   `<agent-name>`: The name of the agent to run. This corresponds to a file named `<agent-name>.md` located in `docs/ai/agents/`.
 
 ### Options
 
@@ -26,7 +26,7 @@ contextuate run <agent-name> [options]
 
 ## How It Works
 
-1.  **Agent Discovery**: Looks for `docs/ai/agents/<name>.agent.md`.
+1.  **Agent Discovery**: Looks for `docs/ai/agents/<name>.md`.
 2.  **Configuration Parsing**: Reads the YAML frontmatter to understand the agent's capabilities, required environment variables, and base context.
 3.  **Environment Provisioning**:
     *   Checks for required environment variables.

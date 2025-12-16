@@ -31,7 +31,7 @@ export async function runCommand(agentName: string, options: { dryRun?: boolean,
     }
 
     // 1. Locate the agent file
-    const agentPath = path.join(process.cwd(), 'docs/ai/agents', `${agentName}.agent.md`);
+    const agentPath = path.join(process.cwd(), 'docs/ai/agents', `${agentName}.md`);
 
     if (!fs.existsSync(agentPath)) {
         console.error(chalk.red(`[ERROR] Agent definition not found at: ${agentPath}`));
@@ -39,8 +39,8 @@ export async function runCommand(agentName: string, options: { dryRun?: boolean,
         try {
             const files = await fs.readdir(path.join(process.cwd(), 'docs/ai/agents'));
             files.forEach(f => {
-                if (f.endsWith('.agent.md')) {
-                    console.log(`- ${f.replace('.agent.md', '')}`);
+                if (f.endsWith('.md')) {
+                    console.log(`- ${f.replace('.md', '')}`);
                 }
             });
         } catch (e) {

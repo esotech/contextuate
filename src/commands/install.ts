@@ -49,8 +49,8 @@ async function discoverTemplates(): Promise<{
     if (fs.existsSync(agentDir)) {
         const files = await fs.readdir(agentDir);
         result.agents = files
-            .filter(f => f.endsWith('.agent.md'))
-            .map(f => f.replace('.agent.md', ''));
+            .filter(f => f.endsWith('.md'))
+            .map(f => f.replace('.md', ''));
     }
 
     // Discover language standards
@@ -140,8 +140,8 @@ async function installAgents(names: string[], force: boolean): Promise<number> {
         const matched = templates.agents.find(a => a.toLowerCase() === normalized);
 
         if (matched) {
-            const src = path.join(templateSource, 'agents', `${matched}.agent.md`);
-            const dest = path.join('docs/ai/agents', `${matched}.agent.md`);
+            const src = path.join(templateSource, 'agents', `${matched}.md`);
+            const dest = path.join('docs/ai/agents', `${matched}.md`);
             if (await copyFile(src, dest, force)) {
                 installed++;
             }

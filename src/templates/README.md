@@ -72,7 +72,7 @@ Creates new AI agent definitions following Contextuate patterns.
 1. Determines agent scope and responsibilities
 2. Creates supporting docs if needed
 3. Generates agent file from template
-4. Outputs to `docs/ai/agents/{domain}-expert.agent.md`
+4. Outputs to `docs/ai/agents/{domain}-expert.md`
 
 **Guide:** [tools/agent-creator.tool.md](tools/agent-creator.tool.md)
 
@@ -137,7 +137,7 @@ Updates framework files while preserving your customizations.
 
 | Type | Purpose | Location |
 |------|---------|----------|
-| **Agent** | Persona with expertise, decision-making | `agents/*.agent.md` |
+| **Agent** | Persona with expertise, decision-making | `agents/*.md` |
 | **Tool** | Step-by-step process guide | `tools/*.tool.md` |
 
 **Agents** define *who* the AI is acting as (e.g., "documentation expert").

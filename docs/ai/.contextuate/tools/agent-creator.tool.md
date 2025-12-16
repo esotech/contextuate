@@ -50,12 +50,12 @@ Use the [Quickref Generator](quickref.tool.md) if needed.
 
 ### Step 3: Create Agent File
 
-**Location:** `docs/ai/agents/{domain}-expert.agent.md`
+**Location:** `docs/ai/agents/{domain}-expert.md`
 
 **Naming conventions:**
 - Use lowercase, hyphen-separated
 - Be specific: `api-auth-expert` not just `api-expert`
-- Pattern: `{domain}-expert.agent.md`
+- Pattern: `{domain}-expert.md`
 
 ### Step 4: Fill Template
 
@@ -78,7 +78,7 @@ Verify:
 ```markdown
 # {Name} Expert Agent
 
-> **Inherits:** [Base Agent Configuration](../.context/agents/base.agent.md)
+> **Inherits:** [Base Agent Configuration](../.context/agents/base.md)
 > **Role:** {One-line description of expertise}
 > **Domain:** `{file patterns covered}`
 
@@ -174,12 +174,12 @@ docs/ai/quickrefs/
 
 ### Step 3: Create Agent File
 
-File: `docs/ai/agents/database-expert.agent.md`
+File: `docs/ai/agents/database-expert.md`
 
 ```markdown
 # Database Expert Agent
 
-> **Inherits:** [Base Agent Configuration](../.context/agents/base.agent.md)
+> **Inherits:** [Base Agent Configuration](../.context/agents/base.md)
 > **Role:** Expert in database operations, queries, and schema design
 > **Domain:** `*.sql`, `migrations/`, `**/db/**`
 
@@ -203,8 +203,8 @@ You are an expert in database operations. Your role is to:
 
 ### Inheritance Hierarchy
 ```
-base.agent.md (framework - immutable)
-    └── {user-agents}.agent.md (project-specific - in docs/ai/agents/)
+base.md (framework - immutable)
+    └── {user-agents}.md (project-specific - in docs/ai/agents/)
 ```
 
 ### Delegation Pattern
@@ -241,7 +241,7 @@ After creating an agent, report:
 ```
 Agent Created
 =============
-File: docs/ai/agents/database-expert.agent.md
+File: docs/ai/agents/database-expert.md
 
 Supporting docs:
   - Created: docs/ai/quickrefs/database.quickref.md

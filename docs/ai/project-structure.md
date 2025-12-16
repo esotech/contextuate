@@ -24,9 +24,9 @@ contextuate/
 │   └── ai/
 │       ├── .contextuate/
 │       │   ├── agents/
-│       │   │   ├── base.agent.md
-│       │   │   ├── documentation-expert.agent.md
-│       │   │   └── tools-expert.agent.md
+│       │   │   ├── base.md
+│       │   │   ├── documentation-expert.md
+│       │   │   └── tools-expert.md
 │       │   ├── standards/
 │       │   │   ├── behavioral-guidelines.md
 │       │   │   ├── coding-standards.md

@@ -39,8 +39,8 @@ async function discoverTemplates() {
     if (fs_extra_1.default.existsSync(agentDir)) {
         const files = await fs_extra_1.default.readdir(agentDir);
         result.agents = files
-            .filter(f => f.endsWith('.agent.md'))
-            .map(f => f.replace('.agent.md', ''));
+            .filter(f => f.endsWith('.md'))
+            .map(f => f.replace('.md', ''));
     }
     // Discover language standards
     const standardsDir = path_1.default.join(templateSource, 'templates/standards');
@@ -116,8 +116,8 @@ async function installAgents(names, force) {
         const normalized = name.toLowerCase().trim();
         const matched = templates.agents.find(a => a.toLowerCase() === normalized);
         if (matched) {
-            const src = path_1.default.join(templateSource, 'agents', `${matched}.agent.md`);
-            const dest = path_1.default.join('docs/ai/agents', `${matched}.agent.md`);
+            const src = path_1.default.join(templateSource, 'agents', `${matched}.md`);
+            const dest = path_1.default.join('docs/ai/agents', `${matched}.md`);
             if (await copyFile(src, dest, force)) {
                 installed++;
             }

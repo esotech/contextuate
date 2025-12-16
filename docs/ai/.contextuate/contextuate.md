@@ -26,18 +26,18 @@
 > **Rule:** If a specialized agent exists for your task, you MUST adopt that persona and read its specific context.
 
 ### Agent Registry
-| Domain              | Agent      | Definition                                                                   |
-| :------------------ | :--------- | :--------------------------------------------------------------------------- |
-| **Orchestration**   | Archon     | [agents/archon.agent.md](agents/archon.agent.md)   |
-| **Infrastructure**  | Forge      | [agents/forge.agent.md](agents/forge.agent.md)     |
-| **Data/State**      | Chronos    | [agents/chronos.agent.md](agents/chronos.agent.md) |
-| **Media**           | Vox        | [agents/vox.agent.md](agents/vox.agent.md)         |
-| **Finance**         | Ledger     | [agents/ledger.agent.md](agents/ledger.agent.md)   |
-| **Backend**         | Nexus      | [agents/nexus.agent.md](agents/nexus.agent.md)     |
-| **Frontend**        | Canvas     | [agents/canvas.agent.md](agents/canvas.agent.md)   |
-| **Version Control** | Unity      | [agents/unity.agent.md](agents/unity.agent.md)     |
-| **Documentation**   | Scribe     | [agents/scribe.agent.md](agents/scribe.agent.md)   |
-| **General Coding**  | Base Agent | [agents/base.agent.md](agents/base.agent.md)       |
+| Domain              | Agent      | Definition                                               |
+| :------------------ | :--------- | :------------------------------------------------------- |
+| **Orchestration**   | Archon     | [agents/archon.md](agents/archon.md)   |
+| **Infrastructure**  | Forge      | [agents/forge.md](agents/forge.md)     |
+| **Data/State**      | Chronos    | [agents/chronos.md](agents/chronos.md) |
+| **Media**           | Vox        | [agents/vox.md](agents/vox.md)         |
+| **Finance**         | Ledger     | [agents/ledger.md](agents/ledger.md)   |
+| **Backend**         | Nexus      | [agents/nexus.md](agents/nexus.md)     |
+| **Frontend**        | Canvas     | [agents/canvas.md](agents/canvas.md)   |
+| **Version Control** | Unity      | [agents/unity.md](agents/unity.md)     |
+| **Documentation**   | Scribe     | [agents/scribe.md](agents/scribe.md)   |
+| **General Coding**  | Base Agent | [agents/base.md](agents/base.md)       |
 
 ### Custom Agents
 Custom agents are stored in `docs/ai/agents/`. Create new agents using the Agent Creator tool.

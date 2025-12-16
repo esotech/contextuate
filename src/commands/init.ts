@@ -173,8 +173,8 @@ export async function initCommand(platformArgs: string[] | { force?: boolean, ag
         if (fs.existsSync(agentTemplateDir)) {
             const agentFiles = await fs.readdir(agentTemplateDir);
             availableAgents = agentFiles
-                .filter(f => f.endsWith('.agent.md'))
-                .map(f => f.replace('.agent.md', ''));
+                .filter(f => f.endsWith('.md'))
+                .map(f => f.replace('.md', ''));
         }
 
         if (opts.agents && opts.agents.length > 0) {
@@ -354,7 +354,7 @@ export async function initCommand(platformArgs: string[] | { force?: boolean, ag
             console.log(chalk.blue('[INFO] Installing selected agents...'));
 
             for (const agent of selectedAgents) {
-                const agentFile = `${agent}.agent.md`;
+                const agentFile = `${agent}.md`;
                 const srcPath = path.join(templateSource, 'agents', agentFile);
                 const destPath = path.join('docs/ai/agents', agentFile);
 
@@ -453,7 +453,7 @@ export async function initCommand(platformArgs: string[] | { force?: boolean, ag
         if (selectedAgents.length > 0) {
             console.log('Installed agents:');
             for (const agent of selectedAgents) {
-                console.log(`  - ${chalk.cyan(agent)} (docs/ai/agents/${agent}.agent.md)`);
+                console.log(`  - ${chalk.cyan(agent)} (docs/ai/agents/${agent}.md)`);
             }
             console.log('');
         }

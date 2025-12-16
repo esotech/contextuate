@@ -40,7 +40,7 @@ async function createAgentCommand(name, options) {
         agentDescription = answers.description;
     }
     const agentsDir = path_1.default.join(process.cwd(), 'docs/ai/agents');
-    const agentFile = path_1.default.join(agentsDir, `${agentName}.agent.md`);
+    const agentFile = path_1.default.join(agentsDir, `${agentName}.md`);
     await fs_extra_1.default.ensureDir(agentsDir);
     if (await fs_extra_1.default.pathExists(agentFile)) {
         console.error(chalk_1.default.red(`[ERROR] Agent already exists: ${agentFile}`));
@@ -65,7 +65,7 @@ env: []
 # ${agentName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
 
 > **Purpose:** ${agentDescription}
-> **Inherits:** [Base Agent](../.contextuate/agents/base.agent.md)
+> **Inherits:** [Base Agent](../.contextuate/agents/base.md)
 
 ## Role
 

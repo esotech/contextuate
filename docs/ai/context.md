@@ -25,10 +25,10 @@
 ### Agent Registry
 | Task Domain | Agent | Context File |
 |-------------|-------|--------------|
-| General Coding | Base Agent | [.context/agents/base.agent.md](.context/agents/base.agent.md) |
-| Documentation | Docs Expert | [.context/agents/documentation-expert.agent.md](.context/agents/documentation-expert.agent.md) |
-| Tool Usage | Tools Expert | [.context/agents/tools-expert.agent.md](.context/agents/tools-expert.agent.md) |
-| {Custom Domain} | {Custom Agent} | [agents/{agent}.agent.md](agents/{agent}.agent.md) |
+| General Coding | Base Agent | [.context/agents/base.md](.context/agents/base.md) |
+| Documentation | Docs Expert | [.context/agents/documentation-expert.md](.context/agents/documentation-expert.md) |
+| Tool Usage | Tools Expert | [.context/agents/tools-expert.md](.context/agents/tools-expert.md) |
+| {Custom Domain} | {Custom Agent} | [agents/{agent}.md](agents/{agent}.md) |
 
 ### How to Create Agents
 If you need expertise that doesn't exist yet:

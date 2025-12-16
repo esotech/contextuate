@@ -18,15 +18,15 @@ async function runCommand(agentName, options) {
         console.log(chalk_1.default.bold('Goal: ') + options.goal);
     }
     // 1. Locate the agent file
-    const agentPath = path_1.default.join(process.cwd(), 'docs/ai/agents', `${agentName}.agent.md`);
+    const agentPath = path_1.default.join(process.cwd(), 'docs/ai/agents', `${agentName}.md`);
     if (!fs_extra_1.default.existsSync(agentPath)) {
         console.error(chalk_1.default.red(`[ERROR] Agent definition not found at: ${agentPath}`));
         console.log(chalk_1.default.yellow(`Available agents:`));
         try {
             const files = await fs_extra_1.default.readdir(path_1.default.join(process.cwd(), 'docs/ai/agents'));
             files.forEach(f => {
-                if (f.endsWith('.agent.md')) {
-                    console.log(`- ${f.replace('.agent.md', '')}`);
+                if (f.endsWith('.md')) {
+                    console.log(`- ${f.replace('.md', '')}`);
                 }
             });
         }

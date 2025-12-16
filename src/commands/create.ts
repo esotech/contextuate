@@ -40,7 +40,7 @@ export async function createAgentCommand(name: string, options: { description?: 
     }
 
     const agentsDir = path.join(process.cwd(), 'docs/ai/agents');
-    const agentFile = path.join(agentsDir, `${agentName}.agent.md`);
+    const agentFile = path.join(agentsDir, `${agentName}.md`);
 
     await fs.ensureDir(agentsDir);
 
@@ -68,7 +68,7 @@ env: []
 # ${agentName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
 
 > **Purpose:** ${agentDescription}
-> **Inherits:** [Base Agent](../.contextuate/agents/base.agent.md)
+> **Inherits:** [Base Agent](../.contextuate/agents/base.md)
 
 ## Role
 

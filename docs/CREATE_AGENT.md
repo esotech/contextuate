@@ -18,7 +18,7 @@ contextuate create-agent [name] [options]
 
 ## Output
 
-Creates a file at `docs/ai/agents/<name>.agent.md`.
+Creates a file at `docs/ai/agents/<name>.md`.
 
 This file contains **YAML Frontmatter** and **Markdown** instructions:
 
