@@ -13,13 +13,25 @@ Contextuate provides a structured "brain" for your project that AI coding assist
 
 ## Quick Start
 
-### One-Line Install (Recommended)
+### Install via npm (Recommended)
+
+```bash
+npm install -g @esotech/contextuate
+```
+
+Or use directly with npx:
+
+```bash
+npx @esotech/contextuate init
+```
+
+### One-Line Install (Alternative)
 
 ```bash
 curl -fsSL https://contextuate.md/install.sh | sh
 ```
 
-### Manual Installation
+### Install from Source
 
 Clone the repository and install globally:
 
@@ -260,6 +272,10 @@ contextuate remove
 ## Documentation
 
 For full documentation, see [contextuate.md](https://contextuate.md) or browse the `docs/ai/.contextuate/` directory.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for version history and release notes.
 
 ## License
 
