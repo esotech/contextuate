@@ -11,7 +11,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc && mkdir -p dist/templates && cp -r src/templates/* dist/templates/",
+    "build": "tsc && mkdir -p dist/templates && cp -r src/templates/* dist/templates/ && chmod +x dist/index.js",
     "prepublishOnly": "npm run build"
   },
   "repository": {

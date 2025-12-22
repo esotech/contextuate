@@ -32,6 +32,7 @@ docs/ai/tasks/
 # Contextuate - Framework files
 docs/ai/.context/
 docs/ai/tasks/
+docs/ai/agents/
 
 # Contextuate - Generated Artifacts (DO NOT EDIT)
 /CLAUDE.md
