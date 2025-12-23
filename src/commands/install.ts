@@ -7,6 +7,7 @@ interface InstallOptions {
     agents?: string[];
     standards?: string[];
     tools?: string[];
+    skills?: string[];
     all?: boolean;
     list?: boolean;
     force?: boolean;
@@ -35,6 +36,7 @@ async function discoverTemplates(): Promise<{
     agents: string[];
     standards: string[];
     tools: string[];
+    skills: string[];
 }> {
     const templateSource = getTemplateSource();
 
@@ -42,6 +44,7 @@ async function discoverTemplates(): Promise<{
         agents: [] as string[],
         standards: [] as string[],
         tools: [] as string[],
+        skills: [] as string[],
     };
 
     // Discover agents
@@ -71,6 +74,15 @@ async function discoverTemplates(): Promise<{
             .map(f => f.replace('.tool.md', ''));
     }
 
+    // Discover skills
+    const skillsDir = path.join(templateSource, 'skills');
+    if (fs.existsSync(skillsDir)) {
+        const files = await fs.readdir(skillsDir);
+        result.skills = files
+            .filter(f => f.endsWith('.md'))
+            .map(f => f.replace('.md', ''));
+    }
+
     return result;
 }
 
@@ -97,6 +109,13 @@ async function listTemplates(): Promise<void> {
     console.log(chalk.cyan('\nTools:'));
     if (templates.tools.length > 0) {
         templates.tools.forEach(t => console.log(`  - ${t}`));
+    } else {
+        console.log('  (none found)');
+    }
+
+    console.log(chalk.cyan('\nSkills (Slash Commands):'));
+    if (templates.skills.length > 0) {
+        templates.skills.forEach(s => console.log(`  - /${s}`));
     } else {
         console.log('  (none found)');
     }
@@ -201,8 +220,32 @@ async function installTools(names: string[], force: boolean): Promise<number> {
     return installed;
 }
 
+// Install skills (slash commands)
+async function installSkills(names: string[], force: boolean): Promise<number> {
+    const templateSource = getTemplateSource();
+    const templates = await discoverTemplates();
+    let installed = 0;
+
+    for (const name of names) {
+        const normalized = name.toLowerCase().trim().replace(/^\//, ''); // Remove leading slash if present
+        const matched = templates.skills.find(s => s.toLowerCase() === normalized);
+
+        if (matched) {
+            const src = path.join(templateSource, 'skills', `${matched}.md`);
+            const dest = path.join('docs/ai/skills', `${matched}.md`);
+            if (await copyFile(src, dest, force)) {
+                installed++;
+            }
+        } else {
+            console.log(chalk.yellow(`[WARN] Skill "${name}" not found. Use --list to see available skills.`));
+        }
+    }
+
+    return installed;
+}
+
 // Subcommand handlers
-export async function installAgentsCommand(names: string[], options: { all?: boolean; force?: boolean }): Promise<void> {
+export async function installAgentsCommand(names: string[], options: { all?: boolean; force?: boolean; includeSkills?: boolean }): Promise<void> {
     const templates = await discoverTemplates();
     const useAll = options.all || names.includes('all');
     const agentsToInstall = useAll ? templates.agents : names;
@@ -215,8 +258,16 @@ export async function installAgentsCommand(names: string[], options: { all?: boo
     }
 
     console.log(chalk.blue('\n[INFO] Installing agents...\n'));
-    const count = await installAgents(agentsToInstall, options.force || false);
-    console.log(chalk.green(`\n[OK] Installed ${count} agent(s)\n`));
+    const agentCount = await installAgents(agentsToInstall, options.force || false);
+
+    // By default, also install skills when installing agents (unless explicitly disabled)
+    let skillCount = 0;
+    if (options.includeSkills !== false && templates.skills.length > 0) {
+        console.log(chalk.blue('\n[INFO] Installing skills (slash commands)...\n'));
+        skillCount = await installSkills(templates.skills, options.force || false);
+    }
+
+    console.log(chalk.green(`\n[OK] Installed ${agentCount} agent(s) and ${skillCount} skill(s)\n`));
 }
 
 export async function installStandardsCommand(names: string[], options: { all?: boolean; force?: boolean }): Promise<void> {
@@ -253,6 +304,23 @@ export async function installToolsCommand(names: string[], options: { all?: bool
     console.log(chalk.green(`\n[OK] Installed ${count} tool(s)\n`));
 }
 
+export async function installSkillsCommand(names: string[], options: { all?: boolean; force?: boolean }): Promise<void> {
+    const templates = await discoverTemplates();
+    const useAll = options.all || names.includes('all');
+    const skillsToInstall = useAll ? templates.skills : names;
+
+    if (skillsToInstall.length === 0) {
+        console.log(chalk.yellow('No skills specified. Use "all" or provide skill names.'));
+        console.log(chalk.gray('Available skills:'));
+        templates.skills.forEach(s => console.log(`  - /${s}`));
+        return;
+    }
+
+    console.log(chalk.blue('\n[INFO] Installing skills (slash commands)...\n'));
+    const count = await installSkills(skillsToInstall, options.force || false);
+    console.log(chalk.green(`\n[OK] Installed ${count} skill(s)\n`));
+}
+
 // Main install command (flag style or interactive)
 export async function installCommand(options: InstallOptions): Promise<void> {
     // Handle --list flag
@@ -265,7 +333,7 @@ export async function installCommand(options: InstallOptions): Promise<void> {
     const force = options.force || false;
 
     // Check if any flags were provided
-    const hasFlags = options.agents || options.standards || options.tools || options.all;
+    const hasFlags = options.agents || options.standards || options.tools || options.skills || options.all;
 
     if (!hasFlags) {
         // Interactive mode
@@ -277,6 +345,7 @@ export async function installCommand(options: InstallOptions): Promise<void> {
                     message: 'What would you like to install?',
                     choices: [
                         { name: 'Agents (AI persona definitions)', value: 'agents' },
+                        { name: 'Skills (Slash commands like /orchestrate)', value: 'skills' },
                         { name: 'Language Standards (coding guidelines)', value: 'standards' },
                         { name: 'Tools (AI tool guides)', value: 'tools' },
                     ],
@@ -292,6 +361,7 @@ export async function installCommand(options: InstallOptions): Promise<void> {
             let selectedAgents: string[] = [];
             let selectedStandards: string[] = [];
             let selectedTools: string[] = [];
+            let selectedSkills: string[] = [];
 
             if (categories.includes('agents') && templates.agents.length > 0) {
                 const { agents } = await inquirer.prompt([
@@ -350,6 +420,25 @@ export async function installCommand(options: InstallOptions): Promise<void> {
                 selectedTools = tools.includes('__all__') ? templates.tools : tools;
             }
 
+            if (categories.includes('skills') && templates.skills.length > 0) {
+                const { skills } = await inquirer.prompt([
+                    {
+                        type: 'checkbox',
+                        name: 'skills',
+                        message: 'Select skills (slash commands) to install:',
+                        choices: [
+                            { name: 'Select All', value: '__all__' },
+                            new inquirer.Separator(),
+                            ...templates.skills.map(s => ({
+                                name: `/${s}`,
+                                value: s,
+                            })),
+                        ],
+                    },
+                ]);
+                selectedSkills = skills.includes('__all__') ? templates.skills : skills;
+            }
+
             // Install selected items
             let totalInstalled = 0;
 
@@ -366,6 +455,11 @@ export async function installCommand(options: InstallOptions): Promise<void> {
             if (selectedTools.length > 0) {
                 console.log(chalk.blue('\n[INFO] Installing tools...'));
                 totalInstalled += await installTools(selectedTools, force);
+            }
+
+            if (selectedSkills.length > 0) {
+                console.log(chalk.blue('\n[INFO] Installing skills...'));
+                totalInstalled += await installSkills(selectedSkills, force);
             }
 
             console.log(chalk.green(`\n[OK] Installation complete. ${totalInstalled} file(s) installed.\n`));
@@ -386,6 +480,7 @@ export async function installCommand(options: InstallOptions): Promise<void> {
             totalInstalled += await installAgents(templates.agents, force);
             totalInstalled += await installStandards(templates.standards, force);
             totalInstalled += await installTools(templates.tools, force);
+            totalInstalled += await installSkills(templates.skills, force);
         } else {
             // Handle individual flags
             if (options.agents && options.agents.length > 0) {
@@ -404,6 +499,12 @@ export async function installCommand(options: InstallOptions): Promise<void> {
                 const toolsToInstall = options.tools.includes('all') ? templates.tools : options.tools;
                 console.log(chalk.blue('\n[INFO] Installing tools...'));
                 totalInstalled += await installTools(toolsToInstall, force);
+            }
+
+            if (options.skills && options.skills.length > 0) {
+                const skillsToInstall = options.skills.includes('all') ? templates.skills : options.skills;
+                console.log(chalk.blue('\n[INFO] Installing skills...'));
+                totalInstalled += await installSkills(skillsToInstall, force);
             }
         }
 

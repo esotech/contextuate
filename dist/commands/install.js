@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.installAgentsCommand = installAgentsCommand;
 exports.installStandardsCommand = installStandardsCommand;
 exports.installToolsCommand = installToolsCommand;
+exports.installSkillsCommand = installSkillsCommand;
 exports.installCommand = installCommand;
 const inquirer_1 = __importDefault(require("inquirer"));
 const chalk_1 = __importDefault(require("chalk"));
@@ -33,6 +34,7 @@ async function discoverTemplates() {
         agents: [],
         standards: [],
         tools: [],
+        skills: [],
     };
     // Discover agents
     const agentDir = path_1.default.join(templateSource, 'agents');
@@ -58,6 +60,14 @@ async function discoverTemplates() {
             .filter(f => f.endsWith('.tool.md'))
             .map(f => f.replace('.tool.md', ''));
     }
+    // Discover skills
+    const skillsDir = path_1.default.join(templateSource, 'skills');
+    if (fs_extra_1.default.existsSync(skillsDir)) {
+        const files = await fs_extra_1.default.readdir(skillsDir);
+        result.skills = files
+            .filter(f => f.endsWith('.md'))
+            .map(f => f.replace('.md', ''));
+    }
     return result;
 }
 // List available templates
@@ -81,6 +91,13 @@ async function listTemplates() {
     console.log(chalk_1.default.cyan('\nTools:'));
     if (templates.tools.length > 0) {
         templates.tools.forEach(t => console.log(`  - ${t}`));
+    }
+    else {
+        console.log('  (none found)');
+    }
+    console.log(chalk_1.default.cyan('\nSkills (Slash Commands):'));
+    if (templates.skills.length > 0) {
+        templates.skills.forEach(s => console.log(`  - /${s}`));
     }
     else {
         console.log('  (none found)');
@@ -170,6 +187,27 @@ async function installTools(names, force) {
     }
     return installed;
 }
+// Install skills (slash commands)
+async function installSkills(names, force) {
+    const templateSource = getTemplateSource();
+    const templates = await discoverTemplates();
+    let installed = 0;
+    for (const name of names) {
+        const normalized = name.toLowerCase().trim().replace(/^\//, ''); // Remove leading slash if present
+        const matched = templates.skills.find(s => s.toLowerCase() === normalized);
+        if (matched) {
+            const src = path_1.default.join(templateSource, 'skills', `${matched}.md`);
+            const dest = path_1.default.join('docs/ai/skills', `${matched}.md`);
+            if (await copyFile(src, dest, force)) {
+                installed++;
+            }
+        }
+        else {
+            console.log(chalk_1.default.yellow(`[WARN] Skill "${name}" not found. Use --list to see available skills.`));
+        }
+    }
+    return installed;
+}
 // Subcommand handlers
 async function installAgentsCommand(names, options) {
     const templates = await discoverTemplates();
@@ -182,8 +220,14 @@ async function installAgentsCommand(names, options) {
         return;
     }
     console.log(chalk_1.default.blue('\n[INFO] Installing agents...\n'));
-    const count = await installAgents(agentsToInstall, options.force || false);
-    console.log(chalk_1.default.green(`\n[OK] Installed ${count} agent(s)\n`));
+    const agentCount = await installAgents(agentsToInstall, options.force || false);
+    // By default, also install skills when installing agents (unless explicitly disabled)
+    let skillCount = 0;
+    if (options.includeSkills !== false && templates.skills.length > 0) {
+        console.log(chalk_1.default.blue('\n[INFO] Installing skills (slash commands)...\n'));
+        skillCount = await installSkills(templates.skills, options.force || false);
+    }
+    console.log(chalk_1.default.green(`\n[OK] Installed ${agentCount} agent(s) and ${skillCount} skill(s)\n`));
 }
 async function installStandardsCommand(names, options) {
     const templates = await discoverTemplates();
@@ -213,6 +257,20 @@ async function installToolsCommand(names, options) {
     const count = await installTools(toolsToInstall, options.force || false);
     console.log(chalk_1.default.green(`\n[OK] Installed ${count} tool(s)\n`));
 }
+async function installSkillsCommand(names, options) {
+    const templates = await discoverTemplates();
+    const useAll = options.all || names.includes('all');
+    const skillsToInstall = useAll ? templates.skills : names;
+    if (skillsToInstall.length === 0) {
+        console.log(chalk_1.default.yellow('No skills specified. Use "all" or provide skill names.'));
+        console.log(chalk_1.default.gray('Available skills:'));
+        templates.skills.forEach(s => console.log(`  - /${s}`));
+        return;
+    }
+    console.log(chalk_1.default.blue('\n[INFO] Installing skills (slash commands)...\n'));
+    const count = await installSkills(skillsToInstall, options.force || false);
+    console.log(chalk_1.default.green(`\n[OK] Installed ${count} skill(s)\n`));
+}
 // Main install command (flag style or interactive)
 async function installCommand(options) {
     // Handle --list flag
@@ -223,7 +281,7 @@ async function installCommand(options) {
     const templates = await discoverTemplates();
     const force = options.force || false;
     // Check if any flags were provided
-    const hasFlags = options.agents || options.standards || options.tools || options.all;
+    const hasFlags = options.agents || options.standards || options.tools || options.skills || options.all;
     if (!hasFlags) {
         // Interactive mode
         try {
@@ -234,6 +292,7 @@ async function installCommand(options) {
                     message: 'What would you like to install?',
                     choices: [
                         { name: 'Agents (AI persona definitions)', value: 'agents' },
+                        { name: 'Skills (Slash commands like /orchestrate)', value: 'skills' },
                         { name: 'Language Standards (coding guidelines)', value: 'standards' },
                         { name: 'Tools (AI tool guides)', value: 'tools' },
                     ],
@@ -248,6 +307,7 @@ async function installCommand(options) {
             let selectedAgents = [];
             let selectedStandards = [];
             let selectedTools = [];
+            let selectedSkills = [];
             if (categories.includes('agents') && templates.agents.length > 0) {
                 const { agents } = await inquirer_1.default.prompt([
                     {
@@ -302,6 +362,24 @@ async function installCommand(options) {
                 ]);
                 selectedTools = tools.includes('__all__') ? templates.tools : tools;
             }
+            if (categories.includes('skills') && templates.skills.length > 0) {
+                const { skills } = await inquirer_1.default.prompt([
+                    {
+                        type: 'checkbox',
+                        name: 'skills',
+                        message: 'Select skills (slash commands) to install:',
+                        choices: [
+                            { name: 'Select All', value: '__all__' },
+                            new inquirer_1.default.Separator(),
+                            ...templates.skills.map(s => ({
+                                name: `/${s}`,
+                                value: s,
+                            })),
+                        ],
+                    },
+                ]);
+                selectedSkills = skills.includes('__all__') ? templates.skills : skills;
+            }
             // Install selected items
             let totalInstalled = 0;
             if (selectedAgents.length > 0) {
@@ -315,6 +393,10 @@ async function installCommand(options) {
             if (selectedTools.length > 0) {
                 console.log(chalk_1.default.blue('\n[INFO] Installing tools...'));
                 totalInstalled += await installTools(selectedTools, force);
+            }
+            if (selectedSkills.length > 0) {
+                console.log(chalk_1.default.blue('\n[INFO] Installing skills...'));
+                totalInstalled += await installSkills(selectedSkills, force);
             }
             console.log(chalk_1.default.green(`\n[OK] Installation complete. ${totalInstalled} file(s) installed.\n`));
         }
@@ -335,6 +417,7 @@ async function installCommand(options) {
             totalInstalled += await installAgents(templates.agents, force);
             totalInstalled += await installStandards(templates.standards, force);
             totalInstalled += await installTools(templates.tools, force);
+            totalInstalled += await installSkills(templates.skills, force);
         }
         else {
             // Handle individual flags
@@ -352,6 +435,11 @@ async function installCommand(options) {
                 const toolsToInstall = options.tools.includes('all') ? templates.tools : options.tools;
                 console.log(chalk_1.default.blue('\n[INFO] Installing tools...'));
                 totalInstalled += await installTools(toolsToInstall, force);
+            }
+            if (options.skills && options.skills.length > 0) {
+                const skillsToInstall = options.skills.includes('all') ? templates.skills : options.skills;
+                console.log(chalk_1.default.blue('\n[INFO] Installing skills...'));
+                totalInstalled += await installSkills(skillsToInstall, force);
             }
         }
         console.log(chalk_1.default.green(`\n[OK] Installation complete. ${totalInstalled} file(s) installed.\n`));

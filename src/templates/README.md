@@ -78,6 +78,29 @@ Creates new AI agent definitions following Contextuate patterns.
 
 ---
 
+## Skills (Slash Commands)
+
+Skills are special commands that activate specific AI behaviors. Install them with `contextuate install skills`.
+
+### /orchestrate
+
+Activates ARCHON orchestrator mode for coordinated multi-agent task execution.
+
+**How to use:** In a Claude Code session, run:
+> `/orchestrate Add a new API endpoint with database query, validation, and tests`
+
+**What it does:**
+1. Analyzes your task to identify required domains
+2. Delegates to specialist agents instead of implementing directly
+3. Coordinates handoffs between agents
+4. Synthesizes results into a cohesive solution
+
+**Available specialist agents:** aegis, atlas, canvas, chronicle, chronos, cipher, crucible, echo, forge, ledger, meridian, nexus, oracle, scribe, sentinel, unity, vox, weaver
+
+**File:** `docs/ai/skills/orchestrate.md`
+
+---
+
 ## Directory Structure
 
 ```
@@ -89,6 +112,7 @@ docs/ai/
 │   ├── tools/          # AI tool guides
 │   └── bin/            # Install/update scripts
 ├── agents/             # Your custom agents (user-editable)
+├── skills/             # Slash commands (e.g., /orchestrate)
 ├── standards/          # Your project standards (user-editable)
 ├── quickrefs/          # Generated quick references
 ├── tasks/              # Task tracking (gitignored)
@@ -133,15 +157,17 @@ Updates framework files while preserving your customizations.
 
 ---
 
-## Agents vs Tools
+## Agents vs Tools vs Skills
 
 | Type | Purpose | Location |
 |------|---------|----------|
 | **Agent** | Persona with expertise, decision-making | `agents/*.md` |
 | **Tool** | Step-by-step process guide | `tools/*.tool.md` |
+| **Skill** | Slash command that activates behaviors | `skills/*.md` |
 
 **Agents** define *who* the AI is acting as (e.g., "documentation expert").
 **Tools** define *how* to accomplish a specific task (e.g., "follow these steps to generate a quickref").
+**Skills** are slash commands that trigger specific modes or behaviors (e.g., `/orchestrate` activates multi-agent coordination).
 
 ---
 

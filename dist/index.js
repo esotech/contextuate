@@ -69,6 +69,7 @@ const install = program
     .option('-a, --agents <names...>', 'Install specific agents (use "all" for all)')
     .option('-s, --standards <names...>', 'Install language standards (use "all" for all)')
     .option('-t, --tools <names...>', 'Install tools (use "all" for all)')
+    .option('-k, --skills <names...>', 'Install skills/slash commands (use "all" for all)')
     .option('--all', 'Install all available templates')
     .option('-l, --list', 'List available templates')
     .option('-f, --force', 'Overwrite existing files')
@@ -94,6 +95,13 @@ install
     .option('--all', 'Install all tools')
     .option('-f, --force', 'Overwrite existing files')
     .action(install_1.installToolsCommand);
+// Subcommand: install skills
+install
+    .command('skills [names...]')
+    .description('Install skill templates (slash commands like /orchestrate)')
+    .option('--all', 'Install all skills')
+    .option('-f, --force', 'Overwrite existing files')
+    .action(install_1.installSkillsCommand);
 // Monitor command with subcommands
 const monitor = program
     .command('monitor')

@@ -68,6 +68,7 @@ Contextuate is a directory structure and set of conventions that helps AI agents
 - **`docs/ai/standards/`**: Explicit coding standards and behavioral guidelines.
 - **`docs/ai/quickrefs/`**: Condensed documentation optimized for AI token limits.
 - **`docs/ai/tasks/`**: A workflow for managing multi-session AI tasks.
+- **`docs/ai/skills/`**: Slash commands that activate special behaviors (e.g., `/orchestrate`).
 
 ## How LLMs Use Contextuate
 
@@ -168,6 +169,7 @@ contextuate install --all
 contextuate install --agents archon base canvas
 contextuate install --standards php javascript
 contextuate install --tools quickref
+contextuate install --skills orchestrate
 
 # Subcommand style
 contextuate install agents archon base
@@ -175,6 +177,7 @@ contextuate install agents --all
 contextuate install standards php javascript python
 contextuate install standards --all
 contextuate install tools --all
+contextuate install skills --all
 
 # Force overwrite
 contextuate install agents --all --force
@@ -184,14 +187,16 @@ contextuate install agents --all --force
 - `-a, --agents <names...>` - Install specific agents
 - `-s, --standards <names...>` - Install language standards
 - `-t, --tools <names...>` - Install tools
+- `-k, --skills <names...>` - Install skills (slash commands)
 - `--all` - Install all available templates
 - `-l, --list` - List available templates
 - `-f, --force` - Overwrite existing files
 
 **Subcommands:**
-- `install agents [names...]` - Install agent templates
+- `install agents [names...]` - Install agent templates (also installs skills by default)
 - `install standards [names...]` - Install language standard templates
 - `install tools [names...]` - Install tool templates
+- `install skills [names...]` - Install skill templates (slash commands like `/orchestrate`)
 
 ---
 

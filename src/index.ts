@@ -7,7 +7,7 @@ import { runCommand } from './commands/run';
 import { createAgentCommand } from './commands/create';
 import { indexCommand } from './commands/index';
 import { addContextCommand } from './commands/context';
-import { installCommand, installAgentsCommand, installStandardsCommand, installToolsCommand } from './commands/install';
+import { installCommand, installAgentsCommand, installStandardsCommand, installToolsCommand, installSkillsCommand } from './commands/install';
 import { monitorInitCommand, monitorStartCommand, monitorStatusCommand } from './commands/monitor';
 import { readFileSync } from 'fs';
 import { join } from 'path';
@@ -77,6 +77,7 @@ const install = program
     .option('-a, --agents <names...>', 'Install specific agents (use "all" for all)')
     .option('-s, --standards <names...>', 'Install language standards (use "all" for all)')
     .option('-t, --tools <names...>', 'Install tools (use "all" for all)')
+    .option('-k, --skills <names...>', 'Install skills/slash commands (use "all" for all)')
     .option('--all', 'Install all available templates')
     .option('-l, --list', 'List available templates')
     .option('-f, --force', 'Overwrite existing files')
@@ -105,6 +106,14 @@ install
     .option('--all', 'Install all tools')
     .option('-f, --force', 'Overwrite existing files')
     .action(installToolsCommand);
+
+// Subcommand: install skills
+install
+    .command('skills [names...]')
+    .description('Install skill templates (slash commands like /orchestrate)')
+    .option('--all', 'Install all skills')
+    .option('-f, --force', 'Overwrite existing files')
+    .action(installSkillsCommand);
 
 // Monitor command with subcommands
 const monitor = program

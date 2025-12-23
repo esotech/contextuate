@@ -5,6 +5,30 @@ All notable changes to Contextuate will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Skills (Slash Commands)**: New template type for activating AI behaviors
+  - `contextuate install skills [names...]` - Install skill templates
+  - `-k, --skills` flag for install command
+  - Skills auto-install when installing agents
+- **`/orchestrate` skill**: Activates ARCHON orchestrator mode for multi-agent coordination
+  - Delegates tasks to specialist agents (chronicle, nexus, aegis, etc.)
+  - Analyzes task domains and complexity
+  - Synthesizes results from multiple agents
+- **Monitor Feature**: Real-time Claude Code session monitoring dashboard
+  - Track multiple concurrent sessions across terminals
+  - Automatic sub-agent detection and hierarchy
+  - WebSocket-based live event streaming
+  - Tool call timeline and token usage metrics
+  - `contextuate monitor init` - Initialize monitor hooks
+  - `contextuate monitor start` - Launch dashboard
+  - `contextuate monitor status` - Check server status
+
+### Changed
+- Updated documentation with skills section
+- Interactive install now includes skills category
+
 ## [2.0.0] - 2025-12-16
 
 ### Added
