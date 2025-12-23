@@ -220,7 +220,7 @@ async function installTools(names: string[], force: boolean): Promise<number> {
     return installed;
 }
 
-// Install skills (slash commands)
+// Install skills (slash commands) - installs to commands/ folder for Claude Code compatibility
 async function installSkills(names: string[], force: boolean): Promise<number> {
     const templateSource = getTemplateSource();
     const templates = await discoverTemplates();
@@ -232,7 +232,8 @@ async function installSkills(names: string[], force: boolean): Promise<number> {
 
         if (matched) {
             const src = path.join(templateSource, 'skills', `${matched}.md`);
-            const dest = path.join('docs/ai/skills', `${matched}.md`);
+            // Install to commands/ folder - Claude Code looks for slash commands there
+            const dest = path.join('docs/ai/commands', `${matched}.md`);
             if (await copyFile(src, dest, force)) {
                 installed++;
             }

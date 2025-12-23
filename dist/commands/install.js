@@ -187,7 +187,7 @@ async function installTools(names, force) {
     }
     return installed;
 }
-// Install skills (slash commands)
+// Install skills (slash commands) - installs to commands/ folder for Claude Code compatibility
 async function installSkills(names, force) {
     const templateSource = getTemplateSource();
     const templates = await discoverTemplates();
@@ -197,7 +197,8 @@ async function installSkills(names, force) {
         const matched = templates.skills.find(s => s.toLowerCase() === normalized);
         if (matched) {
             const src = path_1.default.join(templateSource, 'skills', `${matched}.md`);
-            const dest = path_1.default.join('docs/ai/skills', `${matched}.md`);
+            // Install to commands/ folder - Claude Code looks for slash commands there
+            const dest = path_1.default.join('docs/ai/commands', `${matched}.md`);
             if (await copyFile(src, dest, force)) {
                 installed++;
             }
