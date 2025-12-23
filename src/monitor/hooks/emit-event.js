@@ -129,6 +129,97 @@ function generateUUID() {
 }
 
 /**
+ * Parse transcript JSONL file to extract thinking blocks and token usage
+ * @param {string} transcriptPath - Path to the transcript JSONL file
+ * @returns {{ thinkingBlocks: Array, sessionTokenUsage: Object, model: string|null }}
+ */
+function parseTranscript(transcriptPath) {
+  const result = {
+    thinkingBlocks: [],
+    sessionTokenUsage: {
+      input: 0,
+      output: 0,
+      cacheRead: 0,
+      cacheCreation5m: 0,
+      cacheCreation1h: 0
+    },
+    model: null
+  };
+
+  try {
+    if (!transcriptPath || !fs.existsSync(transcriptPath)) {
+      return result;
+    }
+
+    const content = fs.readFileSync(transcriptPath, 'utf-8');
+    const lines = content.trim().split('\n');
+
+    for (const line of lines) {
+      if (!line.trim()) continue;
+
+      try {
+        const entry = JSON.parse(line);
+
+        // Only process assistant messages (which contain thinking and usage)
+        if (entry.type !== 'assistant' || !entry.message) continue;
+
+        const message = entry.message;
+
+        // Extract model (use the last one seen)
+        if (message.model) {
+          result.model = message.model;
+        }
+
+        // Extract token usage
+        if (message.usage) {
+          const usage = message.usage;
+          result.sessionTokenUsage.input += usage.input_tokens || 0;
+          result.sessionTokenUsage.output += usage.output_tokens || 0;
+          result.sessionTokenUsage.cacheRead += usage.cache_read_input_tokens || 0;
+
+          // Cache creation tokens
+          if (usage.cache_creation) {
+            result.sessionTokenUsage.cacheCreation5m += usage.cache_creation.ephemeral_5m_input_tokens || 0;
+            result.sessionTokenUsage.cacheCreation1h += usage.cache_creation.ephemeral_1h_input_tokens || 0;
+          }
+          // Also check for cache_creation_input_tokens (aggregate)
+          if (usage.cache_creation_input_tokens) {
+            // Only add if we haven't already counted via cache_creation
+            if (!usage.cache_creation) {
+              result.sessionTokenUsage.cacheCreation5m += usage.cache_creation_input_tokens || 0;
+            }
+          }
+        }
+
+        // Extract thinking blocks from content
+        if (message.content && Array.isArray(message.content)) {
+          for (const block of message.content) {
+            if (block.type === 'thinking' && block.thinking) {
+              result.thinkingBlocks.push({
+                content: block.thinking,
+                timestamp: entry.timestamp ? new Date(entry.timestamp).getTime() : Date.now(),
+                requestId: entry.requestId || undefined
+              });
+            }
+          }
+        }
+      } catch (parseErr) {
+        // Skip malformed lines
+        if (process.env.CONTEXTUATE_DEBUG) {
+          console.error(`[emit-event] Failed to parse transcript line: ${parseErr.message}`);
+        }
+      }
+    }
+  } catch (err) {
+    if (process.env.CONTEXTUATE_DEBUG) {
+      console.error(`[emit-event] Failed to read transcript: ${err.message}`);
+    }
+  }
+
+  return result;
+}
+
+/**
  * Map hook type to event type
  */
 function getEventType(hookType, payload) {
@@ -197,6 +288,31 @@ function buildEvent(hookPayload) {
     };
   }
 
+  // For Stop and SubagentStop events, parse the transcript for thinking and token usage
+  if ((hookType === 'Stop' || hookType === 'SubagentStop') && hookPayload.transcript_path) {
+    const transcriptData = parseTranscript(hookPayload.transcript_path);
+
+    // Add transcript path to data
+    data.transcriptPath = hookPayload.transcript_path;
+
+    // Add thinking blocks
+    if (transcriptData.thinkingBlocks.length > 0) {
+      data.thinkingBlocks = transcriptData.thinkingBlocks;
+      // Also set the last thinking as the legacy 'thinking' field
+      data.thinking = transcriptData.thinkingBlocks[transcriptData.thinkingBlocks.length - 1].content;
+    }
+
+    // Add session token usage (cumulative)
+    if (transcriptData.sessionTokenUsage.input > 0 || transcriptData.sessionTokenUsage.output > 0) {
+      data.sessionTokenUsage = transcriptData.sessionTokenUsage;
+    }
+
+    // Add model
+    if (transcriptData.model) {
+      data.model = transcriptData.model;
+    }
+  }
+
   // Get parent session ID from environment if this is a sub-agent
   const parentSessionId = process.env.CONTEXTUATE_PARENT_SESSION;
 
@@ -206,7 +322,7 @@ function buildEvent(hookPayload) {
     sessionId: getSessionId(),
     parentSessionId: parentSessionId || undefined,
     machineId: getMachineId(),
-    workingDirectory: getWorkingDirectory(),
+    workingDirectory: hookPayload.cwd || getWorkingDirectory(),
     eventType: eventType,
     hookType: hookType,
     data: data

@@ -452,6 +452,25 @@ export class EventBroker {
       case 'agent_complete':
         session.status = 'completed';
         session.endTime = event.timestamp;
+
+        // Use session token usage from transcript parsing (most accurate)
+        if (event.data.sessionTokenUsage) {
+          session.tokenUsage = {
+            totalInput: event.data.sessionTokenUsage.input || 0,
+            totalOutput: event.data.sessionTokenUsage.output || 0,
+            totalCacheRead: event.data.sessionTokenUsage.cacheRead || 0,
+            totalCacheCreation: (event.data.sessionTokenUsage.cacheCreation5m || 0) +
+                                (event.data.sessionTokenUsage.cacheCreation1h || 0),
+          };
+        }
+
+        // Store model and transcript path
+        if (event.data.model) {
+          session.model = event.data.model;
+        }
+        if (event.data.transcriptPath) {
+          session.transcriptPath = event.data.transcriptPath;
+        }
         break;
 
       case 'error':

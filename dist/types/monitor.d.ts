@@ -20,6 +20,21 @@ export interface TokenUsage {
     output: number;
     cacheRead?: number;
     cacheWrite?: number;
+    /** Cache creation tokens (5-minute ephemeral) */
+    cacheCreation5m?: number;
+    /** Cache creation tokens (1-hour ephemeral) */
+    cacheCreation1h?: number;
+}
+/**
+ * Thinking block from Claude's chain of thought
+ */
+export interface ThinkingBlock {
+    /** The thinking/reasoning content */
+    content: string;
+    /** Timestamp when this thinking occurred */
+    timestamp: number;
+    /** Request ID this thinking belongs to */
+    requestId?: string;
 }
 /**
  * Error information in events
@@ -44,10 +59,19 @@ export interface EventData {
     toolInput?: unknown;
     toolOutput?: unknown;
     message?: string;
+    /** Single thinking content (legacy, for backward compat) */
     thinking?: string;
+    /** Array of thinking blocks from the session */
+    thinkingBlocks?: ThinkingBlock[];
     tokenUsage?: TokenUsage;
+    /** Cumulative token usage for the session */
+    sessionTokenUsage?: TokenUsage;
     error?: EventError;
     subagent?: SubagentInfo;
+    /** Model used for this interaction */
+    model?: string;
+    /** Path to the transcript file */
+    transcriptPath?: string;
 }
 /**
  * Core monitor event structure
@@ -82,6 +106,8 @@ export interface SessionMeta {
     tokenUsage: {
         totalInput: number;
         totalOutput: number;
+        totalCacheRead?: number;
+        totalCacheCreation?: number;
     };
     hidden?: boolean;
     /** Agent type for sub-agents (e.g., "nexus", "canvas", "archon") */
@@ -94,6 +120,10 @@ export interface SessionMeta {
     manualParentSessionId?: string;
     /** Custom label/name set by user */
     label?: string;
+    /** Model used in this session */
+    model?: string;
+    /** Path to the transcript file */
+    transcriptPath?: string;
 }
 /**
  * Monitor mode - local (Unix socket) or distributed (Redis)
@@ -324,6 +354,10 @@ export interface PersistenceStore {
 export interface ClaudeHookPayload {
     hook_type: ClaudeHookType;
     session_id?: string;
+    /** Path to the transcript JSONL file */
+    transcript_path?: string;
+    /** Current working directory */
+    cwd?: string;
     tool_name?: string;
     tool_input?: unknown;
     tool_output?: unknown;
