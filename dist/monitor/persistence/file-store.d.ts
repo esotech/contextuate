@@ -6,12 +6,14 @@
  */
 import type { PersistenceStore, MonitorEvent, SessionMeta, SessionStatus } from '../../types/monitor';
 export interface FileStoreOptions {
-    baseDir: string;
+    baseDir?: string;
 }
 export declare class FileStore implements PersistenceStore {
+    private paths;
     private baseDir;
     private sessionsDir;
-    constructor(options: FileStoreOptions);
+    private processedDir;
+    constructor(options?: FileStoreOptions);
     /**
      * Initialize the store - create directories if needed
      */
@@ -75,4 +77,8 @@ export declare class FileStore implements PersistenceStore {
      * Get the base directory path
      */
     getBaseDir(): string;
+    /**
+     * Get list of processed event files (for recovery)
+     */
+    getProcessedFiles(): Promise<string[]>;
 }

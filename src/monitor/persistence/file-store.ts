@@ -13,19 +13,25 @@ import type {
   MonitorEvent,
   SessionMeta,
   SessionStatus,
+  MonitorPaths,
 } from '../../types/monitor';
+import { getDefaultMonitorPaths } from '../../types/monitor.js';
 
 export interface FileStoreOptions {
-  baseDir: string;
+  baseDir?: string;
 }
 
 export class FileStore implements PersistenceStore {
+  private paths: MonitorPaths;
   private baseDir: string;
   private sessionsDir: string;
+  private processedDir: string;
 
-  constructor(options: FileStoreOptions) {
-    this.baseDir = options.baseDir;
+  constructor(options?: FileStoreOptions) {
+    this.paths = getDefaultMonitorPaths();
+    this.baseDir = options?.baseDir || this.paths.baseDir;
     this.sessionsDir = path.join(this.baseDir, 'sessions');
+    this.processedDir = path.join(this.baseDir, 'processed');
   }
 
   /**
@@ -33,6 +39,7 @@ export class FileStore implements PersistenceStore {
    */
   async init(): Promise<void> {
     await fs.promises.mkdir(this.sessionsDir, { recursive: true });
+    await fs.promises.mkdir(this.processedDir, { recursive: true });
     console.log(`[FileStore] Initialized at ${this.baseDir}`);
   }
 
@@ -319,5 +326,17 @@ export class FileStore implements PersistenceStore {
    */
   getBaseDir(): string {
     return this.baseDir;
+  }
+
+  /**
+   * Get list of processed event files (for recovery)
+   */
+  async getProcessedFiles(): Promise<string[]> {
+    try {
+      const files = await fs.promises.readdir(this.processedDir);
+      return files.filter(f => f.endsWith('.json')).sort();
+    } catch {
+      return [];
+    }
   }
 }

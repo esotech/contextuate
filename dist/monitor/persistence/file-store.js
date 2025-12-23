@@ -43,16 +43,20 @@ exports.FileStore = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const readline = __importStar(require("readline"));
+const monitor_js_1 = require("../../types/monitor.js");
 class FileStore {
     constructor(options) {
-        this.baseDir = options.baseDir;
+        this.paths = (0, monitor_js_1.getDefaultMonitorPaths)();
+        this.baseDir = options?.baseDir || this.paths.baseDir;
         this.sessionsDir = path.join(this.baseDir, 'sessions');
+        this.processedDir = path.join(this.baseDir, 'processed');
     }
     /**
      * Initialize the store - create directories if needed
      */
     async init() {
         await fs.promises.mkdir(this.sessionsDir, { recursive: true });
+        await fs.promises.mkdir(this.processedDir, { recursive: true });
         console.log(`[FileStore] Initialized at ${this.baseDir}`);
     }
     /**
@@ -289,6 +293,18 @@ class FileStore {
      */
     getBaseDir() {
         return this.baseDir;
+    }
+    /**
+     * Get list of processed event files (for recovery)
+     */
+    async getProcessedFiles() {
+        try {
+            const files = await fs.promises.readdir(this.processedDir);
+            return files.filter(f => f.endsWith('.json')).sort();
+        }
+        catch {
+            return [];
+        }
     }
 }
 exports.FileStore = FileStore;

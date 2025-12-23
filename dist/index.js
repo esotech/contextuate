@@ -131,9 +131,49 @@ monitor
     wsPort: options.wsPort ? parseInt(options.wsPort) : undefined,
     noOpen: options.open === false,
 }));
+// Subcommand: monitor stop
+monitor
+    .command('stop')
+    .description('Stop the monitor daemon')
+    .option('--all', 'Also stop any background processes')
+    .action((options) => (0, monitor_1.monitorStopCommand)({ all: options.all }));
 // Subcommand: monitor status
 monitor
     .command('status')
     .description('Show monitor server status')
     .action(monitor_1.monitorStatusCommand);
+// Daemon subcommand group
+const daemon = monitor
+    .command('daemon')
+    .description('Manage the monitor daemon');
+daemon
+    .command('start')
+    .description('Start the event processing daemon')
+    .option('-d, --detach', 'Run in background (detached mode)')
+    .action(async (options) => {
+    await (0, monitor_1.monitorDaemonStartCommand)(options);
+});
+daemon
+    .command('stop')
+    .description('Stop the daemon')
+    .action(async () => {
+    await (0, monitor_1.monitorDaemonStopCommand)();
+});
+daemon
+    .command('status')
+    .description('Check daemon status')
+    .action(async () => {
+    await (0, monitor_1.monitorDaemonStatusCommand)();
+});
+daemon
+    .command('logs')
+    .description('View daemon logs')
+    .option('-f, --follow', 'Follow log output (like tail -f)')
+    .option('-n, --lines <n>', 'Number of lines to show', '50')
+    .action(async (options) => {
+    await (0, monitor_1.monitorDaemonLogsCommand)({
+        follow: options.follow,
+        lines: parseInt(options.lines)
+    });
+});
 program.parse();

@@ -183,6 +183,12 @@ export interface MonitorConfig {
  */
 export declare const DEFAULT_CONFIG: MonitorConfig;
 /**
+ * Get default monitor paths
+ *
+ * @returns MonitorPaths with all default directory and file paths
+ */
+export declare function getDefaultMonitorPaths(): MonitorPaths;
+/**
  * Client to server message types
  */
 export type ClientMessage = {
@@ -383,6 +389,58 @@ export interface ClaudeHookPayload {
 export interface HookResponse {
     continue: boolean;
     reason?: string;
+}
+/**
+ * Monitor directory paths
+ */
+export interface MonitorPaths {
+    /** Base directory: ~/.contextuate/monitor */
+    baseDir: string;
+    /** Configuration file: ~/.contextuate/monitor/config.json */
+    configFile: string;
+    /** Raw events directory: ~/.contextuate/monitor/raw */
+    rawDir: string;
+    /** Processed events directory: ~/.contextuate/monitor/processed */
+    processedDir: string;
+    /** Sessions directory: ~/.contextuate/monitor/sessions */
+    sessionsDir: string;
+    /** Hooks directory: ~/.contextuate/monitor/hooks */
+    hooksDir: string;
+    /** Daemon PID file: ~/.contextuate/monitor/daemon.pid */
+    daemonPidFile: string;
+    /** Daemon log file: ~/.contextuate/monitor/daemon.log */
+    daemonLogFile: string;
+    /** Daemon state file: ~/.contextuate/monitor/daemon.state.json */
+    daemonStateFile: string;
+}
+/**
+ * Pending subagent spawn information
+ */
+export interface PendingSubagentSpawn {
+    sessionId: string;
+    agentType: string;
+    timestamp: number;
+    prompt: string;
+}
+/**
+ * Active subagent in the stack
+ */
+export interface ActiveSubagent {
+    sessionId: string;
+    agentType: string;
+    prompt: string;
+    startTime: number;
+}
+/**
+ * Daemon state
+ */
+export interface DaemonState {
+    /** Last processed timestamp */
+    lastProcessedTimestamp: number;
+    /** Pending subagent spawns */
+    pendingSubagentSpawns: PendingSubagentSpawn[];
+    /** Active subagent stacks by parent session ID */
+    activeSubagentStacks: Record<string, ActiveSubagent[]>;
 }
 /**
  * Result type for operations that can fail

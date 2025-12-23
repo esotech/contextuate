@@ -12,22 +12,88 @@ import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
 import inquirer from 'inquirer';
-import type { MonitorConfig, MonitorMode, PersistenceType } from '../types/monitor';
-import { DEFAULT_CONFIG } from '../types/monitor';
+import { spawn, ChildProcess } from 'child_process';
+import type { MonitorConfig, MonitorMode, PersistenceType, MonitorPaths } from '../types/monitor';
+import { DEFAULT_CONFIG, getDefaultMonitorPaths } from '../types/monitor';
 
-// Configuration paths
-const CONFIG_DIR = path.join(os.homedir(), '.contextuate');
-const CONFIG_FILE = path.join(CONFIG_DIR, 'monitor.config.json');
-const HOOKS_DIR = path.join(CONFIG_DIR, 'hooks');
+// Use the centralized paths
+const PATHS = getDefaultMonitorPaths();
+
+// For backward compatibility, also define legacy paths
+const LEGACY_CONFIG_DIR = path.join(os.homedir(), '.contextuate');
+const LEGACY_CONFIG_FILE = path.join(LEGACY_CONFIG_DIR, 'monitor.config.json');
+const LEGACY_SESSIONS_DIR = path.join(LEGACY_CONFIG_DIR, 'sessions');
+
+// Claude settings file (unchanged)
 const CLAUDE_SETTINGS_FILE = path.join(os.homedir(), '.claude', 'settings.json');
+
+/**
+ * Migrate from old directory structure to new structure
+ *
+ * Old structure: ~/.contextuate/{monitor.config.json,sessions/,hooks/}
+ * New structure: ~/.contextuate/monitor/{config.json,sessions/,hooks/,raw/,processed/}
+ *
+ * @returns true if migration was performed, false if nothing to migrate or already migrated
+ */
+async function migrateToNewStructure(): Promise<boolean> {
+    // Check if old structure exists
+    const legacyConfigExists = await fs.pathExists(LEGACY_CONFIG_FILE);
+    const legacySessionsExists = await fs.pathExists(LEGACY_SESSIONS_DIR);
+    const newConfigExists = await fs.pathExists(PATHS.configFile);
+
+    if (!legacyConfigExists && !legacySessionsExists) {
+        return false; // Nothing to migrate
+    }
+
+    if (newConfigExists) {
+        return false; // Already migrated
+    }
+
+    console.log(chalk.blue('[Migration] Migrating to new directory structure...'));
+
+    try {
+        // Create new directories
+        await fs.mkdir(PATHS.baseDir, { recursive: true });
+        await fs.mkdir(PATHS.rawDir, { recursive: true });
+        await fs.mkdir(PATHS.processedDir, { recursive: true });
+
+        // Move config file
+        if (legacyConfigExists) {
+            await fs.rename(LEGACY_CONFIG_FILE, PATHS.configFile);
+            console.log(chalk.green('[Migration] Moved config file'));
+        }
+
+        // Move sessions directory
+        if (legacySessionsExists) {
+            await fs.rename(LEGACY_SESSIONS_DIR, PATHS.sessionsDir);
+            console.log(chalk.green('[Migration] Moved sessions directory'));
+        }
+
+        // Move hooks directory if it exists
+        const legacyHooksDir = path.join(LEGACY_CONFIG_DIR, 'hooks');
+        const legacyHooksExists = await fs.pathExists(legacyHooksDir);
+        if (legacyHooksExists) {
+            await fs.rename(legacyHooksDir, PATHS.hooksDir);
+            console.log(chalk.green('[Migration] Moved hooks directory'));
+        }
+
+        console.log(chalk.green('[Migration] Complete! New structure at ~/.contextuate/monitor/'));
+        console.log('');
+        return true;
+    } catch (error: any) {
+        console.log(chalk.yellow(`[Migration] Warning: Migration partially failed: ${error.message}`));
+        console.log(chalk.yellow('[Migration] You may need to manually move files to ~/.contextuate/monitor/'));
+        return false;
+    }
+}
 
 /**
  * Load monitor configuration
  */
 async function loadConfig(): Promise<MonitorConfig | null> {
     try {
-        if (await fs.pathExists(CONFIG_FILE)) {
-            const content = await fs.readFile(CONFIG_FILE, 'utf-8');
+        if (await fs.pathExists(PATHS.configFile)) {
+            const content = await fs.readFile(PATHS.configFile, 'utf-8');
             return { ...DEFAULT_CONFIG, ...JSON.parse(content) };
         }
     } catch (err) {
@@ -40,8 +106,8 @@ async function loadConfig(): Promise<MonitorConfig | null> {
  * Save monitor configuration
  */
 async function saveConfig(config: MonitorConfig): Promise<void> {
-    await fs.ensureDir(CONFIG_DIR);
-    await fs.writeFile(CONFIG_FILE, JSON.stringify(config, null, 2));
+    await fs.ensureDir(PATHS.baseDir);
+    await fs.writeFile(PATHS.configFile, JSON.stringify(config, null, 2));
 }
 
 /**
@@ -55,6 +121,9 @@ export async function monitorInitCommand(): Promise<void> {
     console.log('');
 
     try {
+        // Attempt migration from old structure
+        await migrateToNewStructure();
+
         // Check for existing configuration
         const existingConfig = await loadConfig();
         if (existingConfig) {
@@ -195,16 +264,21 @@ export async function monitorInitCommand(): Promise<void> {
             config.socketPath = socketPath;
         }
 
+        // Create new directory structure
+        await fs.ensureDir(PATHS.baseDir);
+        await fs.ensureDir(PATHS.rawDir);
+        await fs.ensureDir(PATHS.processedDir);
+        await fs.ensureDir(PATHS.sessionsDir);
+        await fs.ensureDir(PATHS.hooksDir);
+
         // Save configuration
         await saveConfig(config);
         console.log('');
-        console.log(chalk.green(`[OK] Configuration saved to ${CONFIG_FILE}`));
+        console.log(chalk.green(`[OK] Configuration saved to ${PATHS.configFile}`));
 
         // Step 6: Install hook script
         console.log('');
         console.log(chalk.blue('[INFO] Installing hook script...'));
-
-        await fs.ensureDir(HOOKS_DIR);
 
         // Find the hook script source
         let hookSource = path.join(__dirname, '../monitor/hooks/emit-event.js');
@@ -212,7 +286,7 @@ export async function monitorInitCommand(): Promise<void> {
             hookSource = path.join(__dirname, '../../src/monitor/hooks/emit-event.js');
         }
 
-        const hookDest = path.join(HOOKS_DIR, 'emit-event.js');
+        const hookDest = path.join(PATHS.hooksDir, 'emit-event.js');
 
         if (await fs.pathExists(hookSource)) {
             await fs.copy(hookSource, hookDest);
@@ -335,6 +409,9 @@ export async function monitorStartCommand(options: {
     wsPort?: number;
     noOpen?: boolean;
 }): Promise<void> {
+    // Attempt migration from old structure
+    await migrateToNewStructure();
+
     // Load configuration
     let config = await loadConfig();
 
@@ -357,6 +434,14 @@ export async function monitorStartCommand(options: {
         config.server.wsPort = options.wsPort;
     }
 
+    // Auto-start daemon if not running
+    const pid = await getDaemonPid();
+    if (!pid || !isProcessRunning(pid)) {
+        console.log(chalk.blue('[INFO] Starting daemon...'));
+        await monitorDaemonStartCommand({ detach: true });
+        console.log('');
+    }
+
     console.log(chalk.blue('[INFO] Starting Contextuate Monitor...'));
     console.log('');
 
@@ -364,7 +449,10 @@ export async function monitorStartCommand(options: {
         // Dynamically import the server module
         const { createMonitorServer } = await import('../monitor/server');
 
-        const server = await createMonitorServer({ config });
+        const server = await createMonitorServer({
+            config,
+            dataDir: PATHS.baseDir
+        });
         await server.start();
 
         // Open browser if not disabled
@@ -407,6 +495,29 @@ export async function monitorStartCommand(options: {
 }
 
 /**
+ * Stop monitor server command
+ */
+export async function monitorStopCommand(options: { all?: boolean }): Promise<void> {
+    console.log(chalk.blue('[INFO] Stopping monitor server...'));
+
+    // The UI server is typically running in foreground, so this command
+    // primarily stops the daemon. If the UI server is running, the user
+    // would typically use Ctrl+C to stop it.
+
+    // Check if daemon is running and stop it
+    const pid = await getDaemonPid();
+
+    if (options.all || pid) {
+        await monitorDaemonStopCommand();
+    }
+
+    // Note: The UI server doesn't have a PID file since it typically runs in foreground
+    // If we want to support background UI server, we'd add that logic here
+
+    console.log(chalk.green('[OK] Monitor stopped'));
+}
+
+/**
  * Show monitor status command
  */
 export async function monitorStatusCommand(): Promise<void> {
@@ -440,8 +551,18 @@ export async function monitorStatusCommand(): Promise<void> {
     console.log(`  Persistence: ${chalk.cyan(config.persistence.type)}`);
     console.log('');
 
+    // Check daemon status
+    console.log(chalk.white('Daemon Status:'));
+    const pid = await getDaemonPid();
+    if (pid && isProcessRunning(pid)) {
+        console.log(`  Status:      ${chalk.green('Running')} (PID: ${pid})`);
+    } else {
+        console.log(`  Status:      ${chalk.yellow('Not running')}`);
+    }
+    console.log('');
+
     // Check if server is running
-    console.log(chalk.white('Server Status:'));
+    console.log(chalk.white('UI Server Status:'));
 
     try {
         const response = await fetch(`http://localhost:${config.server.port}/api/status`);
@@ -483,4 +604,209 @@ function formatUptime(seconds: number): string {
     parts.push(`${secs}s`);
 
     return parts.join(' ');
+}
+
+// =============================================================================
+// Daemon Management Helper Functions
+// =============================================================================
+
+/**
+ * Get daemon PID from PID file
+ */
+async function getDaemonPid(): Promise<number | null> {
+    try {
+        const pidStr = await fs.readFile(PATHS.daemonPidFile, 'utf-8');
+        return parseInt(pidStr.trim(), 10);
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * Check if a process is running
+ */
+function isProcessRunning(pid: number): boolean {
+    try {
+        process.kill(pid, 0); // Signal 0 just checks if process exists
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+// =============================================================================
+// Daemon Management Commands
+// =============================================================================
+
+/**
+ * Start daemon command
+ */
+export async function monitorDaemonStartCommand(options: { detach?: boolean }): Promise<void> {
+    const config = await loadConfig();
+    if (!config) {
+        console.log(chalk.red('[Error] Monitor not initialized. Run: contextuate monitor init'));
+        return;
+    }
+
+    // Check if already running
+    const pid = await getDaemonPid();
+    if (pid && isProcessRunning(pid)) {
+        console.log(chalk.blue(`[Info] Daemon already running (PID: ${pid})`));
+        return;
+    }
+
+    if (options.detach) {
+        // Start as background process
+        // Find the daemon CLI entry point
+        let daemonPath = path.join(__dirname, '..', 'monitor', 'daemon', 'cli.js');
+        if (!await fs.pathExists(daemonPath)) {
+            // Try alternative paths
+            const alternatives = [
+                path.join(__dirname, '..', '..', 'dist', 'monitor', 'daemon', 'cli.js'),
+                path.join(__dirname, 'monitor', 'daemon', 'cli.js'),
+            ];
+            for (const altPath of alternatives) {
+                if (await fs.pathExists(altPath)) {
+                    daemonPath = altPath;
+                    break;
+                }
+            }
+        }
+
+        if (!await fs.pathExists(daemonPath)) {
+            console.log(chalk.red(`[Error] Daemon CLI not found at ${daemonPath}`));
+            console.log(chalk.yellow('[Info] Try running: npm run build'));
+            return;
+        }
+
+        const child = spawn(process.execPath, [
+            daemonPath,
+            '--config', PATHS.configFile,
+        ], {
+            detached: true,
+            stdio: ['ignore', 'pipe', 'pipe'],
+        });
+
+        // Write PID file
+        await fs.writeFile(PATHS.daemonPidFile, child.pid!.toString());
+
+        // Redirect output to log file
+        const logStream = fs.createWriteStream(PATHS.daemonLogFile, { flags: 'a' });
+        child.stdout?.pipe(logStream);
+        child.stderr?.pipe(logStream);
+
+        child.unref();
+
+        console.log(chalk.green(`[OK] Daemon started in background (PID: ${child.pid})`));
+        console.log(chalk.blue(`[Info] Logs: ${PATHS.daemonLogFile}`));
+    } else {
+        // Run in foreground
+        console.log(chalk.blue('[Info] Starting daemon in foreground (Ctrl+C to stop)'));
+
+        const { startDaemon } = await import('../monitor/daemon/index.js');
+        const daemon = await startDaemon(config);
+
+        // Handle shutdown
+        const shutdown = async () => {
+            console.log('');
+            console.log(chalk.blue('[Info] Shutting down daemon...'));
+            await daemon.stop();
+            process.exit(0);
+        };
+
+        process.on('SIGINT', shutdown);
+        process.on('SIGTERM', shutdown);
+    }
+}
+
+/**
+ * Stop daemon command
+ */
+export async function monitorDaemonStopCommand(): Promise<void> {
+    const pid = await getDaemonPid();
+
+    if (!pid) {
+        console.log(chalk.blue('[Info] Daemon not running (no PID file)'));
+        return;
+    }
+
+    if (!isProcessRunning(pid)) {
+        console.log(chalk.blue('[Info] Daemon not running (stale PID file)'));
+        await fs.remove(PATHS.daemonPidFile);
+        return;
+    }
+
+    try {
+        process.kill(pid, 'SIGTERM');
+        console.log(chalk.green(`[OK] Sent shutdown signal to daemon (PID: ${pid})`));
+
+        // Wait for process to exit
+        let attempts = 0;
+        while (isProcessRunning(pid) && attempts < 10) {
+            await new Promise(r => setTimeout(r, 500));
+            attempts++;
+        }
+
+        if (isProcessRunning(pid)) {
+            console.log(chalk.yellow('[Warning] Daemon still running, sending SIGKILL'));
+            process.kill(pid, 'SIGKILL');
+        }
+
+        await fs.remove(PATHS.daemonPidFile);
+        console.log(chalk.green('[OK] Daemon stopped'));
+    } catch (err: any) {
+        console.error(chalk.red(`[Error] Failed to stop daemon: ${err.message}`));
+    }
+}
+
+/**
+ * Show daemon status command
+ */
+export async function monitorDaemonStatusCommand(): Promise<void> {
+    const pid = await getDaemonPid();
+
+    if (!pid) {
+        console.log('Daemon: not running (no PID file)');
+        return;
+    }
+
+    if (isProcessRunning(pid)) {
+        console.log(`Daemon: ${chalk.green('running')} (PID: ${pid})`);
+        console.log(`Logs:   ${PATHS.daemonLogFile}`);
+    } else {
+        console.log('Daemon: not running (stale PID file)');
+        await fs.remove(PATHS.daemonPidFile);
+    }
+}
+
+/**
+ * View daemon logs command
+ */
+export async function monitorDaemonLogsCommand(options: { follow?: boolean; lines?: number }): Promise<void> {
+    const lines = options.lines || 50;
+
+    try {
+        await fs.access(PATHS.daemonLogFile);
+    } catch {
+        console.log(chalk.blue('[Info] No daemon log file found'));
+        return;
+    }
+
+    if (options.follow) {
+        // Use tail -f
+        const tail = spawn('tail', ['-f', '-n', lines.toString(), PATHS.daemonLogFile], {
+            stdio: 'inherit',
+        });
+
+        process.on('SIGINT', () => {
+            tail.kill();
+            process.exit(0);
+        });
+    } else {
+        // Read last N lines
+        const content = await fs.readFile(PATHS.daemonLogFile, 'utf-8');
+        const allLines = content.split('\n');
+        const lastLines = allLines.slice(-lines).join('\n');
+        console.log(lastLines);
+    }
 }

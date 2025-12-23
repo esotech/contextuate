@@ -27,9 +27,13 @@ const os = require('os');
 const crypto = require('crypto');
 
 // Configuration paths
-const CONFIG_DIR = path.join(os.homedir(), '.contextuate');
-const CONFIG_FILE = path.join(CONFIG_DIR, 'monitor.config.json');
+const MONITOR_DIR = path.join(os.homedir(), '.contextuate', 'monitor');
+const CONFIG_FILE = path.join(MONITOR_DIR, 'config.json');
+const RAW_DIR = path.join(MONITOR_DIR, 'raw');
 const SESSION_CACHE_DIR = '/tmp';
+
+// Legacy paths for migration detection
+const LEGACY_CONFIG_FILE = path.join(os.homedir(), '.contextuate', 'monitor.config.json');
 
 // Default configuration
 const DEFAULT_CONFIG = {
@@ -48,13 +52,25 @@ const DEFAULT_CONFIG = {
  */
 function loadConfig() {
   try {
+    // Try new path first
     if (fs.existsSync(CONFIG_FILE)) {
       const content = fs.readFileSync(CONFIG_FILE, 'utf-8');
       return { ...DEFAULT_CONFIG, ...JSON.parse(content) };
     }
   } catch (err) {
+    // Ignore config errors, try legacy
+  }
+
+  try {
+    // Fall back to legacy path
+    if (fs.existsSync(LEGACY_CONFIG_FILE)) {
+      const content = fs.readFileSync(LEGACY_CONFIG_FILE, 'utf-8');
+      return { ...DEFAULT_CONFIG, ...JSON.parse(content) };
+    }
+  } catch (err) {
     // Ignore config errors, use defaults
   }
+
   return DEFAULT_CONFIG;
 }
 
@@ -330,45 +346,75 @@ function buildEvent(hookPayload) {
 }
 
 /**
- * Send event via Unix socket
+ * Write raw event to disk (Layer 1: Resilient capture)
+ * This is the PRIMARY data path - events are first persisted to disk
+ * before attempting any network notification.
  */
-function sendViaSocket(socketPath, event) {
+async function writeRawEvent(event) {
+  try {
+    // Create raw directory if it doesn't exist
+    await fs.promises.mkdir(RAW_DIR, { recursive: true });
+
+    // Filename format: {timestamp}-{sessionId}-{eventId}.json
+    // This ensures events are sorted by time when listing directory
+    const filename = `${event.timestamp}-${event.sessionId}-${event.id}.json`;
+    const filepath = path.join(RAW_DIR, filename);
+
+    // Write event as formatted JSON (helpful for debugging)
+    await fs.promises.writeFile(filepath, JSON.stringify(event, null, 2));
+
+    return filepath;
+  } catch (err) {
+    // Log error but don't fail - event capture should be resilient
+    if (process.env.CONTEXTUATE_DEBUG) {
+      console.error('[Hook] Failed to write raw event:', err.message);
+    }
+    return null;
+  }
+}
+
+/**
+ * Notify daemon via Unix socket (fire-and-forget)
+ */
+function notifyViaSocket(socketPath, event) {
   return new Promise((resolve, reject) => {
-    const client = net.createConnection(socketPath, () => {
-      const data = JSON.stringify(event) + '\n';
-      client.write(data, () => {
-        client.end();
-        resolve();
-      });
+    const client = net.createConnection(socketPath);
+
+    // Short timeout - this is just a notification
+    client.setTimeout(500);
+
+    client.on('connect', () => {
+      client.write(JSON.stringify(event) + '\n');
+      client.end();
+      resolve();
     });
 
     client.on('error', (err) => {
-      // Silently fail if monitor is not running
-      resolve();
+      // Don't fail - daemon might not be running
+      reject(err);
     });
 
-    // Timeout after 1 second (hook scripts need to be fast)
-    client.setTimeout(1000, () => {
+    client.on('timeout', () => {
       client.destroy();
-      resolve();
+      reject(new Error('Notification timeout'));
     });
   });
 }
 
 /**
- * Send event via Redis pub/sub
+ * Publish event to Redis for UI aggregation (fire-and-forget)
  */
-async function sendViaRedis(config, event) {
+async function publishToRedis(redisConfig, event) {
   let client = null;
   try {
     // Dynamic require to avoid loading redis when not needed
     const Redis = require('ioredis');
 
     client = new Redis({
-      host: config.redis.host,
-      port: config.redis.port,
-      password: config.redis.password || undefined,
-      connectTimeout: 1000,
+      host: redisConfig.host,
+      port: redisConfig.port,
+      password: redisConfig.password || undefined,
+      connectTimeout: 500,
       maxRetriesPerRequest: 1,
       retryStrategy: () => null, // Don't retry in hook script (needs to be fast)
       lazyConnect: true,
@@ -378,29 +424,47 @@ async function sendViaRedis(config, event) {
     await Promise.race([
       client.connect(),
       new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Connection timeout')), 1000)
+        setTimeout(() => reject(new Error('Connection timeout')), 500)
       ),
     ]);
 
     // Publish event
-    await client.publish(config.redis.channel, JSON.stringify(event));
+    await client.publish(redisConfig.channel, JSON.stringify(event));
 
-    // Log success for debugging (only if DEBUG env var is set)
+    // Log success for debugging
     if (process.env.CONTEXTUATE_DEBUG) {
-      console.error(`[emit-event] Published to Redis: ${event.eventType} from ${event.machineId}`);
+      console.error(`[Hook] Published to Redis: ${event.eventType}`);
     }
   } catch (err) {
-    // Silently fail if redis is not available (hook scripts need to be fast)
-    // Only log if DEBUG is enabled
-    if (process.env.CONTEXTUATE_DEBUG) {
-      console.error(`[emit-event] Redis publish failed: ${err.message}`);
-    }
+    // Don't fail - Redis might not be available
+    throw err;
   } finally {
     // Always disconnect to avoid hanging connections
     if (client) {
       client.disconnect();
     }
   }
+}
+
+/**
+ * Notify daemon via socket and/or Redis (Layer 2: Real-time notification)
+ * This is fire-and-forget - failures here don't affect event capture.
+ */
+async function notifyDaemon(config, event) {
+  const promises = [];
+
+  // Always try local socket notification
+  promises.push(
+    notifyViaSocket(config.socketPath || '/tmp/contextuate-monitor.sock', event)
+  );
+
+  // If Redis mode, also publish for UI aggregation
+  if (config.mode === 'redis' && config.redis) {
+    promises.push(publishToRedis(config.redis, event));
+  }
+
+  // Wait for all but don't fail if any notification fails
+  await Promise.allSettled(promises);
 }
 
 /**
@@ -440,15 +504,21 @@ async function main() {
   // Build the monitor event
   const event = buildEvent(hookPayload);
 
-  // Send the event
-  if (config.mode === 'redis') {
-    await sendViaRedis(config, event);
-  } else {
-    await sendViaSocket(config.socketPath, event);
+  // LAYER 1: Write raw event to disk FIRST (primary data path)
+  const rawPath = await writeRawEvent(event);
+  if (rawPath && process.env.CONTEXTUATE_DEBUG) {
+    console.error('[Hook] Wrote raw event:', rawPath);
   }
 
-  // Output response (continue hook execution)
-  console.log(JSON.stringify({ continue: true }));
+  // LAYER 2: Try to notify daemon (fire-and-forget, don't block on errors)
+  notifyDaemon(config, event).catch(err => {
+    if (process.env.CONTEXTUATE_DEBUG) {
+      console.error('[Hook] Daemon notification failed (non-fatal):', err.message);
+    }
+  });
+
+  // Return immediately to Claude - don't wait for notifications
+  process.exit(0);
 }
 
 // Run

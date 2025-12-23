@@ -8,7 +8,16 @@ import { createAgentCommand } from './commands/create';
 import { indexCommand } from './commands/index';
 import { addContextCommand } from './commands/context';
 import { installCommand, installAgentsCommand, installStandardsCommand, installToolsCommand, installSkillsCommand } from './commands/install';
-import { monitorInitCommand, monitorStartCommand, monitorStatusCommand } from './commands/monitor';
+import {
+    monitorInitCommand,
+    monitorStartCommand,
+    monitorStopCommand,
+    monitorStatusCommand,
+    monitorDaemonStartCommand,
+    monitorDaemonStopCommand,
+    monitorDaemonStatusCommand,
+    monitorDaemonLogsCommand
+} from './commands/monitor';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -147,10 +156,56 @@ monitor
         noOpen: options.open === false,
     }));
 
+// Subcommand: monitor stop
+monitor
+    .command('stop')
+    .description('Stop the monitor daemon')
+    .option('--all', 'Also stop any background processes')
+    .action((options) => monitorStopCommand({ all: options.all }));
+
 // Subcommand: monitor status
 monitor
     .command('status')
     .description('Show monitor server status')
     .action(monitorStatusCommand);
+
+// Daemon subcommand group
+const daemon = monitor
+    .command('daemon')
+    .description('Manage the monitor daemon');
+
+daemon
+    .command('start')
+    .description('Start the event processing daemon')
+    .option('-d, --detach', 'Run in background (detached mode)')
+    .action(async (options) => {
+        await monitorDaemonStartCommand(options);
+    });
+
+daemon
+    .command('stop')
+    .description('Stop the daemon')
+    .action(async () => {
+        await monitorDaemonStopCommand();
+    });
+
+daemon
+    .command('status')
+    .description('Check daemon status')
+    .action(async () => {
+        await monitorDaemonStatusCommand();
+    });
+
+daemon
+    .command('logs')
+    .description('View daemon logs')
+    .option('-f, --follow', 'Follow log output (like tail -f)')
+    .option('-n, --lines <n>', 'Number of lines to show', '50')
+    .action(async (options) => {
+        await monitorDaemonLogsCommand({
+            follow: options.follow,
+            lines: parseInt(options.lines)
+        });
+    });
 
 program.parse();
