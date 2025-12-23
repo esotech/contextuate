@@ -595,5 +595,19 @@ class EventBroker {
         this.emit('session_updated', session);
         console.log(`[Broker] Session ${sessionId.slice(0, 8)} marked as ${isUserInitiated ? 'user-initiated' : 'sub-agent'}`);
     }
+    /**
+     * Rename a session (set custom label)
+     */
+    async renameSession(sessionId, label) {
+        const session = this.sessions.get(sessionId);
+        if (!session) {
+            throw new Error(`Session not found: ${sessionId}`);
+        }
+        // Empty string clears the label
+        session.label = label.trim() || undefined;
+        await this.persistSession(session);
+        this.emit('session_updated', session);
+        console.log(`[Broker] Session ${sessionId.slice(0, 8)} renamed to "${session.label || '(cleared)'}"`);
+    }
 }
 exports.EventBroker = EventBroker;

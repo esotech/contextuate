@@ -214,6 +214,15 @@ class MonitorWebSocketServer {
                     client.send({ type: 'error', message: error.message });
                 }
                 break;
+            case 'rename_session':
+                try {
+                    await this.broker.renameSession(message.sessionId, message.label);
+                }
+                catch (err) {
+                    const error = err;
+                    client.send({ type: 'error', message: error.message });
+                }
+                break;
         }
     }
     /**

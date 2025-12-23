@@ -53,7 +53,7 @@ onUnmounted(() => {
     <header class="bg-monitor-bg-secondary border-b border-slate-700 px-4 py-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-4">
-          <img src="/logo.svg" alt="Contextuate" class="h-8 w-auto" />
+          <img src="/logo.png" alt="Contextuate" class="h-8 w-auto" />
           <h1 class="text-xl font-semibold">
             <span class="text-monitor-accent-cyan">Contextuate</span>
             <span class="text-monitor-text-secondary ml-2">Monitor</span>

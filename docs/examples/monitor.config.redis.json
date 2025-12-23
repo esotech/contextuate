@@ -1,0 +1,19 @@
+{
+  "mode": "redis",
+  "server": {
+    "host": "0.0.0.0",
+    "port": 3847,
+    "wsPort": 3848
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "password": null,
+    "channel": "contextuate:events"
+  },
+  "persistence": {
+    "enabled": true,
+    "type": "file"
+  },
+  "socketPath": "/tmp/contextuate-monitor.sock"
+}

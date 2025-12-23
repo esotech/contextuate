@@ -128,10 +128,12 @@ const SessionChild = defineComponent({
                   session.status === 'error' ? 'bg-red-500' : '',
                 ],
               }),
-              // Session ID
-              h('span', { class: 'text-xs font-medium text-monitor-text-secondary' },
-                session.sessionId.slice(0, 8)
-              ),
+              // Session ID / Label
+              session.label
+                ? h('span', { class: 'text-xs font-medium text-monitor-accent-cyan' }, session.label)
+                : h('span', { class: 'text-xs font-medium text-monitor-text-secondary' },
+                    session.sessionId.slice(0, 8)
+                  ),
               // Agent type badge
               session.agentType
                 ? h('span', {
@@ -409,8 +411,11 @@ export default defineComponent({
                       }"
                     ></span>
 
-                    <!-- Session ID -->
-                    <span class="text-sm font-medium text-monitor-text-primary">
+                    <!-- Session ID / Label -->
+                    <span v-if="session.label" class="text-sm font-medium text-monitor-accent-cyan">
+                      {{ session.label }}
+                    </span>
+                    <span v-else class="text-sm font-medium text-monitor-text-primary">
                       {{ session.sessionId.slice(0, 8) }}
                     </span>
 
@@ -512,8 +517,11 @@ export default defineComponent({
                       }"
                     ></span>
 
-                    <!-- Session ID -->
-                    <span class="text-xs text-monitor-text-secondary">
+                    <!-- Session ID / Label -->
+                    <span v-if="session.label" class="text-xs text-monitor-accent-cyan">
+                      {{ session.label }}
+                    </span>
+                    <span v-else class="text-xs text-monitor-text-secondary">
                       {{ session.sessionId.slice(0, 8) }}
                     </span>
 
@@ -574,6 +582,7 @@ export default defineComponent({
       @set-parent="(sessionId, parentId) => store.setSessionParent(sessionId, parentId)"
       @toggle-pin="(sessionId) => store.toggleSessionPin(sessionId)"
       @set-user-initiated="(sessionId, value) => store.setUserInitiated(sessionId, value)"
+      @rename="(sessionId, label) => store.renameSession(sessionId, label)"
     />
   </div>
 </template>

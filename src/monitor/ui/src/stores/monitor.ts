@@ -85,8 +85,8 @@ export const useMonitorStore = defineStore('monitor', () => {
       result = result.filter(e => e.timestamp <= filters.value.timeRange.end!);
     }
 
-    // Sort by timestamp - newest first for display
-    return result.sort((a, b) => b.timestamp - a.timestamp);
+    // Sort by timestamp - oldest first for auto-scroll to work correctly
+    return result.sort((a, b) => a.timestamp - b.timestamp);
   });
 
   const activeSessions = computed(() => {
@@ -393,6 +393,10 @@ export const useMonitorStore = defineStore('monitor', () => {
     send({ type: 'set_user_initiated', sessionId, isUserInitiated });
   }
 
+  function renameSession(sessionId: string, label: string) {
+    send({ type: 'rename_session', sessionId, label });
+  }
+
   // Drag state for drag-and-drop grouping
   const draggedSessionId = ref<string | null>(null);
 
@@ -444,6 +448,7 @@ export const useMonitorStore = defineStore('monitor', () => {
     setSessionParent,
     toggleSessionPin,
     setUserInitiated,
+    renameSession,
     setDraggedSession,
   };
 });

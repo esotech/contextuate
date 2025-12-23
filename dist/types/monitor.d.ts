@@ -92,6 +92,8 @@ export interface SessionMeta {
     isPinned?: boolean;
     /** Manual parent override set by user via UI */
     manualParentSessionId?: string;
+    /** Custom label/name set by user */
+    label?: string;
 }
 /**
  * Monitor mode - local (Unix socket) or distributed (Redis)
@@ -200,6 +202,10 @@ export type ClientMessage = {
     type: 'set_user_initiated';
     sessionId: string;
     isUserInitiated: boolean;
+} | {
+    type: 'rename_session';
+    sessionId: string;
+    label: string;
 };
 /**
  * Server to client message types

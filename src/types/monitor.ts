@@ -124,6 +124,8 @@ export interface SessionMeta {
   isPinned?: boolean;
   /** Manual parent override set by user via UI */
   manualParentSessionId?: string;
+  /** Custom label/name set by user */
+  label?: string;
 }
 
 // =============================================================================
@@ -235,7 +237,8 @@ export type ClientMessage =
   | { type: 'set_show_hidden'; showHidden: boolean }
   | { type: 'set_parent'; sessionId: string; parentSessionId: string | null }
   | { type: 'toggle_pin'; sessionId: string }
-  | { type: 'set_user_initiated'; sessionId: string; isUserInitiated: boolean };
+  | { type: 'set_user_initiated'; sessionId: string; isUserInitiated: boolean }
+  | { type: 'rename_session'; sessionId: string; label: string };
 
 /**
  * Server to client message types

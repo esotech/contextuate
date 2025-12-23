@@ -43,28 +43,50 @@ export class RedisAdapter implements IPCAdapter {
       port: this.config.port,
       password: this.config.password || undefined,
       retryStrategy: (times: number) => {
+        const delay = Math.min(times * 100, 3000);
+        console.log(`[Redis] Reconnecting in ${delay}ms (attempt ${times}/10)...`);
         if (times > 10) {
+          console.error('[Redis] Max reconnection attempts reached');
           return null; // Stop retrying
         }
-        return Math.min(times * 100, 3000);
+        return delay;
       },
+      lazyConnect: true, // Don't auto-connect, we'll do it manually
     };
 
     // Create subscriber connection
     this.subscriber = new Redis(redisOptions);
     this.publisher = new Redis(redisOptions);
 
-    // Wait for connections
-    await Promise.all([
-      new Promise<void>((resolve, reject) => {
-        this.subscriber!.on('connect', resolve);
-        this.subscriber!.on('error', reject);
-      }),
-      new Promise<void>((resolve, reject) => {
-        this.publisher!.on('connect', resolve);
-        this.publisher!.on('error', reject);
-      }),
-    ]);
+    // Set up error handlers before connecting
+    this.subscriber.on('error', (err) => {
+      console.error('[Redis Subscriber] Connection error:', err.message);
+    });
+
+    this.publisher.on('error', (err) => {
+      console.error('[Redis Publisher] Connection error:', err.message);
+    });
+
+    this.subscriber.on('reconnecting', () => {
+      console.log('[Redis Subscriber] Reconnecting...');
+    });
+
+    this.publisher.on('reconnecting', () => {
+      console.log('[Redis Publisher] Reconnecting...');
+    });
+
+    // Connect both clients
+    try {
+      await Promise.all([
+        this.subscriber.connect(),
+        this.publisher.connect(),
+      ]);
+    } catch (err) {
+      // Clean up on connection failure
+      this.subscriber.disconnect();
+      this.publisher.disconnect();
+      throw new Error(`Failed to connect to Redis: ${err instanceof Error ? err.message : String(err)}`);
+    }
 
     // Subscribe to the channel
     await this.subscriber.subscribe(this.config.channel);
@@ -74,6 +96,7 @@ export class RedisAdapter implements IPCAdapter {
       if (channel === this.config.channel) {
         try {
           const event: MonitorEvent = JSON.parse(message);
+          console.log(`[Redis] Received event from ${event.machineId}/${event.sessionId}: ${event.eventType}`);
           this.emitEvent(event);
         } catch (err) {
           console.error('[Redis] Failed to parse event:', err);
@@ -83,6 +106,7 @@ export class RedisAdapter implements IPCAdapter {
 
     this.running = true;
     console.log(`[Redis] Connected to ${this.config.host}:${this.config.port}, channel: ${this.config.channel}`);
+    console.log('[Redis] Listening for events from multiple sources...');
   }
 
   async stop(): Promise<void> {
@@ -140,7 +164,9 @@ export class RedisAdapter implements IPCAdapter {
     if (!this.publisher) {
       throw new Error('Redis adapter not started');
     }
-    await this.publisher.publish(this.config.channel, JSON.stringify(event));
+    const message = JSON.stringify(event);
+    const subscriberCount = await this.publisher.publish(this.config.channel, message);
+    console.log(`[Redis] Published event ${event.eventType} from ${event.machineId}/${event.sessionId} (${subscriberCount} subscribers)`);
   }
 
   /**

@@ -243,21 +243,47 @@ function sendViaSocket(socketPath, event) {
  * Send event via Redis pub/sub
  */
 async function sendViaRedis(config, event) {
+  let client = null;
   try {
     // Dynamic require to avoid loading redis when not needed
     const Redis = require('ioredis');
-    const client = new Redis({
+
+    client = new Redis({
       host: config.redis.host,
       port: config.redis.port,
       password: config.redis.password || undefined,
       connectTimeout: 1000,
-      maxRetriesPerRequest: 1
+      maxRetriesPerRequest: 1,
+      retryStrategy: () => null, // Don't retry in hook script (needs to be fast)
+      lazyConnect: true,
     });
 
+    // Connect with timeout
+    await Promise.race([
+      client.connect(),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Connection timeout')), 1000)
+      ),
+    ]);
+
+    // Publish event
     await client.publish(config.redis.channel, JSON.stringify(event));
-    client.disconnect();
+
+    // Log success for debugging (only if DEBUG env var is set)
+    if (process.env.CONTEXTUATE_DEBUG) {
+      console.error(`[emit-event] Published to Redis: ${event.eventType} from ${event.machineId}`);
+    }
   } catch (err) {
-    // Silently fail if redis is not available
+    // Silently fail if redis is not available (hook scripts need to be fast)
+    // Only log if DEBUG is enabled
+    if (process.env.CONTEXTUATE_DEBUG) {
+      console.error(`[emit-event] Redis publish failed: ${err.message}`);
+    }
+  } finally {
+    // Always disconnect to avoid hanging connections
+    if (client) {
+      client.disconnect();
+    }
   }
 }
 

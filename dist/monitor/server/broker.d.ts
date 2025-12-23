@@ -137,4 +137,8 @@ export declare class EventBroker {
      * Set whether a session is user-initiated
      */
     setUserInitiated(sessionId: string, isUserInitiated: boolean): Promise<void>;
+    /**
+     * Rename a session (set custom label)
+     */
+    renameSession(sessionId: string, label: string): Promise<void>;
 }
