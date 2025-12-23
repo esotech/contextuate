@@ -74,26 +74,29 @@ function formatJson(obj: unknown): string {
 }
 
 function getAgentName(event: MonitorEvent): string | null {
+  let agentType: string | null = null;
+
   // Direct subagent info from event data
   if (event.data.subagent?.type) {
-    return event.data.subagent.type;
+    agentType = event.data.subagent.type;
   }
-
   // For Task tool calls, extract from toolInput
-  if (event.data.toolName === 'Task') {
+  else if (event.data.toolName === 'Task') {
     const input = event.data.toolInput as Record<string, unknown> | undefined;
     if (input?.subagent_type) {
-      return String(input.subagent_type);
+      agentType = String(input.subagent_type);
+    }
+  }
+  // Fallback: try to get from session metadata
+  else {
+    const session = store.sessions.find(s => s.sessionId === event.sessionId);
+    if (session?.agentType) {
+      agentType = session.agentType;
     }
   }
 
-  // Fallback: try to get from session metadata
-  const session = store.sessions.find(s => s.sessionId === event.sessionId);
-  if (session?.agentType) {
-    return session.agentType;
-  }
-
-  return null;
+  // Normalize to lowercase for consistent display
+  return agentType ? agentType.toLowerCase() : null;
 }
 
 function getToolDetail(event: MonitorEvent): string {
@@ -178,26 +181,26 @@ function getEventSummary(event: MonitorEvent): string {
     case 'error':
       return event.data.error?.message || 'Error occurred';
     case 'agent_spawn':
-      return `Spawned ${event.data.subagent?.type || 'sub-agent'}`;
+      return `Spawned ${event.data.subagent?.type?.toLowerCase() || 'subagent'}`;
     case 'agent_complete':
-      return 'Sub-agent completed';
+      return 'subagent completed';
     case 'subagent_start':
-      return `${event.data.subagent?.type || 'Subagent'} started`;
+      return `${event.data.subagent?.type?.toLowerCase() || 'subagent'} started`;
     case 'subagent_stop':
-      return `${event.data.subagent?.type || 'Subagent'} completed`;
+      return `${event.data.subagent?.type?.toLowerCase() || 'subagent'} completed`;
     default:
       return event.eventType;
   }
 }
 
 function navigateToSpawnedSession(event: MonitorEvent) {
-  const subagentType = event.data.subagent?.type;
+  const subagentType = event.data.subagent?.type?.toLowerCase();
   const eventTime = event.timestamp;
 
   // Find child session spawned by this Task event
   const childSession = store.sessions.find(s =>
     s.parentSessionId === event.sessionId &&
-    s.agentType === subagentType &&
+    s.agentType?.toLowerCase() === subagentType &&
     Math.abs(s.startTime - eventTime) < 5000
   );
 
