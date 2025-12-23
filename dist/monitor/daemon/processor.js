@@ -139,11 +139,30 @@ class EventProcessor {
      * Handle SubagentStart event - create child session immediately
      */
     async handleSubagentStart(event) {
+        const parentSessionId = event.parentSessionId || undefined;
+        // Ensure parent session exists first
+        if (parentSessionId && !this.sessions.has(parentSessionId)) {
+            const parentSession = {
+                sessionId: parentSessionId,
+                machineId: event.machineId,
+                workingDirectory: event.workingDirectory,
+                startTime: event.timestamp - 1, // Slightly before child
+                status: 'active',
+                childSessionIds: [],
+                tokenUsage: { totalInput: 0, totalOutput: 0 },
+                isUserInitiated: true, // Parent is user-initiated
+                isPinned: false,
+            };
+            this.sessions.set(parentSessionId, parentSession);
+            await this.persistSession(parentSession);
+            await this.notifier.notifySessionUpdate(parentSession);
+            console.log(`[Processor] Created parent session: ${parentSessionId}`);
+        }
         // SubagentStart should have its own session_id from Claude
         // Create the child session with parent relationship
         const session = {
             sessionId: event.sessionId,
-            parentSessionId: event.parentSessionId || undefined,
+            parentSessionId,
             machineId: event.machineId,
             workingDirectory: event.workingDirectory,
             startTime: event.timestamp,
@@ -151,9 +170,20 @@ class EventProcessor {
             childSessionIds: [],
             tokenUsage: { totalInput: 0, totalOutput: 0 },
             agentType: event.data?.subagent?.type?.toLowerCase() || undefined,
+            isUserInitiated: false,
+            isPinned: false,
         };
         this.sessions.set(session.sessionId, session);
         await this.persistSession(session);
+        // Add child to parent's childSessionIds
+        if (parentSessionId) {
+            const parent = this.sessions.get(parentSessionId);
+            if (parent && !parent.childSessionIds.includes(session.sessionId)) {
+                parent.childSessionIds.push(session.sessionId);
+                await this.persistSession(parent);
+                await this.notifier.notifySessionUpdate(parent);
+            }
+        }
         await this.notifier.notifySessionUpdate(session);
         console.log(`[Processor] SubagentStart: ${session.sessionId} (type: ${session.agentType}, parent: ${session.parentSessionId})`);
     }
