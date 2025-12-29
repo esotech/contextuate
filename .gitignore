@@ -30,9 +30,9 @@ vendor/
 docs/ai/.contextuate/
 
 # Contextuate - Generated Artifacts (DO NOT EDIT)
-/CLAUDE.md
-/AGENTS.md
-/GEMINI.md
+CLAUDE.md
+AGENTS.md
+GEMINI.md
 .claude/
 .clinerules/
 .cursor/rules/project.mdc
