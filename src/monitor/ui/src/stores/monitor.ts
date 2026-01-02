@@ -266,6 +266,7 @@ export const useMonitorStore = defineStore('monitor', () => {
         break;
 
       case 'event':
+        console.log(`[Monitor] Received real-time event: ${message.event.eventType} (session: ${message.event.sessionId})`);
         events.value.push(message.event);
         // Keep only last 1000 events to prevent memory issues
         if (events.value.length > 1000) {
@@ -282,9 +283,11 @@ export const useMonitorStore = defineStore('monitor', () => {
 
       case 'all_events':
         // Merge all recent events from persistence, avoiding duplicates
+        console.log(`[Monitor] Received ${message.events.length} events from get_all_recent_events`);
         const existingEventIds = new Set(events.value.map(e => e.id));
         const loadedEvents = message.events.filter(e => !existingEventIds.has(e.id));
         events.value = [...events.value, ...loadedEvents].sort((a, b) => a.timestamp - b.timestamp);
+        console.log(`[Monitor] Total events now: ${events.value.length}`);
         break;
 
       case 'event_detail':

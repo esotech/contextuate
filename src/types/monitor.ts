@@ -111,6 +111,8 @@ export interface EventData {
   model?: string;
   /** Path to the transcript file */
   transcriptPath?: string;
+  /** Final assistant response (from transcript parsing) */
+  assistantResponse?: string;
 }
 
 /**

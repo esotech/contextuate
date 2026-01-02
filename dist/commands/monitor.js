@@ -405,7 +405,8 @@ async function updateClaudeHookSettings(hookPath, settingsFile) {
             'Notification',
             'Stop',
             'SubagentStart',
-            'SubagentStop'
+            'SubagentStop',
+            'UserPromptSubmit'
         ];
         // Initialize hooks object if needed
         if (!settings.hooks || typeof settings.hooks !== 'object') {

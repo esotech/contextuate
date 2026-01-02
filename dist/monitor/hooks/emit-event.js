@@ -203,7 +203,7 @@ function generateUUID() {
 /**
  * Parse transcript JSONL file to extract thinking blocks and token usage
  * @param {string} transcriptPath - Path to the transcript JSONL file
- * @returns {{ thinkingBlocks: Array, sessionTokenUsage: Object, model: string|null }}
+ * @returns {{ thinkingBlocks: Array, sessionTokenUsage: Object, model: string|null, assistantResponse: string|null }}
  */
 function parseTranscript(transcriptPath) {
   const result = {
@@ -215,7 +215,8 @@ function parseTranscript(transcriptPath) {
       cacheCreation5m: 0,
       cacheCreation1h: 0
     },
-    model: null
+    model: null,
+    assistantResponse: null
   };
 
   try {
@@ -225,6 +226,7 @@ function parseTranscript(transcriptPath) {
 
     const content = fs.readFileSync(transcriptPath, 'utf-8');
     const lines = content.trim().split('\n');
+    let lastAssistantTextBlocks = [];
 
     for (const line of lines) {
       if (!line.trim()) continue;
@@ -263,8 +265,11 @@ function parseTranscript(transcriptPath) {
           }
         }
 
-        // Extract thinking blocks from content
+        // Extract thinking blocks and text content from content
         if (message.content && Array.isArray(message.content)) {
+          // Reset text blocks for this assistant message
+          lastAssistantTextBlocks = [];
+
           for (const block of message.content) {
             if (block.type === 'thinking' && block.thinking) {
               result.thinkingBlocks.push({
@@ -272,6 +277,9 @@ function parseTranscript(transcriptPath) {
                 timestamp: entry.timestamp ? new Date(entry.timestamp).getTime() : Date.now(),
                 requestId: entry.requestId || undefined
               });
+            } else if (block.type === 'text' && block.text) {
+              // Collect text blocks from this assistant message
+              lastAssistantTextBlocks.push(block.text);
             }
           }
         }
@@ -281,6 +289,11 @@ function parseTranscript(transcriptPath) {
           console.error(`[emit-event] Failed to parse transcript line: ${parseErr.message}`);
         }
       }
+    }
+
+    // Concatenate all text blocks from the last assistant message
+    if (lastAssistantTextBlocks.length > 0) {
+      result.assistantResponse = lastAssistantTextBlocks.join('');
     }
   } catch (err) {
     if (process.env.CONTEXTUATE_DEBUG) {
@@ -359,6 +372,11 @@ function buildEvent(hookPayload) {
     data.message = hookPayload.message;
   }
 
+  // UserPromptSubmit hook sends 'prompt' field (not 'user_prompt')
+  if (hookPayload.prompt) {
+    data.message = hookPayload.prompt;
+  }
+
   if (hookPayload.error) {
     data.error = {
       code: hookPayload.error.code || 'UNKNOWN',
@@ -418,6 +436,11 @@ function buildEvent(hookPayload) {
     // Add model
     if (transcriptData.model) {
       data.model = transcriptData.model;
+    }
+
+    // Add assistant response
+    if (transcriptData.assistantResponse) {
+      data.assistantResponse = transcriptData.assistantResponse;
     }
   }
 
@@ -593,9 +616,9 @@ async function main() {
   // Load configuration
   const config = loadConfig();
 
-  // Debug: Log SubagentStart/SubagentStop payloads to understand the structure
-  if (hookPayload.hook_event_name === 'SubagentStart' || hookPayload.hook_event_name === 'SubagentStop') {
-    const debugPath = '/tmp/subagent-debug.log';
+  // Debug: Log hook payloads to understand the structure
+  if (hookPayload.hook_event_name === 'SubagentStart' || hookPayload.hook_event_name === 'SubagentStop' || hookPayload.hook_event_name === 'UserPromptSubmit') {
+    const debugPath = '/tmp/hook-debug.log';
     const debugEntry = `\n=== ${new Date().toISOString()} - ${hookPayload.hook_event_name} ===\n${JSON.stringify(hookPayload, null, 2)}\n`;
     try {
       fs.appendFileSync(debugPath, debugEntry);

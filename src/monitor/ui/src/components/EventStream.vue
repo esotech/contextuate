@@ -44,6 +44,7 @@ function getEventIcon(eventType: string): string {
     session_end: 'M21 12a9 9 0 11-18 0 9 9 0 0118 0z M9 10h6v4H9v-4z',
     tool_call: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z',
     tool_result: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+    user_prompt: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
     message: 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z',
     notification: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9',
     thinking: 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z',
@@ -171,7 +172,19 @@ function getEventSummary(event: MonitorEvent): string {
     case 'session_start':
       return 'Session started';
     case 'session_end':
+      // Show preview of final response if available
+      if (event.data.assistantResponse) {
+        const preview = event.data.assistantResponse.slice(0, 80);
+        return preview.length < event.data.assistantResponse.length ? preview + '...' : preview;
+      }
       return 'Session ended';
+    case 'user_prompt':
+      // Show preview of user prompt
+      if (event.data.message) {
+        const preview = event.data.message.slice(0, 80);
+        return preview.length < event.data.message.length ? preview + '...' : preview;
+      }
+      return 'User prompt';
     case 'message':
       return event.data.message?.slice(0, 100) || 'Message';
     case 'notification':
@@ -187,6 +200,13 @@ function getEventSummary(event: MonitorEvent): string {
     case 'subagent_start':
       return `${event.data.subagent?.type?.toLowerCase() || 'subagent'} started`;
     case 'subagent_stop':
+      // Show preview of final response if available
+      if (event.data.assistantResponse) {
+        const agentType = event.data.subagent?.type?.toLowerCase() || 'subagent';
+        const preview = event.data.assistantResponse.slice(0, 60);
+        const suffix = preview.length < event.data.assistantResponse.length ? '...' : '';
+        return `${agentType}: ${preview}${suffix}`;
+      }
       return `${event.data.subagent?.type?.toLowerCase() || 'subagent'} completed`;
     default:
       return event.eventType;
@@ -252,7 +272,13 @@ watch(events, async () => {
         v-if="events.length === 0"
         class="text-monitor-text-muted text-sm p-4 text-center"
       >
-        Waiting for events...
+        <template v-if="!store.selectedSessionId">
+          <p>Select a session to view its events</p>
+          <p class="text-xs mt-2">or new events will appear here as they occur</p>
+        </template>
+        <template v-else>
+          <p>Waiting for events...</p>
+        </template>
       </div>
 
       <div
@@ -352,8 +378,32 @@ watch(events, async () => {
             <pre class="code-block text-xs overflow-y-auto overflow-x-hidden whitespace-pre-wrap word-wrap-break max-h-48 max-w-full">{{ formatJson(event.data.toolOutput) }}</pre>
           </div>
 
-          <!-- Message -->
-          <div v-if="event.data.message" class="mt-2">
+          <!-- User Prompt (for user_prompt events) -->
+          <div v-if="event.eventType === 'user_prompt' && event.data.message" class="mt-2">
+            <div class="text-xs text-cyan-400 mb-1 flex items-center">
+              <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
+              User Prompt:
+            </div>
+            <pre class="code-block text-xs overflow-y-auto overflow-x-hidden whitespace-pre-wrap word-wrap-break max-h-96 max-w-full bg-cyan-900/20 border-l-2 border-cyan-500">{{ event.data.message }}</pre>
+          </div>
+
+          <!-- Assistant Response (for session_end events) -->
+          <div v-if="event.eventType === 'session_end' && event.data.assistantResponse" class="mt-2">
+            <div class="text-xs text-green-400 mb-1 flex items-center">
+              <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              Final Response:
+            </div>
+            <pre class="code-block text-xs overflow-y-auto overflow-x-hidden whitespace-pre-wrap word-wrap-break max-h-96 max-w-full bg-green-900/20 border-l-2 border-green-500">{{ event.data.assistantResponse }}</pre>
+          </div>
+
+          <!-- Generic Message (for other event types) -->
+          <div v-if="event.data.message && event.eventType !== 'user_prompt'" class="mt-2">
             <div class="text-xs text-monitor-text-secondary mb-1">Message:</div>
             <pre class="code-block text-xs overflow-y-auto overflow-x-hidden whitespace-pre-wrap word-wrap-break max-w-full">{{ event.data.message }}</pre>
           </div>

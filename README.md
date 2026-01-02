@@ -120,6 +120,7 @@ contextuate -V         # Short form for version
 | `index`        | Generate a project file tree             |
 | `add-context`  | Interactively add files to context       |
 | `remove`       | Clean up framework files                 |
+| `monitor`      | Real-time Claude Code session monitoring |
 
 ---
 
@@ -273,6 +274,168 @@ Remove unmodified platform jump files.
 ```bash
 contextuate remove
 ```
+
+---
+
+### `contextuate monitor`
+
+Real-time monitoring dashboard for Claude Code sessions. Tracks tool usage, events, and session activity.
+
+#### Architecture
+
+The monitor uses a 3-layer architecture:
+
+1. **Hooks** - Claude Code hooks emit events to the daemon
+2. **Daemon** - Background process that collects and processes events (runs independently)
+3. **UI Server** - Web dashboard and WebSocket server for real-time updates
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│   Claude Code   │────▶│     Daemon      │────▶│   UI Server     │
+│     (Hooks)     │     │   (Background)  │     │   (Dashboard)   │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
+```
+
+**Important:** The daemon runs independently of the UI server. Starting the monitor will spawn the daemon, but stopping the monitor will NOT stop the daemon (so it can continue collecting events). Use `--all` to stop both.
+
+#### Commands
+
+```bash
+# Initial setup (interactive)
+contextuate monitor init
+contextuate monitor init --global   # Install hooks at user level (~/.claude/)
+contextuate monitor init --project  # Install hooks at project level (.claude/)
+
+# Start the monitor (auto-starts daemon if not running)
+contextuate monitor
+contextuate monitor start
+contextuate monitor start --port 8080       # Custom HTTP port
+contextuate monitor start --ws-port 8081    # Custom WebSocket port
+contextuate monitor start --no-open         # Don't open browser
+contextuate monitor start --foreground      # Run in foreground (blocking)
+
+# Stop the monitor
+contextuate monitor stop          # Stop UI server only (daemon keeps running)
+contextuate monitor stop --all    # Stop both UI server and daemon
+
+# Check status
+contextuate monitor status
+
+# Daemon management (advanced)
+contextuate monitor daemon start            # Start daemon only
+contextuate monitor daemon start --detach   # Start daemon in background
+contextuate monitor daemon stop             # Stop daemon
+contextuate monitor daemon status           # Check daemon status
+contextuate monitor daemon logs             # View daemon logs
+contextuate monitor daemon logs -f          # Follow daemon logs
+contextuate monitor daemon logs -n 100      # Show last 100 lines
+```
+
+#### Configuration
+
+Configuration is stored in `~/.contextuate/monitor/config.json`. Run `contextuate monitor init` for interactive setup, or edit the file directly.
+
+##### Full Configuration Example
+
+```json
+{
+  "mode": "local",
+  "server": {
+    "host": "0.0.0.0",
+    "port": 3847,
+    "wsPort": 3848
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "password": null,
+    "channel": "contextuate:events"
+  },
+  "persistence": {
+    "enabled": true,
+    "type": "file",
+    "database": {
+      "host": "localhost",
+      "port": 3306,
+      "database": "contextuate",
+      "user": "contextuate",
+      "password": "secret"
+    }
+  },
+  "socketPath": "/tmp/contextuate-monitor.sock"
+}
+```
+
+##### Configuration Parameters
+
+| Parameter | Type | Default | Description |
+|:----------|:-----|:--------|:------------|
+| `mode` | `"local"` \| `"redis"` | `"local"` | Communication mode between components |
+| `socketPath` | string | `"/tmp/contextuate-monitor.sock"` | Unix socket path (local mode only) |
+
+**Server Settings** (`server`):
+
+| Parameter | Type | Default | Description |
+|:----------|:-----|:--------|:------------|
+| `host` | string | `"0.0.0.0"` | Host to bind the HTTP server |
+| `port` | number | `3847` | HTTP port for the dashboard |
+| `wsPort` | number | `3848` | WebSocket port for real-time updates |
+
+**Redis Settings** (`redis`) - for distributed/multi-machine setups:
+
+| Parameter | Type | Default | Description |
+|:----------|:-----|:--------|:------------|
+| `host` | string | `"localhost"` | Redis server host |
+| `port` | number | `6379` | Redis server port |
+| `password` | string \| null | `null` | Redis password (optional) |
+| `channel` | string | `"contextuate:events"` | Redis pub/sub channel name |
+
+**Persistence Settings** (`persistence`):
+
+| Parameter | Type | Default | Description |
+|:----------|:-----|:--------|:------------|
+| `enabled` | boolean | `true` | Enable session persistence |
+| `type` | `"file"` \| `"mysql"` \| `"postgresql"` | `"file"` | Storage backend |
+| `database` | object | - | Database connection settings (required for mysql/postgresql) |
+
+**Database Settings** (`persistence.database`) - for MySQL/PostgreSQL:
+
+| Parameter | Type | Description |
+|:----------|:-----|:------------|
+| `host` | string | Database server host |
+| `port` | number | Database server port (3306 for MySQL, 5432 for PostgreSQL) |
+| `database` | string | Database name |
+| `user` | string | Database username |
+| `password` | string | Database password |
+
+> **Note:** MySQL and PostgreSQL persistence are planned features. Currently only file-based persistence is fully implemented.
+
+##### Mode Comparison
+
+| Feature | Local Mode | Redis Mode |
+|:--------|:-----------|:-----------|
+| Setup complexity | Simple | Requires Redis server |
+| Multi-machine support | No | Yes |
+| Single machine | Recommended | Overkill |
+| Event delivery | Unix socket | Redis pub/sub |
+| Use case | Personal development | Team/distributed environments |
+
+#### Files and Directories
+
+```
+~/.contextuate/monitor/
+├── config.json      # Monitor configuration
+├── sessions/        # Persisted session data
+├── raw/             # Raw event files from hooks
+├── processed/       # Processed event files
+├── hooks/           # Hook scripts
+├── daemon.pid       # Daemon process ID
+├── daemon.log       # Daemon logs
+├── server.pid       # UI server process ID
+└── server.log       # UI server logs
+```
+
+---
 
 ## Documentation
 
