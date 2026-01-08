@@ -324,6 +324,9 @@ class WrapperManager {
      */
     findClaudeExecutable() {
         const commonPaths = [
+            // New Claude Code installation location (Bun-based)
+            path.join(os.homedir(), '.local', 'bin', 'claude'),
+            // Legacy npm-based installations
             path.join(os.homedir(), '.npm-global', 'bin', 'claude'),
             path.join(os.homedir(), '.nvm', 'versions', 'node', process.version, 'bin', 'claude'),
             '/opt/homebrew/bin/claude',
@@ -332,7 +335,15 @@ class WrapperManager {
         ];
         for (const p of commonPaths) {
             if (fs.existsSync(p)) {
-                return p;
+                // Resolve symlinks to get the actual executable path
+                try {
+                    const resolved = fs.realpathSync(p);
+                    console.log(`[WrapperManager] Found Claude at ${p} -> ${resolved}`);
+                    return resolved;
+                }
+                catch {
+                    return p;
+                }
             }
         }
         // Try to find via PATH
@@ -342,7 +353,16 @@ class WrapperManager {
                 timeout: 5000,
             }).trim();
             if (result) {
-                return result.split('\n')[0];
+                const foundPath = result.split('\n')[0];
+                // Resolve symlinks to get the actual executable path
+                try {
+                    const resolved = fs.realpathSync(foundPath);
+                    console.log(`[WrapperManager] Found Claude via PATH at ${foundPath} -> ${resolved}`);
+                    return resolved;
+                }
+                catch {
+                    return foundPath;
+                }
             }
         }
         catch {

@@ -63,7 +63,7 @@
     "gray-matter": "^4.0.3",
     "inquirer": "^13.0.1",
     "ioredis": "^5.4.2",
-    "node-pty": "^1.1.0",
+    "node-pty": "^1.2.0-beta.2",
     "uuid": "^11.0.3",
     "ws": "^8.18.0"
   }
