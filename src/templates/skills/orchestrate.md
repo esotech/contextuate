@@ -1,6 +1,14 @@
 # /orchestrate - Orchestrator Mode Skill
 
-Activate ARCHON orchestrator mode for coordinated multi-agent task execution.
+Activate the ARCHON agent for coordinated multi-agent task execution.
+
+## Agent Invocation
+
+**IMPORTANT:** Before proceeding, read and adopt the ARCHON agent persona:
+
+**Agent Definition:** [agents/archon.md](../agents/archon.md)
+
+Read the agent file above, then follow its guidelines for task analysis, delegation, and synthesis.
 
 ## Usage
 
@@ -10,7 +18,7 @@ Activate ARCHON orchestrator mode for coordinated multi-agent task execution.
 
 ## Behavior
 
-When this skill is invoked, Claude will:
+When this skill is invoked, read the ARCHON agent definition and adopt its persona to:
 
 1. **Analyze the task** to identify required domains and complexity
 2. **Delegate to specialist agents** rather than implementing directly
@@ -42,7 +50,7 @@ For complex or unfamiliar work, use `/pythia` BEFORE `/orchestrate`:
 | **ledger** | Task Mgmt | Multi-step tasks, progress tracking |
 | **meridian** | Schema | Database migrations |
 | **nexus** | Backend | Services, APIs, business logic |
-| **oracle** | Database | Complex queries, schema design |
+| **thoth** | Database | Complex queries, schema design |
 | **scribe** | Docs | API docs, user guides |
 | **sentinel** | Security | Validation, permissions, security |
 | **unity** | Version Control | Git, merges, releases |
@@ -55,7 +63,7 @@ For complex or unfamiliar work, use `/pythia` BEFORE `/orchestrate`:
 ```
 /orchestrate Add a new API endpoint with database query, validation, and tests
 ```
-Result: Delegates to oracle (query), nexus (API), sentinel (validation), crucible (tests)
+Result: Delegates to thoth (query), nexus (API), sentinel (validation), crucible (tests)
 
 ### Code review workflow
 ```
@@ -86,12 +94,12 @@ When multiple agents can work independently (no dependencies between their outpu
 ```
 Good: Single message with parallel Task calls for independent work
 ├── Task: atlas (find auth files)
-├── Task: oracle (analyze schema)
+├── Task: thoth (analyze schema)
 └── Task: sentinel (security review)
 
 Bad: Sequential Task calls when work is independent
 ├── Message 1: Task: atlas...
-├── Message 2: Task: oracle...
+├── Message 2: Task: thoth...
 └── Message 3: Task: sentinel...
 ```
 
@@ -142,7 +150,7 @@ For highly parallel tasks where locking is too restrictive:
 When deciding which agent to use, follow this preference hierarchy:
 
 1. **Custom Specialist Agents** (STRONGLY PREFERRED)
-   - aegis, atlas, canvas, chronicle, chronos, cipher, crucible, echo, forge, ledger, meridian, nexus, oracle, scribe, sentinel, unity, vox, weaver
+   - aegis, atlas, canvas, chronicle, chronos, cipher, crucible, echo, forge, ledger, meridian, nexus, thoth, scribe, sentinel, unity, vox, weaver
    - These have domain-specific expertise and context
 
 2. **Built-in Specialized Agents** (Use only if no specialist fits)
@@ -157,7 +165,7 @@ When deciding which agent to use, follow this preference hierarchy:
 | Find files related to auth | general-purpose | **atlas** |
 | Write API documentation | general-purpose | **scribe** |
 | Review code quality | Explore | **aegis** |
-| Create database queries | general-purpose | **oracle** |
+| Create database queries | general-purpose | **thoth** |
 | Build new component | general-purpose | **forge** (scaffold) + **canvas** (UI) |
 
 **Always ask: "Which specialist agent has domain expertise for this task?"**

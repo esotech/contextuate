@@ -1,7 +1,7 @@
 # Tools Expert Agent
 
 > **Inherits:** [Base Agent Configuration](base.md)
-> **Role:** Guides usage of Esotech Framework tools and utilities
+> **Role:** Guides usage of Contextuate Framework tools and utilities
 > **Domain:** `docs/ai/.contextuate/tools/*`, `docs/ai/.contextuate/bin/*`
 
 ---

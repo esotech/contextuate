@@ -1,6 +1,14 @@
 # /pythia - Strategic Planning Oracle
 
-Alias for `/consult`. Invokes the PYTHIA agent for strategic planning and research.
+Alias for `/consult`. Activates the PYTHIA agent for strategic planning and research.
+
+## Agent Invocation
+
+**IMPORTANT:** Before proceeding, read and adopt the PYTHIA agent persona:
+
+**Agent Definition:** [agents/pythia.md](../agents/pythia.md)
+
+Read the agent file above, then follow its guidelines for research, synthesis, and specification creation.
 
 ## Usage
 
@@ -8,7 +16,7 @@ Alias for `/consult`. Invokes the PYTHIA agent for strategic planning and resear
 /pythia [topic or question]
 ```
 
-See [/consult](./consult.md) for full documentation.
+See [/consult](./consult.md) for full documentation and behavior details.
 
 ## Quick Reference
 

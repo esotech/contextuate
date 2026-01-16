@@ -60,7 +60,7 @@ export async function initCommand(platformArgs: string[] | { force?: boolean, ag
     console.log(chalk.blue('╔════════════════════════════════════════╗'));
     console.log(chalk.blue('║     Contextuate Installer              ║'));
     console.log(chalk.blue('║     AI Context Framework               ║'));
-    console.log(chalk.blue('║     Powered by Esotech                 ║'));
+    console.log(chalk.blue('║                                        ║'));
     console.log(chalk.blue('╚════════════════════════════════════════╝'));
     console.log('');
 
@@ -471,7 +471,7 @@ export async function initCommand(platformArgs: string[] | { force?: boolean, ag
         console.log('');
         console.log('Documentation: https://contextuate.md');
         console.log('');
-        console.log(chalk.gray('Powered by Esotech.'));
+        console.log(chalk.gray('Contextuate Framework'));
         console.log(chalk.gray('Created by Alexander Conroy (@geilt)'));
         console.log('');
     } catch (error: any) {
