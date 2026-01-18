@@ -259,6 +259,17 @@ export type ClientMessage = {
     wrapperId: string;
     cols: number;
     rows: number;
+} | {
+    type: 'get_circuit_health';
+} | {
+    type: 'get_session_health';
+    sessionId: string;
+} | {
+    type: 'reset_circuit';
+    sessionId: string;
+} | {
+    type: 'update_circuit_config';
+    config: Partial<CircuitBreakerConfig>;
 };
 /**
  * Wrapper session state
@@ -331,6 +342,18 @@ export type ServerMessage = {
     wrapperId: string;
     data: string;
     timestamp: number;
+} | {
+    type: 'circuit_alert';
+    alert: CircuitAlert;
+} | {
+    type: 'circuit_health';
+    health: SessionHealth[];
+} | {
+    type: 'session_health';
+    health: SessionHealth;
+} | {
+    type: 'circuit_config';
+    config: CircuitBreakerConfig;
 };
 /**
  * Event handler callback
@@ -539,3 +562,85 @@ export interface WSClient {
     showHidden: boolean;
     send: (message: ServerMessage) => void;
 }
+/**
+ * Circuit breaker state
+ */
+export type CircuitState = 'CLOSED' | 'HALF_OPEN' | 'OPEN';
+/**
+ * Circuit breaker configuration
+ */
+export interface CircuitBreakerConfig {
+    /** Enable circuit breaker monitoring (default: true) */
+    enabled: boolean;
+    /** No events at all timeout - process might be hung (default: 300 = 5 min) */
+    noEventTimeout: number;
+    /** No progress (file changes) timeout (default: 600 = 10 min) */
+    noProgressTimeout: number;
+    /** Maximum session duration hard limit (default: 7200 = 2 hrs) */
+    maxSessionDuration: number;
+    /** Loops with no file changes before warning (default: 3) */
+    noProgressLoops: number;
+    /** Same error repeated threshold (default: 5) */
+    sameErrorThreshold: number;
+    /** Cron expression for health check interval (default: every 30 seconds) */
+    healthCheckInterval: string;
+    /** Automatically inject a "you're stuck" prompt (default: true) */
+    autoInjectPrompt: boolean;
+    /** Automatically kill session on circuit open (default: false) */
+    autoKill: boolean;
+    /** Automatically restart session after kill (default: false) */
+    autoRestart: boolean;
+    /** Grace period in ms after prompt injection before kill (default: 60000 = 1 min) */
+    gracePeriodMs: number;
+    /** Base prompt to inject when stuck */
+    stuckPrompt: string;
+}
+/**
+ * Default circuit breaker configuration
+ */
+export declare const DEFAULT_CIRCUIT_BREAKER_CONFIG: CircuitBreakerConfig;
+/**
+ * Health metrics for a session
+ */
+export interface SessionHealth {
+    sessionId: string;
+    wrapperId: string | null;
+    state: CircuitState;
+    /** Timestamp of last event received */
+    lastEventTime: number;
+    /** Timestamp of last file modification (progress) */
+    lastProgressTime: number;
+    /** Session start timestamp */
+    sessionStartTime: number;
+    /** Number of loops (Stop events) since last progress */
+    loopsSinceProgress: number;
+    /** Consecutive errors of the same type */
+    consecutiveErrors: number;
+    /** Last error message */
+    lastError: string | null;
+    /** Total events processed */
+    totalEvents: number;
+    /** Total errors encountered */
+    totalErrors: number;
+    /** Number of files modified */
+    filesModified: number;
+    recommendation: 'continue' | 'warn' | 'intervene';
+}
+/**
+ * Circuit breaker alert emitted when state changes
+ */
+export interface CircuitAlert {
+    sessionId: string;
+    wrapperId: string | null;
+    previousState: CircuitState;
+    newState: CircuitState;
+    reason: CircuitAlertReason;
+    message: string;
+    timestamp: number;
+    /** Additional context data */
+    context?: Record<string, unknown>;
+}
+/**
+ * Reasons for circuit state changes
+ */
+export type CircuitAlertReason = 'no_events' | 'no_progress' | 'no_progress_extended' | 'error_threshold' | 'loop_threshold' | 'max_duration' | 'recovered' | 'progress_detected' | 'manual_reset' | 'intervention_sent' | 'session_killed' | 'session_restarted';

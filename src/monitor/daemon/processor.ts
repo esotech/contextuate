@@ -18,6 +18,7 @@ import {
 } from '../../types/monitor.js';
 import { StateManager } from './state.js';
 import { Notifier } from './notifier.js';
+import type { CircuitBreaker } from './circuit-breaker.js';
 
 const PATHS = getDefaultMonitorPaths();
 const SUBAGENT_CORRELATION_WINDOW_MS = 30000;
@@ -46,10 +47,18 @@ export class EventProcessor {
   private state: StateManager;
   private notifier: Notifier;
   private sessions: Map<string, SessionMeta> = new Map();
+  private circuitBreaker: CircuitBreaker | null = null;
 
   constructor(state: StateManager, notifier: Notifier) {
     this.state = state;
     this.notifier = notifier;
+  }
+
+  /**
+   * Set the circuit breaker instance for health monitoring
+   */
+  setCircuitBreaker(circuitBreaker: CircuitBreaker): void {
+    this.circuitBreaker = circuitBreaker;
   }
 
   /**
@@ -137,6 +146,28 @@ export class EventProcessor {
 
     // Notify UI server
     await this.notifier.notify(event);
+
+    // Feed event to circuit breaker for health monitoring
+    if (this.circuitBreaker) {
+      // Try to find associated wrapper for this session
+      const wrapperId = this.findWrapperForSession(event.sessionId);
+      this.circuitBreaker.processEvent(event, wrapperId);
+
+      // Clean up circuit breaker tracking when session ends
+      if (event.eventType === 'session_end' || event.eventType === 'agent_complete') {
+        this.circuitBreaker.removeSession(event.sessionId);
+      }
+    }
+  }
+
+  /**
+   * Find wrapper ID associated with a session (for circuit breaker)
+   * This is a placeholder - the daemon will provide better association
+   */
+  private findWrapperForSession(sessionId: string): string | null {
+    // This will be enhanced by the daemon's wrapper-session correlation
+    // For now, return null and let the circuit breaker handle it
+    return null;
   }
 
   /**

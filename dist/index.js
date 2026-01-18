@@ -25,7 +25,7 @@ catch (error) {
 }
 program
     .name('contextuate')
-    .description('Standardized AI context framework for any project. Powered by Esotech.')
+    .description('Standardized AI context framework for any project.')
     .version(version);
 program
     .command('init [platforms...]')

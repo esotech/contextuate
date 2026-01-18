@@ -50,6 +50,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/inquirer": "^9.0.9",
     "@types/node": "^24.10.1",
+    "@types/node-cron": "^3.0.11",
     "@types/ws": "^8.5.13",
     "typescript": "^5.9.3"
   },
@@ -63,6 +64,7 @@
     "gray-matter": "^4.0.3",
     "inquirer": "^13.0.1",
     "ioredis": "^5.4.2",
+    "node-cron": "^4.2.1",
     "node-pty": "^1.2.0-beta.2",
     "uuid": "^11.0.3",
     "ws": "^8.18.0"

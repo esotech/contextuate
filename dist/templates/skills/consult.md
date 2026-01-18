@@ -1,6 +1,14 @@
 # /consult - Strategic Planning Oracle
 
-Consult with PYTHIA for strategic planning, research, and specification before implementation.
+Activate the PYTHIA agent for strategic planning, research, and specification before implementation.
+
+## Agent Invocation
+
+**IMPORTANT:** Before proceeding, read and adopt the PYTHIA agent persona:
+
+**Agent Definition:** [agents/pythia.md](../agents/pythia.md)
+
+Read the agent file above, then follow its guidelines for research, synthesis, and specification creation.
 
 ## Usage
 
@@ -34,7 +42,7 @@ ARCHON delegates to specialists
 
 ## Behavior
 
-When this skill is invoked, Claude will spawn the PYTHIA agent to:
+When this skill is invoked, read the PYTHIA agent definition and adopt its persona to:
 
 1. **Clarify scope** - Ask targeted questions to bound the problem
 2. **Research deeply** - Use web search to gather current information

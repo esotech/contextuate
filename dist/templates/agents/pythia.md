@@ -158,7 +158,7 @@ When planning is complete, PYTHIA provides ARCHON with:
 | Task | Agent | Notes |
 |------|-------|-------|
 | [Task 1] | NEXUS | [Context] |
-| [Task 2] | ORACLE | [Context] |
+| [Task 2] | THOTH | [Context] |
 
 ### Dependencies
 [Task 2] depends on [Task 1]

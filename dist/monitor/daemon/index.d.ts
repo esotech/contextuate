@@ -13,7 +13,8 @@
  * Layer 2: Daemon (process raw/ -> sessions/)
  * Layer 3: UI Server (read from sessions/, serve WebSocket)
  */
-import { MonitorConfig } from '../../types/monitor.js';
+import { MonitorConfig, CircuitBreakerConfig } from '../../types/monitor.js';
+import { CircuitBreaker } from './circuit-breaker.js';
 export declare class MonitorDaemon {
     private config;
     private state;
@@ -24,8 +25,13 @@ export declare class MonitorDaemon {
     private uiClients;
     private legacyWrapperSessions;
     private wrapperManager;
+    private circuitBreaker;
     private running;
-    constructor(config: MonitorConfig);
+    constructor(config: MonitorConfig, circuitBreakerConfig?: Partial<CircuitBreakerConfig>);
+    /**
+     * Handle circuit breaker alerts
+     */
+    private handleCircuitAlert;
     /**
      * Handle events from WrapperManager
      */
@@ -95,6 +101,26 @@ export declare class MonitorDaemon {
      * and notify relevant wrapper
      */
     private checkAndNotifyWrapperState;
+    /**
+     * Handle get circuit health request
+     */
+    private handleGetCircuitHealth;
+    /**
+     * Handle get session health request
+     */
+    private handleGetSessionHealth;
+    /**
+     * Handle reset circuit request
+     */
+    private handleResetCircuit;
+    /**
+     * Handle update circuit config request
+     */
+    private handleUpdateCircuitConfig;
+    /**
+     * Get the circuit breaker instance (for external access)
+     */
+    getCircuitBreaker(): CircuitBreaker;
     /**
      * Get list of active wrapper sessions (for UI)
      */

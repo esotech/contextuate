@@ -17,12 +17,18 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as net from 'net';
-import { MonitorConfig, getDefaultMonitorPaths } from '../../types/monitor.js';
+import {
+  MonitorConfig,
+  getDefaultMonitorPaths,
+  CircuitBreakerConfig,
+  DEFAULT_CIRCUIT_BREAKER_CONFIG,
+} from '../../types/monitor.js';
 import { StateManager } from './state.js';
 import { FileWatcher } from './watcher.js';
 import { EventProcessor } from './processor.js';
 import { Notifier } from './notifier.js';
 import { WrapperManager } from './wrapper-manager.js';
+import { CircuitBreaker } from './circuit-breaker.js';
 
 const PATHS = getDefaultMonitorPaths();
 
@@ -47,9 +53,10 @@ export class MonitorDaemon {
   private uiClients: Set<net.Socket> = new Set();
   private legacyWrapperSessions: Map<string, LegacyWrapperSession> = new Map();
   private wrapperManager: WrapperManager;
+  private circuitBreaker: CircuitBreaker;
   private running = false;
 
-  constructor(config: MonitorConfig) {
+  constructor(config: MonitorConfig, circuitBreakerConfig?: Partial<CircuitBreakerConfig>) {
     this.config = config;
     this.state = new StateManager();
     this.notifier = new Notifier(config, (data) => this.broadcastToClients(data));
@@ -60,6 +67,27 @@ export class MonitorDaemon {
     const wrapperPersistPath = path.join(PATHS.baseDir, 'wrappers.json');
     this.wrapperManager = new WrapperManager(wrapperPersistPath, (event) => {
       this.handleWrapperManagerEvent(event);
+    });
+
+    // Initialize circuit breaker
+    this.circuitBreaker = new CircuitBreaker(
+      circuitBreakerConfig || {},
+      this.wrapperManager,
+      (alert) => this.handleCircuitAlert(alert)
+    );
+
+    // Connect event processor to circuit breaker
+    this.processor.setCircuitBreaker(this.circuitBreaker);
+  }
+
+  /**
+   * Handle circuit breaker alerts
+   */
+  private handleCircuitAlert(alert: any): void {
+    console.log(`[Daemon] Circuit alert: ${alert.sessionId} ${alert.previousState} → ${alert.newState} (${alert.reason})`);
+    this.broadcastToClients({
+      type: 'circuit_alert',
+      alert,
     });
   }
 
@@ -151,6 +179,9 @@ export class MonitorDaemon {
     // Start socket server for UI connections
     await this.startSocketServer();
 
+    // Start circuit breaker health monitoring
+    this.circuitBreaker.start();
+
     this.running = true;
     console.log('[Daemon] Monitor daemon started');
   }
@@ -162,6 +193,9 @@ export class MonitorDaemon {
     console.log('[Daemon] Stopping monitor daemon...');
 
     this.running = false;
+
+    // Stop circuit breaker health monitoring
+    this.circuitBreaker.stop();
 
     // Shutdown wrapper manager (kills all wrappers, persists state)
     await this.wrapperManager.shutdown();
@@ -314,6 +348,27 @@ export class MonitorDaemon {
               // Handle get wrappers request
               if (message.type === 'get_wrappers') {
                 this.handleGetWrappers(socket);
+                continue;
+              }
+
+              // Circuit breaker messages
+              if (message.type === 'get_circuit_health') {
+                this.handleGetCircuitHealth(socket);
+                continue;
+              }
+
+              if (message.type === 'get_session_health') {
+                this.handleGetSessionHealth(socket, message);
+                continue;
+              }
+
+              if (message.type === 'reset_circuit') {
+                this.handleResetCircuit(message);
+                continue;
+              }
+
+              if (message.type === 'update_circuit_config') {
+                this.handleUpdateCircuitConfig(socket, message);
                 continue;
               }
 
@@ -623,6 +678,75 @@ export class MonitorDaemon {
         }
       }
     }
+  }
+
+  // =============================================================================
+  // Circuit Breaker Handlers
+  // =============================================================================
+
+  /**
+   * Handle get circuit health request
+   */
+  private handleGetCircuitHealth(socket: net.Socket): void {
+    const health = this.circuitBreaker.getAllHealth();
+    socket.write(JSON.stringify({
+      type: 'circuit_health',
+      health,
+    }) + '\n');
+  }
+
+  /**
+   * Handle get session health request
+   */
+  private handleGetSessionHealth(socket: net.Socket, message: any): void {
+    const { sessionId } = message;
+    const health = this.circuitBreaker.getSessionHealth(sessionId);
+    if (health) {
+      socket.write(JSON.stringify({
+        type: 'session_health',
+        health,
+      }) + '\n');
+    } else {
+      socket.write(JSON.stringify({
+        type: 'error',
+        message: `No health data for session ${sessionId}`,
+      }) + '\n');
+    }
+  }
+
+  /**
+   * Handle reset circuit request
+   */
+  private handleResetCircuit(message: any): void {
+    const { sessionId } = message;
+    this.circuitBreaker.resetCircuit(sessionId);
+    console.log(`[Daemon] Circuit reset for session ${sessionId}`);
+  }
+
+  /**
+   * Handle update circuit config request
+   */
+  private handleUpdateCircuitConfig(socket: net.Socket, message: any): void {
+    const { config } = message;
+    this.circuitBreaker.updateConfig(config);
+
+    // Broadcast updated config to all clients
+    this.broadcastToClients({
+      type: 'circuit_config',
+      config: this.circuitBreaker.getConfig(),
+    });
+
+    socket.write(JSON.stringify({
+      type: 'circuit_config',
+      config: this.circuitBreaker.getConfig(),
+    }) + '\n');
+  }
+
+  /**
+   * Get the circuit breaker instance (for external access)
+   */
+  getCircuitBreaker(): CircuitBreaker {
+    return this.circuitBreaker;
   }
 
   /**

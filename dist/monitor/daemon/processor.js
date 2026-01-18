@@ -52,10 +52,17 @@ const SUBAGENT_CORRELATION_WINDOW_MS = 30000;
 class EventProcessor {
     constructor(state, notifier) {
         this.sessions = new Map();
+        this.circuitBreaker = null;
         // Track processed event IDs to prevent duplicates (socket + file watcher)
         this.processedEventIds = new Set();
         this.state = state;
         this.notifier = notifier;
+    }
+    /**
+     * Set the circuit breaker instance for health monitoring
+     */
+    setCircuitBreaker(circuitBreaker) {
+        this.circuitBreaker = circuitBreaker;
     }
     /**
      * Load existing sessions from disk
@@ -134,6 +141,25 @@ class EventProcessor {
         }
         // Notify UI server
         await this.notifier.notify(event);
+        // Feed event to circuit breaker for health monitoring
+        if (this.circuitBreaker) {
+            // Try to find associated wrapper for this session
+            const wrapperId = this.findWrapperForSession(event.sessionId);
+            this.circuitBreaker.processEvent(event, wrapperId);
+            // Clean up circuit breaker tracking when session ends
+            if (event.eventType === 'session_end' || event.eventType === 'agent_complete') {
+                this.circuitBreaker.removeSession(event.sessionId);
+            }
+        }
+    }
+    /**
+     * Find wrapper ID associated with a session (for circuit breaker)
+     * This is a placeholder - the daemon will provide better association
+     */
+    findWrapperForSession(sessionId) {
+        // This will be enhanced by the daemon's wrapper-session correlation
+        // For now, return null and let the circuit breaker handle it
+        return null;
     }
     /**
      * Handle SubagentStart event - create child session immediately

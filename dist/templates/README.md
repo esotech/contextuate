@@ -95,7 +95,7 @@ Activates ARCHON orchestrator mode for coordinated multi-agent task execution.
 3. Coordinates handoffs between agents
 4. Synthesizes results into a cohesive solution
 
-**Available specialist agents:** aegis, atlas, canvas, chronicle, chronos, cipher, crucible, echo, forge, ledger, meridian, nexus, oracle, scribe, sentinel, unity, vox, weaver
+**Available specialist agents:** aegis, atlas, canvas, chronicle, chronos, cipher, crucible, echo, forge, ledger, meridian, nexus, thoth, scribe, sentinel, unity, vox, weaver
 
 **File:** `docs/ai/skills/orchestrate.md`
 
@@ -174,5 +174,5 @@ Updates framework files while preserving your customizations.
 ## Support
 
 - Documentation: https://contextuate.md
-- Repository: https://github.com/esotech/contextuate
-- Issues: https://github.com/esotech/contextuate/issues
+- Repository: https://github.com/contextuate/contextuate
+- Issues: https://github.com/contextuate/contextuate/issues

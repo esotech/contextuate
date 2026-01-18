@@ -6,7 +6,7 @@
  * Used by both server and client components.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DEFAULT_CONFIG = void 0;
+exports.DEFAULT_CIRCUIT_BREAKER_CONFIG = exports.DEFAULT_CONFIG = void 0;
 exports.getDefaultMonitorPaths = getDefaultMonitorPaths;
 /**
  * Default configuration values
@@ -56,3 +56,20 @@ function getDefaultMonitorPaths() {
         serverLogFile: path.join(baseDir, 'server.log'),
     };
 }
+/**
+ * Default circuit breaker configuration
+ */
+exports.DEFAULT_CIRCUIT_BREAKER_CONFIG = {
+    enabled: true,
+    noEventTimeout: 300,
+    noProgressTimeout: 600,
+    maxSessionDuration: 7200,
+    noProgressLoops: 3,
+    sameErrorThreshold: 5,
+    healthCheckInterval: '*/30 * * * * *',
+    autoInjectPrompt: true,
+    autoKill: false,
+    autoRestart: false,
+    gracePeriodMs: 60000,
+    stuckPrompt: 'You appear to be stuck. Please try a different approach or describe what is blocking you.',
+};

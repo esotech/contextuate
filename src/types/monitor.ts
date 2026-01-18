@@ -316,7 +316,12 @@ export type ClientMessage =
   | { type: 'rename_session'; sessionId: string; label: string }
   | { type: 'get_wrappers' }
   | { type: 'inject_input'; wrapperId: string; input: string }
-  | { type: 'resize_wrapper'; wrapperId: string; cols: number; rows: number };
+  | { type: 'resize_wrapper'; wrapperId: string; cols: number; rows: number }
+  // Circuit breaker messages
+  | { type: 'get_circuit_health' }
+  | { type: 'get_session_health'; sessionId: string }
+  | { type: 'reset_circuit'; sessionId: string }
+  | { type: 'update_circuit_config'; config: Partial<CircuitBreakerConfig> };
 
 /**
  * Wrapper session state
@@ -359,7 +364,12 @@ export type ServerMessage =
   | { type: 'wrapper_connected'; wrapperId: string; state: WrapperState }
   | { type: 'wrapper_disconnected'; wrapperId: string; exitCode?: number }
   | { type: 'wrapper_state'; wrapperId: string; state: WrapperState; claudeSessionId?: string }
-  | { type: 'wrapper_output'; wrapperId: string; data: string; timestamp: number };
+  | { type: 'wrapper_output'; wrapperId: string; data: string; timestamp: number }
+  // Circuit breaker messages
+  | { type: 'circuit_alert'; alert: CircuitAlert }
+  | { type: 'circuit_health'; health: SessionHealth[] }
+  | { type: 'session_health'; health: SessionHealth }
+  | { type: 'circuit_config'; config: CircuitBreakerConfig };
 
 // =============================================================================
 // IPC Adapter Types
@@ -610,3 +620,138 @@ export interface WSClient {
   showHidden: boolean;
   send: (message: ServerMessage) => void;
 }
+
+// =============================================================================
+// Circuit Breaker Types
+// =============================================================================
+
+/**
+ * Circuit breaker state
+ */
+export type CircuitState = 'CLOSED' | 'HALF_OPEN' | 'OPEN';
+
+/**
+ * Circuit breaker configuration
+ */
+export interface CircuitBreakerConfig {
+  /** Enable circuit breaker monitoring (default: true) */
+  enabled: boolean;
+
+  // Time-based thresholds (in seconds)
+  /** No events at all timeout - process might be hung (default: 300 = 5 min) */
+  noEventTimeout: number;
+  /** No progress (file changes) timeout (default: 600 = 10 min) */
+  noProgressTimeout: number;
+  /** Maximum session duration hard limit (default: 7200 = 2 hrs) */
+  maxSessionDuration: number;
+
+  // Loop-based thresholds (fallback)
+  /** Loops with no file changes before warning (default: 3) */
+  noProgressLoops: number;
+  /** Same error repeated threshold (default: 5) */
+  sameErrorThreshold: number;
+
+  // Cron schedule for health checks
+  /** Cron expression for health check interval (default: every 30 seconds) */
+  healthCheckInterval: string;
+
+  // Automated actions
+  /** Automatically inject a "you're stuck" prompt (default: true) */
+  autoInjectPrompt: boolean;
+  /** Automatically kill session on circuit open (default: false) */
+  autoKill: boolean;
+  /** Automatically restart session after kill (default: false) */
+  autoRestart: boolean;
+  /** Grace period in ms after prompt injection before kill (default: 60000 = 1 min) */
+  gracePeriodMs: number;
+
+  // Prompts
+  /** Base prompt to inject when stuck */
+  stuckPrompt: string;
+}
+
+/**
+ * Default circuit breaker configuration
+ */
+export const DEFAULT_CIRCUIT_BREAKER_CONFIG: CircuitBreakerConfig = {
+  enabled: true,
+  noEventTimeout: 300,
+  noProgressTimeout: 600,
+  maxSessionDuration: 7200,
+  noProgressLoops: 3,
+  sameErrorThreshold: 5,
+  healthCheckInterval: '*/30 * * * * *',
+  autoInjectPrompt: true,
+  autoKill: false,
+  autoRestart: false,
+  gracePeriodMs: 60000,
+  stuckPrompt: 'You appear to be stuck. Please try a different approach or describe what is blocking you.',
+};
+
+/**
+ * Health metrics for a session
+ */
+export interface SessionHealth {
+  sessionId: string;
+  wrapperId: string | null;
+  state: CircuitState;
+
+  // Time-based tracking
+  /** Timestamp of last event received */
+  lastEventTime: number;
+  /** Timestamp of last file modification (progress) */
+  lastProgressTime: number;
+  /** Session start timestamp */
+  sessionStartTime: number;
+
+  // Loop-based tracking
+  /** Number of loops (Stop events) since last progress */
+  loopsSinceProgress: number;
+  /** Consecutive errors of the same type */
+  consecutiveErrors: number;
+  /** Last error message */
+  lastError: string | null;
+
+  // Metrics
+  /** Total events processed */
+  totalEvents: number;
+  /** Total errors encountered */
+  totalErrors: number;
+  /** Number of files modified */
+  filesModified: number;
+
+  // Recommendation
+  recommendation: 'continue' | 'warn' | 'intervene';
+}
+
+/**
+ * Circuit breaker alert emitted when state changes
+ */
+export interface CircuitAlert {
+  sessionId: string;
+  wrapperId: string | null;
+  previousState: CircuitState;
+  newState: CircuitState;
+  reason: CircuitAlertReason;
+  message: string;
+  timestamp: number;
+  /** Additional context data */
+  context?: Record<string, unknown>;
+}
+
+/**
+ * Reasons for circuit state changes
+ */
+export type CircuitAlertReason =
+  | 'no_events'           // No events received for too long
+  | 'no_progress'         // Events happening but no file changes
+  | 'no_progress_extended'// Still no progress after warning
+  | 'error_threshold'     // Same error repeated too many times
+  | 'loop_threshold'      // Too many loops without progress
+  | 'max_duration'        // Session exceeded maximum duration
+  | 'recovered'           // Progress detected, circuit recovered
+  | 'progress_detected'   // File modification detected
+  | 'manual_reset'        // User manually reset the circuit
+  | 'intervention_sent'   // Prompt was injected
+  | 'session_killed'      // Session was killed
+  | 'session_restarted';  // Session was restarted

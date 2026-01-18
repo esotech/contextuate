@@ -11,11 +11,17 @@
 import { MonitorEvent } from '../../types/monitor.js';
 import { StateManager } from './state.js';
 import { Notifier } from './notifier.js';
+import type { CircuitBreaker } from './circuit-breaker.js';
 export declare class EventProcessor {
     private state;
     private notifier;
     private sessions;
+    private circuitBreaker;
     constructor(state: StateManager, notifier: Notifier);
+    /**
+     * Set the circuit breaker instance for health monitoring
+     */
+    setCircuitBreaker(circuitBreaker: CircuitBreaker): void;
     /**
      * Load existing sessions from disk
      */
@@ -27,6 +33,11 @@ export declare class EventProcessor {
      * @param filepath The source file path (null if from socket)
      */
     processEvent(event: MonitorEvent, filepath: string | null): Promise<void>;
+    /**
+     * Find wrapper ID associated with a session (for circuit breaker)
+     * This is a placeholder - the daemon will provide better association
+     */
+    private findWrapperForSession;
     /**
      * Handle SubagentStart event - create child session immediately
      */
