@@ -260,6 +260,15 @@ export type ClientMessage = {
     cols: number;
     rows: number;
 } | {
+    type: 'spawn_wrapper';
+    cwd?: string;
+    args?: string[];
+    cols?: number;
+    rows?: number;
+} | {
+    type: 'kill_wrapper';
+    wrapperId: string;
+} | {
     type: 'get_circuit_health';
 } | {
     type: 'get_session_health';
@@ -342,6 +351,11 @@ export type ServerMessage = {
     wrapperId: string;
     data: string;
     timestamp: number;
+} | {
+    type: 'wrapper_spawned';
+    wrapperId?: string;
+    success: boolean;
+    error?: string;
 } | {
     type: 'circuit_alert';
     alert: CircuitAlert;

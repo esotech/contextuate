@@ -1,6 +1,7 @@
 ---
 name: "vox"
 description: "Media Streaming & Communications Specialist"
+model: sonnet
 version: "1.0.0"
 inherits: "base"
 provider:

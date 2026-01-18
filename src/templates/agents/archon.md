@@ -1,6 +1,7 @@
 ---
 name: "archon"
 description: "Master orchestrator that analyzes complex tasks and delegates to specialist agents. Use for multi-step tasks requiring coordination."
+model: opus
 version: "1.0.0"
 inherits: "base"
 provider:

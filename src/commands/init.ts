@@ -179,7 +179,10 @@ export async function initCommand(platformArgs: string[] | { force?: boolean, ag
 
         if (opts.agents && opts.agents.length > 0) {
             // Non-interactive agent selection via --agents flag
-            if (opts.agents.includes('all')) {
+            if (opts.agents.includes('none')) {
+                // Explicitly skip agent installation
+                console.log(chalk.blue('[INFO] Skipping agent installation (--agents none)'));
+            } else if (opts.agents.includes('all')) {
                 selectedAgents = availableAgents;
                 console.log(chalk.blue('[INFO] Installing all agents'));
             } else {
@@ -195,7 +198,7 @@ export async function initCommand(platformArgs: string[] | { force?: boolean, ag
                     }
                 }
 
-                if (selectedAgents.length === 0 && opts.agents.length > 0 && !opts.agents.includes('all')) {
+                if (selectedAgents.length === 0 && opts.agents.length > 0) {
                     console.log(chalk.yellow('[WARN] No valid agents matched. Available agents:'));
                     availableAgents.forEach(a => console.log(`  - ${a}`));
                 }
@@ -235,6 +238,10 @@ export async function initCommand(platformArgs: string[] | { force?: boolean, ag
                     selectedAgents = agents;
                 }
             }
+        } else {
+            // Non-interactive mode without --agents flag: default to all agents
+            selectedAgents = availableAgents;
+            console.log(chalk.blue('[INFO] Installing all agents (default in non-interactive mode)'));
         }
 
         console.log('');
@@ -431,6 +438,9 @@ export async function initCommand(platformArgs: string[] | { force?: boolean, ag
                     { target: 'docs/ai/agents', link: '.claude/agents' },
                     { target: 'docs/ai/hooks', link: '.claude/hooks' },
                     { target: 'docs/ai/skills', link: '.claude/skills' },
+                    // Link .contextuate so relative paths from agents work correctly
+                    // (e.g., ../.contextuate/agents/base.md resolves properly)
+                    { target: 'docs/ai/.contextuate', link: '.claude/.contextuate' },
                 ];
 
                 for (const symlink of symlinks) {

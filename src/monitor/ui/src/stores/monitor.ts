@@ -215,6 +215,8 @@ export const useMonitorStore = defineStore('monitor', () => {
       send({ type: 'get_sessions' });
       // Load recent events from persistence
       send({ type: 'get_all_recent_events', limit: 200 });
+      // Request current active wrappers
+      send({ type: 'get_wrappers' });
     };
 
     ws.value.onmessage = (event) => {
@@ -360,6 +362,17 @@ export const useMonitorStore = defineStore('monitor', () => {
 
           // Update lastWrapperOutput for reactive watching
           lastWrapperOutput.value = { wrapperId: message.wrapperId, data };
+        }
+        break;
+
+      case 'wrapper_spawned':
+        console.log(`[Monitor] Wrapper spawn result:`, message);
+        if (message.success && message.wrapperId) {
+          // The wrapper_connected event will add it to the list
+          // Auto-select the newly spawned wrapper
+          selectedWrapperId.value = message.wrapperId;
+        } else if (message.error) {
+          console.error(`[Monitor] Failed to spawn wrapper: ${message.error}`);
         }
         break;
     }
@@ -522,6 +535,20 @@ export const useMonitorStore = defineStore('monitor', () => {
     return buffer ? [...buffer] : [];
   }
 
+  function spawnWrapper(options: { cwd?: string; args?: string[]; cols?: number; rows?: number } = {}) {
+    send({
+      type: 'spawn_wrapper',
+      cwd: options.cwd,
+      args: options.args,
+      cols: options.cols,
+      rows: options.rows,
+    } as ClientMessage);
+  }
+
+  function killWrapper(wrapperId: string) {
+    send({ type: 'kill_wrapper', wrapperId } as ClientMessage);
+  }
+
   // Computed for selected wrapper
   const selectedWrapper = computed(() => {
     if (!selectedWrapperId.value) return null;
@@ -601,5 +628,7 @@ export const useMonitorStore = defineStore('monitor', () => {
     getRawWrapperOutput,
     getWrapperOutputChunks,
     lastWrapperOutput,
+    spawnWrapper,
+    killWrapper,
   };
 });

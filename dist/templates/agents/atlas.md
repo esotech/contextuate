@@ -1,6 +1,7 @@
 ---
 name: "atlas"
 description: "Codebase Navigation Expert"
+model: sonnet
 version: "1.0.0"
 inherits: "base"
 provider:

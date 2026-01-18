@@ -29,15 +29,20 @@ export type BrokerEventType =
   | 'wrapper_connected'
   | 'wrapper_disconnected'
   | 'wrapper_state'
-  | 'wrapper_output';
+  | 'wrapper_output'
+  | 'wrapper_spawned'
+  | 'wrappers_list';
 
 export interface WrapperEventData {
-  wrapperId: string;
+  wrapperId?: string;
   state?: string;
   claudeSessionId?: string;
   exitCode?: number;
   data?: string;
   timestamp?: number;
+  success?: boolean;
+  error?: string;
+  wrappers?: Array<{ wrapperId: string; state: string; claudeSessionId: string | null }>;
 }
 
 export type BrokerHandler = (type: BrokerEventType, data: MonitorEvent | SessionMeta | WrapperEventData) => void | Promise<void>;
@@ -208,6 +213,18 @@ export class EventBroker {
         wrapperId: message.wrapperId,
         data: message.data,
         timestamp: message.timestamp,
+      });
+    } else if (message.type === 'wrapper_spawned') {
+      // Wrapper spawn response
+      this.emit('wrapper_spawned', {
+        wrapperId: message.wrapperId || '',
+        success: message.success,
+        error: message.error,
+      });
+    } else if (message.type === 'wrappers_list') {
+      // List of active wrappers from daemon
+      this.emit('wrappers_list', {
+        wrappers: message.wrappers || [],
       });
     } else if (message.eventType) {
       // This is an event from the daemon

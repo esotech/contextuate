@@ -1,6 +1,7 @@
 ---
 name: "forge"
 description: "Scaffolding expert for creating new files, boilerplate generation, infrastructure, and file structure. Use for creating new components, DevOps, and deployment."
+model: sonnet
 version: "1.0.0"
 inherits: "base"
 provider:

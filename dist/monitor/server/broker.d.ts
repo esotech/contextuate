@@ -13,14 +13,21 @@
  * Note: Event processing (correlation, parent linking, etc.) is handled by the daemon.
  */
 import type { MonitorEvent, SessionMeta, PersistenceStore, MonitorConfig } from '../../types/monitor';
-export type BrokerEventType = 'event' | 'session_created' | 'session_updated' | 'session_ended' | 'wrapper_connected' | 'wrapper_disconnected' | 'wrapper_state' | 'wrapper_output';
+export type BrokerEventType = 'event' | 'session_created' | 'session_updated' | 'session_ended' | 'wrapper_connected' | 'wrapper_disconnected' | 'wrapper_state' | 'wrapper_output' | 'wrapper_spawned' | 'wrappers_list';
 export interface WrapperEventData {
-    wrapperId: string;
+    wrapperId?: string;
     state?: string;
     claudeSessionId?: string;
     exitCode?: number;
     data?: string;
     timestamp?: number;
+    success?: boolean;
+    error?: string;
+    wrappers?: Array<{
+        wrapperId: string;
+        state: string;
+        claudeSessionId: string | null;
+    }>;
 }
 export type BrokerHandler = (type: BrokerEventType, data: MonitorEvent | SessionMeta | WrapperEventData) => void | Promise<void>;
 export declare class EventBroker {

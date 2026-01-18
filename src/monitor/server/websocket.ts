@@ -212,8 +212,27 @@ export class MonitorWebSocketServer {
         break;
 
       case 'get_wrappers':
-        // Request current wrapper list (not implemented yet - daemon would need to track)
-        console.log(`[WebSocket] Get wrappers request`);
+        // Request current wrapper list from daemon
+        this.broker.sendToDaemon({ type: 'get_wrappers' });
+        break;
+
+      case 'spawn_wrapper':
+        // Forward spawn request to daemon
+        this.broker.sendToDaemon({
+          type: 'spawn_wrapper',
+          cwd: message.cwd,
+          args: message.args,
+          cols: message.cols,
+          rows: message.rows,
+        });
+        break;
+
+      case 'kill_wrapper':
+        // Forward kill request to daemon
+        this.broker.sendToDaemon({
+          type: 'kill_wrapper',
+          wrapperId: message.wrapperId,
+        });
         break;
 
       case 'hide_session':
@@ -428,6 +447,22 @@ export class MonitorWebSocketServer {
           wrapperId: data.wrapperId,
           data: data.data,
           timestamp: data.timestamp,
+        });
+        break;
+
+      case 'wrapper_spawned':
+        this.broadcastToAll({
+          type: 'wrapper_spawned',
+          wrapperId: data.wrapperId,
+          success: data.success ?? false,
+          error: data.error,
+        });
+        break;
+
+      case 'wrappers_list':
+        this.broadcastToAll({
+          type: 'wrappers',
+          wrappers: data.wrappers || [],
         });
         break;
     }

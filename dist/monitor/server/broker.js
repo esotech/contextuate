@@ -198,6 +198,20 @@ class EventBroker {
                 timestamp: message.timestamp,
             });
         }
+        else if (message.type === 'wrapper_spawned') {
+            // Wrapper spawn response
+            this.emit('wrapper_spawned', {
+                wrapperId: message.wrapperId || '',
+                success: message.success,
+                error: message.error,
+            });
+        }
+        else if (message.type === 'wrappers_list') {
+            // List of active wrappers from daemon
+            this.emit('wrappers_list', {
+                wrappers: message.wrappers || [],
+            });
+        }
         else if (message.eventType) {
             // This is an event from the daemon
             const event = message;

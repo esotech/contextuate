@@ -168,7 +168,11 @@ async function initCommand(platformArgs, options) {
         }
         if (opts.agents && opts.agents.length > 0) {
             // Non-interactive agent selection via --agents flag
-            if (opts.agents.includes('all')) {
+            if (opts.agents.includes('none')) {
+                // Explicitly skip agent installation
+                console.log(chalk_1.default.blue('[INFO] Skipping agent installation (--agents none)'));
+            }
+            else if (opts.agents.includes('all')) {
                 selectedAgents = availableAgents;
                 console.log(chalk_1.default.blue('[INFO] Installing all agents'));
             }
@@ -185,7 +189,7 @@ async function initCommand(platformArgs, options) {
                         console.log(chalk_1.default.yellow(`[WARN] Could not match agent "${agentArg}" - skipping`));
                     }
                 }
-                if (selectedAgents.length === 0 && opts.agents.length > 0 && !opts.agents.includes('all')) {
+                if (selectedAgents.length === 0 && opts.agents.length > 0) {
                     console.log(chalk_1.default.yellow('[WARN] No valid agents matched. Available agents:'));
                     availableAgents.forEach(a => console.log(`  - ${a}`));
                 }
@@ -225,6 +229,11 @@ async function initCommand(platformArgs, options) {
                     selectedAgents = agents;
                 }
             }
+        }
+        else {
+            // Non-interactive mode without --agents flag: default to all agents
+            selectedAgents = availableAgents;
+            console.log(chalk_1.default.blue('[INFO] Installing all agents (default in non-interactive mode)'));
         }
         console.log('');
         console.log(chalk_1.default.blue('[INFO] Installing Contextuate framework...'));

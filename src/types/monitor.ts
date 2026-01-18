@@ -317,6 +317,8 @@ export type ClientMessage =
   | { type: 'get_wrappers' }
   | { type: 'inject_input'; wrapperId: string; input: string }
   | { type: 'resize_wrapper'; wrapperId: string; cols: number; rows: number }
+  | { type: 'spawn_wrapper'; cwd?: string; args?: string[]; cols?: number; rows?: number }
+  | { type: 'kill_wrapper'; wrapperId: string }
   // Circuit breaker messages
   | { type: 'get_circuit_health' }
   | { type: 'get_session_health'; sessionId: string }
@@ -365,6 +367,7 @@ export type ServerMessage =
   | { type: 'wrapper_disconnected'; wrapperId: string; exitCode?: number }
   | { type: 'wrapper_state'; wrapperId: string; state: WrapperState; claudeSessionId?: string }
   | { type: 'wrapper_output'; wrapperId: string; data: string; timestamp: number }
+  | { type: 'wrapper_spawned'; wrapperId?: string; success: boolean; error?: string }
   // Circuit breaker messages
   | { type: 'circuit_alert'; alert: CircuitAlert }
   | { type: 'circuit_health'; health: SessionHealth[] }

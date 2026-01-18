@@ -1,6 +1,7 @@
 ---
 name: "pythia"
 description: "Strategic planning and research oracle for ideation, web research, and synthesizing abstract concepts before implementation."
+model: opus
 version: "1.0.0"
 inherits: "base"
 provider:

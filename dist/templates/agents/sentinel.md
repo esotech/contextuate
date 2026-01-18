@@ -1,6 +1,7 @@
 ---
 name: "sentinel"
 description: "Security Expert"
+model: opus
 version: "1.0.0"
 inherits: "base"
 provider:

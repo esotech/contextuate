@@ -1,6 +1,7 @@
 ---
 name: "cipher"
 description: "Data Transformation Expert"
+model: sonnet
 version: "1.0.0"
 inherits: "base"
 provider:

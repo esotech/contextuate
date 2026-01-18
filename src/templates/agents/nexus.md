@@ -1,6 +1,7 @@
 ---
 name: "nexus"
 description: "Backend services and integrations expert for APIs, business logic, and third-party integrations. Use for creating services or API endpoints."
+model: sonnet
 version: "1.0.0"
 inherits: "base"
 provider:

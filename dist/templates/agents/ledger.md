@@ -1,6 +1,7 @@
 ---
 name: "ledger"
 description: "Task management expert for planning, progress tracking, and session continuity. Use for complex multi-step tasks requiring organization."
+model: sonnet
 version: "1.0.0"
 inherits: "base"
 provider:

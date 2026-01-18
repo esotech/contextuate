@@ -1,6 +1,7 @@
 ---
 name: "unity"
 description: "Release Manager & Version Control Specialist"
+model: sonnet
 version: "1.0.0"
 inherits: "base"
 provider:

@@ -1,6 +1,7 @@
 ---
 name: "meridian"
 description: "Schema & Migrations Expert"
+model: sonnet
 version: "1.0.0"
 inherits: "base"
 provider:

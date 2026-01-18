@@ -1,6 +1,7 @@
 ---
 name: "thoth"
 description: "Database Query Expert"
+model: opus
 version: "1.0.0"
 inherits: "base"
 provider:

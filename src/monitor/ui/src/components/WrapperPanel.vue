@@ -176,6 +176,20 @@ function selectWrapper(wrapperId: string) {
   store.selectWrapper(wrapperId);
 }
 
+function handleSpawnWrapper() {
+  // Spawn a new Claude session in the current working directory
+  store.spawnWrapper({
+    cols: 120,
+    rows: 40,
+  });
+}
+
+function handleKillWrapper(wrapperId: string) {
+  if (confirm(`Are you sure you want to kill wrapper ${wrapperId}?`)) {
+    store.killWrapper(wrapperId);
+  }
+}
+
 function getStateColor(state: string): string {
   switch (state) {
     case 'waiting_input': return 'text-green-400';
@@ -204,16 +218,33 @@ function getStateIcon(state: string): string {
       <h2 class="text-sm font-medium text-monitor-text-secondary uppercase tracking-wide">
         Claude Wrappers
       </h2>
-      <span class="text-xs text-monitor-text-muted">
-        {{ activeWrappers.length }} active
-      </span>
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-monitor-text-muted">
+          {{ activeWrappers.length }} active
+        </span>
+        <button
+          class="px-2 py-1 bg-monitor-accent-cyan/20 text-monitor-accent-cyan rounded text-xs hover:bg-monitor-accent-cyan/30 transition-colors flex items-center gap-1"
+          @click="handleSpawnWrapper"
+          title="Spawn new Claude Code session"
+        >
+          <span>+</span>
+          <span>New</span>
+        </button>
+      </div>
     </div>
 
     <!-- No wrappers message -->
     <div v-if="wrappers.length === 0" class="flex-1 flex items-center justify-center p-4">
       <div class="text-center text-monitor-text-muted">
         <p class="text-sm">No wrapper sessions</p>
-        <p class="text-xs mt-2">Run <code class="bg-slate-700 px-1 rounded">contextuate claude</code> to start</p>
+        <p class="text-xs mt-2">Click the <span class="text-monitor-accent-cyan">+ New</span> button above to spawn a Claude Code session</p>
+        <p class="text-xs mt-1">or run <code class="bg-slate-700 px-1 rounded">contextuate claude</code> from terminal</p>
+        <button
+          class="mt-4 px-4 py-2 bg-monitor-accent-cyan/20 text-monitor-accent-cyan rounded hover:bg-monitor-accent-cyan/30 transition-colors"
+          @click="handleSpawnWrapper"
+        >
+          Spawn Claude Code Session
+        </button>
       </div>
     </div>
 
@@ -254,8 +285,18 @@ function getStateIcon(state: string): string {
               <code class="text-xs text-slate-400">{{ selectedWrapper.claudeSessionId.slice(0, 8) }}</code>
             </template>
           </div>
-          <div class="text-xs text-monitor-text-muted">
-            Click terminal to type directly
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-monitor-text-muted">
+              Click terminal to type directly
+            </span>
+            <button
+              v-if="selectedWrapper.state !== 'ended'"
+              class="px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs hover:bg-red-500/30 transition-colors"
+              @click="handleKillWrapper(selectedWrapper.wrapperId)"
+              title="Kill this wrapper session"
+            >
+              Kill
+            </button>
           </div>
         </div>
 

@@ -1,6 +1,7 @@
 ---
 name: "chronos"
 description: "Database Administrator & Data Engineer"
+model: sonnet
 version: "1.0.0"
 inherits: "base"
 provider:

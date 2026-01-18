@@ -1,6 +1,7 @@
 ---
 name: "crucible"
 description: "Testing Expert"
+model: sonnet
 version: "1.0.0"
 inherits: "tools-expert"
 provider:

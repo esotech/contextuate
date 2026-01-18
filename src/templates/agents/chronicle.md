@@ -1,6 +1,7 @@
 ---
 name: "chronicle"
 description: "Documentation Expert"
+model: sonnet
 version: "1.0.0"
 inherits: "documentation-expert"
 provider:

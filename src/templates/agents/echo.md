@@ -1,6 +1,7 @@
 ---
 name: "echo"
 description: "Frontend & JavaScript Expert"
+model: sonnet
 version: "1.0.0"
 inherits: "base"
 provider:
