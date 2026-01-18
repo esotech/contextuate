@@ -400,6 +400,9 @@ async function initCommand(platformArgs, options) {
                     { target: 'docs/ai/agents', link: '.claude/agents' },
                     { target: 'docs/ai/hooks', link: '.claude/hooks' },
                     { target: 'docs/ai/skills', link: '.claude/skills' },
+                    // Link .contextuate so relative paths from agents work correctly
+                    // (e.g., ../.contextuate/agents/base.md resolves properly)
+                    { target: 'docs/ai/.contextuate', link: '.claude/.contextuate' },
                 ];
                 for (const symlink of symlinks) {
                     await createSymlink(symlink.target, symlink.link);

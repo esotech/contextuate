@@ -113,7 +113,7 @@ Bad: Sequential Task calls when work is independent
 
 When multiple agents may modify the same files, use the **Intent-First Locking Protocol**.
 
-> **Full Protocol:** [agent-workflow.md](.contextuate/standards/agent-workflow.md#conflict-avoidance--file-locking)
+> **Full Protocol:** [agent-workflow.md](../.contextuate/standards/agent-workflow.md#conflict-avoidance--file-locking)
 
 ### Quick Reference
 

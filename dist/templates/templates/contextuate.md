@@ -40,9 +40,9 @@ For example, if you need to create a new agent, read `docs/ai/.contextuate/tools
 ### Agent Registry
 | Task Domain    | Agent        | Context File                                                                             |
 | -------------- | ------------ | ---------------------------------------------------------------------------------------- |
-| General Coding | Base Agent   | [.contextuate/agents/base.md](.contextuate/agents/base.md)                               |
-| Documentation  | Docs Expert  | [.contextuate/agents/documentation-expert.md](.contextuate/agents/documentation-expert.md) |
-| Tools Expert   | Tools Expert | [.contextuate/agents/tools-expert.md](.contextuate/agents/tools-expert.md)               |
+| General Coding | Base Agent   | [agents/base.md](agents/base.md)                               |
+| Documentation  | Docs Expert  | [agents/documentation-expert.md](agents/documentation-expert.md) |
+| Tools Expert   | Tools Expert | [agents/tools-expert.md](agents/tools-expert.md)               |
 
 ### Custom Agents
 Custom agents are stored in `docs/ai/agents/`. Create new agents using the Agent Creator tool.
@@ -54,9 +54,9 @@ Custom agents are stored in `docs/ai/agents/`. Create new agents using the Agent
 ### Framework Tools
 | Tool                   | Purpose                       | Instruction Guide                                                                              |
 | ---------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------- |
-| **Standards Detector** | Analyze code to find patterns | [.contextuate/tools/standards-detector.tool.md](.contextuate/tools/standards-detector.tool.md) |
-| **Quickref Generator** | Condense docs for AI usage    | [.contextuate/tools/quickref.tool.md](.contextuate/tools/quickref.tool.md)                     |
-| **Agent Creator**      | Generate new agent personas   | [.contextuate/tools/agent-creator.tool.md](.contextuate/tools/agent-creator.tool.md)           |
+| **Standards Detector** | Analyze code to find patterns | [tools/standards-detector.tool.md](tools/standards-detector.tool.md) |
+| **Quickref Generator** | Condense docs for AI usage    | [tools/quickref.tool.md](tools/quickref.tool.md)                     |
+| **Agent Creator**      | Generate new agent personas   | [tools/agent-creator.tool.md](tools/agent-creator.tool.md)           |
 
 ---
 
@@ -65,16 +65,16 @@ Custom agents are stored in `docs/ai/agents/`. Create new agents using the Agent
 ### Coding Standards
 | Language              | Standards File                                                                                                       |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| PHP                   | [.contextuate/templates/standards/php.standards.md](.contextuate/templates/standards/php.standards.md)               |
-| JavaScript/TypeScript | [.contextuate/templates/standards/javascript.standards.md](.contextuate/templates/standards/javascript.standards.md) |
-| Python                | [.contextuate/templates/standards/python.standards.md](.contextuate/templates/standards/python.standards.md)         |
-| Go                    | [.contextuate/templates/standards/go.standards.md](.contextuate/templates/standards/go.standards.md)                 |
-| Java                  | [.contextuate/templates/standards/java.standards.md](.contextuate/templates/standards/java.standards.md)             |
+| PHP                   | [standards/php.standards.md](standards/php.standards.md)               |
+| JavaScript/TypeScript | [standards/javascript.standards.md](standards/javascript.standards.md) |
+| Python                | [standards/python.standards.md](standards/python.standards.md)         |
+| Go                    | [standards/go.standards.md](standards/go.standards.md)                 |
+| Java                  | [standards/java.standards.md](standards/java.standards.md)             |
 
 Custom standards can be added in `docs/ai/standards/`.
 
 ### Behavioral Guidelines
-**[Behavioral Guidelines](.contextuate/standards/behavioral-guidelines.md)**
+**[Behavioral Guidelines](standards/behavioral-guidelines.md)**
 - Verified Truth: Do not speculate.
 - Minimal Intervention: Only change what is requested.
 
@@ -95,7 +95,7 @@ Custom standards can be added in `docs/ai/standards/`.
 
 ### Multi-Session Tasks
 For complex tasks that span multiple sessions:
-1. Read **[Task Workflow](.contextuate/standards/task-workflow.md)**.
+1. Read **[Task Workflow](standards/task-workflow.md)**.
 2. Create a folder in `docs/ai/tasks/{task-name}/`.
 3. Maintain a `00-project-scope.md` and log files.
 
