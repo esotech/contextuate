@@ -423,7 +423,13 @@ export async function initCommand(platformArgs: string[] | { force?: boolean, ag
         // Copy contextuate.md (main entry point) directly from templates to docs/ai/.contextuate/ (protected)
         await copyFile(path.join(templateSource, 'templates/contextuate.md'), 'docs/ai/.contextuate/contextuate.md');
         // Copy context.md (user customizable) directly from templates to docs/ai/
-        await copyFile(path.join(templateSource, 'templates/context.md'), 'docs/ai/context.md');
+        // IMPORTANT: Never overwrite context.md even with --force, as it contains project-specific context
+        const contextMdPath = 'docs/ai/context.md';
+        if (fs.existsSync(contextMdPath)) {
+            console.log(chalk.yellow(`[WARN] Preserved (project context): ${contextMdPath}`));
+        } else {
+            await copyFile(path.join(templateSource, 'templates/context.md'), contextMdPath);
+        }
         console.log('');
 
         // 5. Generate jump files for selected platforms
