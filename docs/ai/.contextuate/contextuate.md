@@ -29,7 +29,7 @@ This folder (`docs/ai/.contextuate/`) contains the immutable framework definitio
 2.  **Select**: Identify the specific agent, tool, or standard relevant to your current task.
 3.  **Load**: Read only that specific file.
 
-For example, if you need to create a new agent, read `docs/ai/.contextuate/tools/agent-creator.tool.md`. You do not need to read the entire standards library unless you are writing code that specifically requires it.
+For example, if you need to create a new agent, read `docs/ai/.contextuate/tools/agent-creator.md`. You do not need to read the entire standards library unless you are writing code that specifically requires it.
 
 ---
 
@@ -54,29 +54,25 @@ Custom agents are stored in `docs/ai/agents/`. Create new agents using the Agent
 ### Framework Tools
 | Tool                   | Purpose                       | Instruction Guide                                                                              |
 | ---------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------- |
-| **Standards Detector** | Analyze code to find patterns | [tools/standards-detector.tool.md](tools/standards-detector.tool.md) |
-| **Quickref Generator** | Condense docs for AI usage    | [tools/quickref.tool.md](tools/quickref.tool.md)                     |
-| **Agent Creator**      | Generate new agent personas   | [tools/agent-creator.tool.md](tools/agent-creator.tool.md)           |
+| **Standards Detector** | Analyze code to find patterns | [tools/standards-detector.md](tools/standards-detector.md) |
+| **Quickref Generator** | Condense docs for AI usage    | [tools/quickref.md](tools/quickref.md)                     |
+| **Agent Creator**      | Generate new agent personas   | [tools/agent-creator.md](tools/agent-creator.md)           |
 
 ---
 
 ## 4. Standards & Conventions
 
-### Coding Standards
-| Language              | Standards File                                                                                                       |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| PHP                   | [standards/php.standards.md](standards/php.standards.md)               |
-| JavaScript/TypeScript | [standards/javascript.standards.md](standards/javascript.standards.md) |
-| Python                | [standards/python.standards.md](standards/python.standards.md)         |
-| Go                    | [standards/go.standards.md](standards/go.standards.md)                 |
-| Java                  | [standards/java.standards.md](standards/java.standards.md)             |
+### Framework Standards
+| Standard | Purpose | File |
+|----------|---------|------|
+| **Coding Standards** | General coding principles | [standards/coding-standards.md](standards/coding-standards.md) |
+| **Behavioral Guidelines** | AI interaction rules | [standards/behavioral-guidelines.md](standards/behavioral-guidelines.md) |
+| **Task Workflow** | Multi-session task structure | [standards/task-workflow.md](standards/task-workflow.md) |
+| **Agent Workflow** | Multi-agent coordination | [standards/agent-workflow.md](standards/agent-workflow.md) |
+| **Agent Roles** | Specialist agent roster | [standards/agent-roles.md](standards/agent-roles.md) |
 
-Custom standards can be added in `docs/ai/standards/`.
-
-### Behavioral Guidelines
-**[Behavioral Guidelines](standards/behavioral-guidelines.md)**
-- Verified Truth: Do not speculate.
-- Minimal Intervention: Only change what is requested.
+### Project-Specific Standards
+Create language-specific standards in `docs/ai/standards/` using the [Standards Detector](tools/standards-detector.md) tool.
 
 ---
 
@@ -94,10 +90,7 @@ Custom standards can be added in `docs/ai/standards/`.
 | **Custom Commands**     | `docs/ai/commands/`  |
 
 ### Multi-Session Tasks
-For complex tasks that span multiple sessions:
-1. Read **[Task Workflow](standards/task-workflow.md)**.
-2. Create a folder in `docs/ai/tasks/{task-name}/`.
-3. Maintain a `00-project-scope.md` and log files.
+For complex tasks that span multiple sessions, follow the Task Workflow standard (see section 4).
 
 ---
 

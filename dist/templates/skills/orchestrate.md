@@ -35,27 +35,9 @@ For complex or unfamiliar work, use `/pythia` BEFORE `/orchestrate`:
 
 ## Available Specialist Agents
 
-| Agent | Domain | Use For |
-|-------|--------|---------|
-| **pythia** | Planning/Research | Pre-implementation research, ideation, specification |
-| **aegis** | Quality/Review | Code review, best practices |
-| **atlas** | Navigation | Codebase exploration, file search |
-| **canvas** | Frontend/UX | UI components, design systems |
-| **chronicle** | Documentation | Technical writing, changelogs |
-| **chronos** | Data/State | Database admin, caching, state |
-| **cipher** | Data Transform | Data utilities, formatting |
-| **crucible** | Testing | Test writing, coverage |
-| **echo** | Frontend JS | JavaScript, client-side interactions |
-| **forge** | Infrastructure | Scaffolding, DevOps, deployment |
-| **ledger** | Task Mgmt | Multi-step tasks, progress tracking |
-| **meridian** | Schema | Database migrations |
-| **nexus** | Backend | Services, APIs, business logic |
-| **thoth** | Database | Complex queries, schema design |
-| **scribe** | Docs | API docs, user guides |
-| **sentinel** | Security | Validation, permissions, security |
-| **unity** | Version Control | Git, merges, releases |
-| **vox** | Media | WebRTC, streaming, audio/video |
-| **weaver** | Controllers | Page actions, views, permissions |
+> **Agent Roster:** [agent-roles.md](../.contextuate/standards/agent-roles.md)
+
+Read the agent roster for the complete list of specialist agents with their domains and when to use each one.
 
 ## Examples
 

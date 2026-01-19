@@ -1,124 +1,162 @@
-# Project Context
+# Contextuate Project Context
 
-> **Purpose:** User-defined project context for AI assistants. This file contains project-specific identity, tech stack, and custom configurations.
-> **Directive:** This file is linked from the framework entry point (`docs/ai/.contextuate/contextuate.md`). Edit this file freely to customize your project context.
-
----
-
-## File Ownership
-
-| Path | Owner | Editable? |
-|------|-------|-----------|
-| `docs/ai/.contextuate/` | Framework (Contextuate) | No - overwritten on updates |
-| `docs/ai/context.md` | User (You) | Yes - customize freely |
-| `docs/ai/agents/` | User | Yes - your custom agents |
-| `docs/ai/standards/` | User | Yes - your custom standards |
-| `docs/ai/quickrefs/` | User | Yes - your generated quickrefs |
-| `docs/ai/tasks/` | User | Yes - your multi-session tasks |
-
-The `.contextuate/` folder contains immutable framework definitions that bootstrap AI context loading. The framework entry point (`contextuate.md`) links to this file for project-specific details.
+> **Package:** `@esotech/contextuate`
+> **Version:** 2.0.0
+> **Author:** Alexander David Conroy ([@geilt](https://github.com/geilt))
 
 ---
 
-## 1. Project Identity
+## Project Overview
 
-**Project Name:** Contextuate
+Contextuate is a CLI tool and framework that provides standardized AI context for software projects. It creates a structured "brain" that AI coding assistants (Claude Code, Copilot, Cursor, Windsurf, etc.) can understand and use consistently.
 
-**Package:** `@esotech/contextuate`
+**This repository IS the Contextuate framework itself** - both the CLI tool source code and the framework templates it installs.
 
-**Version:** 2.0.0
+### Important: Dogfooding Notice
 
-**Author:** Alexander David Conroy ([@geilt](https://github.com/geilt))
+This project uses Contextuate for its own AI context. However:
 
-**Description:** Standardized AI Context for Software Projects. Contextuate provides a structured "brain" for your project that AI coding assistants (Claude, Copilot, Cursor, Windsurf, etc.) can understand. It standardizes how AI agents receive context, follow coding standards, and execute tasks.
+- **DO NOT** modify files in `docs/ai/.contextuate/` - these are installed copies
+- **DO** modify source templates in `src/templates/` instead
+- Installed files are overwritten when running `npm run build`
+- The source templates (`src/templates/`) are the source of truth
 
-**Tech Stack:**
-- **Languages:** TypeScript, JavaScript, Markdown
-- **Runtime:** Node.js (CommonJS)
-- **CLI Framework:** Commander.js
-- **Web Server:** Fastify (for monitor UI)
-- **UI Framework:** Vue.js (monitor dashboard)
-- **Build Tool:** TypeScript Compiler (tsc), Vite (monitor UI)
-- **Infrastructure:**
-  - WebSockets (ws) - real-time communication
-  - Redis (ioredis) - optional caching/pub-sub
-  - PostgreSQL - optional persistence
+| Location | Purpose | Edit? |
+|----------|---------|-------|
+| `src/templates/` | Source templates (framework code) | Yes |
+| `docs/ai/.contextuate/` | Installed copies (for dogfooding) | No |
+| `docs/ai/context.md` | This file (project-specific) | Yes |
+| `docs/ai/agents/` | User agents (installed from templates) | Modify source |
 
 ---
 
-## 2. Key Concepts
+## Tech Stack
 
-### Framework Bootstrap Pattern
-The entry point for AI context is `docs/ai/.contextuate/contextuate.md`. This file bootstraps the entire framework and links to all resources. AI assistants should read this file first, then selectively load only the context they need for their current task.
-
-### Agent System
-Agents are specialized AI personas with defined capabilities, rules, and context requirements. They are stored in `docs/ai/agents/` and can be executed via `contextuate run <agent-name>`. Agents inherit from a base definition and can have custom tools, standards, and behavioral guidelines.
-
-### Standards & Conventions
-Explicit coding standards are stored in `docs/ai/standards/`. These include language-specific patterns (TypeScript, Python, PHP, Go, Java) and behavioral guidelines that ensure consistent AI output across sessions.
-
-### Quick References (Quickrefs)
-Condensed documentation optimized for AI token limits. Generated using the Quickref Generator tool and stored in `docs/ai/quickrefs/`. These provide essential API references without overwhelming context windows.
-
-### Multi-Session Tasks
-Complex tasks that span multiple AI sessions use a structured workflow. Task state is persisted in `docs/ai/tasks/<task-name>/` with a project scope file and incremental logs, allowing AI to resume work with full context.
-
-### Platform Integration
-Contextuate supports multiple AI platforms through platform-specific configuration files:
-- **Claude Code:** `.claude/` symlink
-- **Cursor:** `.cursor/rules/`
-- **Copilot:** `.github/copilot-instructions.md`
-- **Windsurf:** `.windsurfrules`
-- **Cline/Antigravity/Gemini:** Similar patterns
+| Component | Technology |
+|-----------|------------|
+| Language | TypeScript (CommonJS) |
+| Runtime | Node.js |
+| CLI Framework | Commander.js |
+| Web Server | Fastify (monitor) |
+| WebSocket | ws |
+| UI Framework | Vue.js + Vite (monitor dashboard) |
+| Optional | Redis (ioredis), PostgreSQL |
 
 ---
 
-## 3. Project Structure
+## Project Structure
 
 ```
 contextuate/
-├── src/                    # TypeScript source code
-│   ├── index.ts           # CLI entry point
-│   ├── commands/          # CLI command implementations
-│   │   ├── init.ts        # Initialize framework in project
-│   │   ├── install.ts     # Install templates
-│   │   ├── run.ts         # Execute agents
-│   │   ├── create.ts      # Create new agents
-│   │   ├── index.ts       # Generate file tree index
-│   │   ├── context.ts     # Add files to context
-│   │   └── remove.ts      # Clean up framework files
-│   ├── runtime/           # Agent execution runtime
-│   ├── utils/             # Shared utilities
-│   ├── types/             # TypeScript type definitions
-│   └── monitor/           # Real-time monitoring dashboard
-│       └── ui/            # Vue.js frontend
-├── dist/                  # Compiled output
-├── docs/ai/               # AI context (project-specific)
-│   ├── context.md         # This file
-│   └── .contextuate/      # Framework files
-└── package.json
+├── src/
+│   ├── index.ts              # CLI entry point
+│   ├── commands/             # CLI command implementations
+│   │   ├── init.ts           # Initialize framework in projects
+│   │   ├── install.ts        # Install agents, standards, tools
+│   │   ├── run.ts            # Execute agents
+│   │   ├── create.ts         # Create new agent definitions
+│   │   ├── index.ts          # Generate file tree index
+│   │   ├── context.ts        # Add files to context
+│   │   ├── remove.ts         # Clean up framework files
+│   │   ├── claude.ts         # Claude wrapper management
+│   │   └── monitor.ts        # Monitor commands
+│   ├── monitor/              # Real-time session monitoring
+│   │   ├── daemon/           # Background monitoring daemon
+│   │   ├── server/           # WebSocket + HTTP server
+│   │   ├── hooks/            # Event emission hooks
+│   │   ├── persistence/      # Data storage
+│   │   └── ui/               # Vue.js dashboard
+│   ├── runtime/              # Agent execution runtime
+│   ├── templates/            # Framework templates (installed to projects)
+│   │   ├── agents/           # Specialist agent definitions
+│   │   ├── framework-agents/ # Base framework agents
+│   │   ├── standards/        # Coding/behavioral standards
+│   │   ├── tools/            # AI tool guides
+│   │   ├── skills/           # Skill definitions
+│   │   └── templates/        # Platform files + contextuate.md
+│   ├── types/                # TypeScript type definitions
+│   └── utils/                # Shared utilities
+├── dist/                     # Compiled output
+└── docs/ai/                  # AI context (dogfooding)
 ```
 
 ---
 
-## 4. CLI Commands
+## CLI Commands
 
+### Framework Setup
 | Command | Description |
 |---------|-------------|
-| `contextuate init` | Initialize framework in a project |
-| `contextuate install` | Install templates (agents, standards, tools) |
-| `contextuate run <agent>` | Execute an agent with optional goal/task |
-| `contextuate create-agent` | Create a new agent definition |
-| `contextuate index` | Generate project structure file tree |
+| `contextuate init [platforms...]` | Initialize framework in a project |
+| `contextuate remove` | Remove unmodified platform files |
+
+### Content Management
+| Command | Description |
+|---------|-------------|
+| `contextuate install agents` | Install agent definitions |
+| `contextuate install standards` | Install coding standards |
+| `contextuate install tools` | Install AI tool guides |
+| `contextuate install skills` | Install skill definitions |
+| `contextuate index` | Generate project structure index |
 | `contextuate add-context` | Interactively add files to context |
-| `contextuate remove` | Remove framework files |
+
+### Agent Execution
+| Command | Description |
+|---------|-------------|
+| `contextuate run <agent>` | Execute an agent with optional goal |
+| `contextuate create-agent [name]` | Create a new agent definition |
+
+### Monitor System
+| Command | Description |
+|---------|-------------|
+| `contextuate monitor init` | Initialize monitor configuration |
+| `contextuate monitor start` | Start the monitor server |
+| `contextuate monitor stop` | Stop the monitor server |
+| `contextuate monitor status` | Check monitor status |
+| `contextuate monitor daemon start` | Start background daemon |
+| `contextuate monitor daemon stop` | Stop background daemon |
+
+### Claude Integration
+| Command | Description |
+|---------|-------------|
+| `contextuate claude [goal]` | Launch Claude with PTY wrapper |
+| `contextuate claude list` | List active Claude wrappers |
+| `contextuate claude kill <id>` | Kill a specific wrapper |
 
 ---
 
-## 5. Resources
+## Key Source Files
+
+| File | Purpose |
+|------|---------|
+| `src/index.ts` | CLI entry, command registration |
+| `src/commands/init.ts` | Framework installation logic |
+| `src/commands/run.ts` | Agent execution runtime |
+| `src/monitor/daemon/index.ts` | Monitoring daemon |
+| `src/monitor/server/broker.ts` | Event brokering |
+| `src/monitor/ui/src/main.ts` | Dashboard entry |
+
+---
+
+## Development Notes
+
+### Build Process
+- `npm run build` - Compiles TypeScript and copies `src/templates/` to `dist/templates/`
+- `npm run build:monitor-ui` - Builds the Vue.js monitor dashboard
+- `npm run build:all` - Full build including UI
+
+### Template Development
+When modifying framework templates (agents, standards, tools, skills):
+1. Edit files in `src/templates/`
+2. Run `npm run build`
+3. Copy updated files to `docs/ai/.contextuate/` for testing (or re-run init)
+
+**Never edit `docs/ai/.contextuate/` directly** - changes will be lost on next build.
+
+---
+
+## Links
 
 - **Repository:** https://github.com/esotech/contextuate
-- **Issue Tracker:** https://github.com/esotech/contextuate/issues
 - **Documentation:** https://contextuate.md
-- **npm Package:** https://www.npmjs.com/package/@esotech/contextuate
-- **License:** MIT
+- **npm:** https://www.npmjs.com/package/@esotech/contextuate

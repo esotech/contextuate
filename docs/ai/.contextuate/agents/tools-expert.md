@@ -24,9 +24,9 @@ Guides that AI assistants follow to perform tasks.
 
 | Tool | Purpose | Guide |
 |------|---------|-------|
-| Quickref Generator | Generate condensed references from docs | [quickref.tool.md](../tools/quickref.tool.md) |
-| Standards Detector | Analyze code to detect coding standards | [standards-detector.tool.md](../tools/standards-detector.tool.md) |
-| Agent Creator | Create new AI agent definitions | [agent-creator.tool.md](../tools/agent-creator.tool.md) |
+| Quickref Generator | Generate condensed references from docs | [quickref.md](../tools/quickref.md) |
+| Standards Detector | Analyze code to detect coding standards | [standards-detector.md](../tools/standards-detector.md) |
+| Agent Creator | Create new AI agent definitions | [agent-creator.md](../tools/agent-creator.md) |
 
 ### Framework Scripts (`docs/ai/.contextuate/bin/`)
 
@@ -47,7 +47,7 @@ Generates AI-friendly quick references from full documentation.
 
 **Type:** AI Tool Guide (not a script)
 
-**Guide Location:** `docs/ai/.contextuate/tools/quickref.tool.md`
+**Guide Location:** `docs/ai/.contextuate/tools/quickref.md`
 
 **How to use:**
 1. Read the tool guide
@@ -71,7 +71,7 @@ Analyzes project source files to detect and document coding standards.
 
 **Type:** AI Tool Guide (not a script)
 
-**Guide Location:** `docs/ai/.contextuate/tools/standards-detector.tool.md`
+**Guide Location:** `docs/ai/.contextuate/tools/standards-detector.md`
 
 **How to use:**
 1. Read the tool guide
@@ -99,7 +99,7 @@ Creates new AI agent definitions following framework standards.
 
 **Type:** AI Tool Guide (not a script)
 
-**Guide Location:** `docs/ai/.contextuate/tools/agent-creator.tool.md`
+**Guide Location:** `docs/ai/.contextuate/tools/agent-creator.md`
 
 **How to use:**
 1. Read the tool guide
@@ -234,7 +234,7 @@ chmod +x ./docs/ai/.contextuate/bin/*.sh
 
 To add a new AI tool guide:
 
-1. Create `docs/ai/.contextuate/tools/{name}.tool.md`
+1. Create `docs/ai/.contextuate/tools/{name}.md`
 2. Follow the structure:
    - When to use
    - Input requirements

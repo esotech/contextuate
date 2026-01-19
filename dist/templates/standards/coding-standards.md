@@ -8,27 +8,17 @@
 
 When looking up coding standards for a specific language, follow this order:
 
-1. **User Standards (First Priority)**
-   Check `docs/ai/standards/{language}.standards.md`
+1. **Project Standards (First Priority)**
+   Look for `docs/ai/standards/{language}.standards.md` in the project
    - Example: `docs/ai/standards/php.standards.md`
-   - These are project-specific customizations
+   - These are project-specific customizations created by the user
 
-2. **Framework Standards (Fallback)**
-   Check `docs/ai/.context/templates/standards/{language}.standards.md`
-   - Example: `docs/ai/.context/templates/standards/php.standards.md`
-   - These are framework-provided defaults
-
-3. **General Principles (Always Apply)**
+2. **General Principles (Always Apply)**
    The general principles below always apply regardless of language.
 
-### Supported Framework Standards
+### Creating Language-Specific Standards
 
-| Language | Template Location |
-|----------|-------------------|
-| PHP | `templates/standards/php.standards.md` |
-| JavaScript/TypeScript | `templates/standards/javascript.standards.md` |
-
-*Use the [Standards Detector](../tools/standards-detector.tool.md) to generate project-specific standards.*
+Use the [Standards Detector](../tools/standards-detector.md) to analyze your codebase and generate project-specific standards automatically.
 
 ---
 
@@ -149,18 +139,11 @@ ORDER BY column_name;
 To customize standards for your project:
 
 1. **Run Standards Detector** (recommended)
-   Have AI analyze your codebase using the [Standards Detector](../tools/standards-detector.tool.md) tool.
+   Have AI analyze your codebase using the [Standards Detector](../tools/standards-detector.md) tool.
    This creates files in `docs/ai/standards/` based on your existing code.
 
-2. **Copy and Modify Template**
-   Copy a framework template to `docs/ai/standards/`:
-   ```bash
-   cp docs/ai/.context/templates/standards/php.standards.md docs/ai/standards/
-   ```
-   Then customize the placeholders.
-
-3. **Create from Scratch**
-   Create `docs/ai/standards/{language}.standards.md` with your own format.
+2. **Create from Scratch**
+   Create `docs/ai/standards/{language}.standards.md` with your own format following the patterns in this document.
 
 ### Common Customizations
 

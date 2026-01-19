@@ -31,7 +31,7 @@ Analyzes your codebase to detect and document coding standards.
 3. Analyzes patterns (indentation, naming, braces)
 4. Creates standards files in `docs/ai/standards/`
 
-**Guide:** [tools/standards-detector.tool.md](tools/standards-detector.tool.md)
+**Guide:** [tools/standards-detector.md](tools/standards-detector.md)
 
 ---
 
@@ -55,7 +55,7 @@ Creates condensed, AI-friendly references from large documentation files.
 - Methods are frequently looked up
 - AI needs method awareness without full context
 
-**Guide:** [tools/quickref.tool.md](tools/quickref.tool.md)
+**Guide:** [tools/quickref.md](tools/quickref.md)
 
 ---
 
@@ -74,7 +74,7 @@ Creates new AI agent definitions following Contextuate patterns.
 3. Generates agent file from template
 4. Outputs to `docs/ai/agents/{domain}-expert.md`
 
-**Guide:** [tools/agent-creator.tool.md](tools/agent-creator.tool.md)
+**Guide:** [tools/agent-creator.md](tools/agent-creator.md)
 
 ---
 
@@ -162,7 +162,7 @@ Updates framework files while preserving your customizations.
 | Type | Purpose | Location |
 |------|---------|----------|
 | **Agent** | Persona with expertise, decision-making | `agents/*.md` |
-| **Tool** | Step-by-step process guide | `tools/*.tool.md` |
+| **Tool** | Step-by-step process guide | `tools/*.md` |
 | **Skill** | Slash command that activates behaviors | `skills/*.md` |
 
 **Agents** define *who* the AI is acting as (e.g., "documentation expert").

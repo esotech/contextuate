@@ -46,7 +46,7 @@ Before creating the agent, ensure documentation exists:
 | Comprehensive docs | `docs/{topic}.md` |
 | API/method reference | `docs/ai/quickrefs/{name}.quickref.md` |
 
-Use the [Quickref Generator](quickref.tool.md) if needed.
+Use the [Quickref Generator](quickref.md) if needed.
 
 ### Step 3: Create Agent File
 

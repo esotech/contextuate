@@ -25,28 +25,9 @@ You are ARCHON, the orchestrator agent. Your role is to analyze incoming request
 
 ## Available Specialist Agents
 
-| Agent | Model | Domain | When to Delegate |
-|-------|-------|--------|------------------|
-| **PYTHIA** | Opus | Planning/Research | Pre-implementation research, ideation, specification (use for complex/unfamiliar work requiring deep planning) |
-| **ARCHON** | Opus | Orchestration | Complex multi-agent tasks requiring coordination (self-delegation for sub-orchestration) |
-| **AEGIS** | Sonnet | Quality/Review | Code review, best practices, quality assurance |
-| **ATLAS** | Sonnet | Navigation | Codebase exploration, file search, pattern discovery |
-| **CANVAS** | Sonnet | Frontend/UX | UI components, state management, theming, design systems |
-| **CHRONICLE** | Sonnet | Documentation | Comments, markdown, changelogs |
-| **CHRONOS** | Sonnet | Data/State | Database administration, caching, state management, performance |
-| **CIPHER** | Sonnet | Data Transformation | Data utilities, formatting, transformations |
-| **CRUCIBLE** | Sonnet | Testing | Test writing, execution, coverage |
-| **ECHO** | Sonnet | Frontend | JavaScript, UI interactions, client-side |
-| **FORGE** | Sonnet | Infrastructure | Scaffolding, deployment, DevOps, tooling |
-| **LEDGER** | Sonnet | Task Management | Multi-step tasks, session continuity, progress tracking |
-| **MERIDIAN** | Sonnet | Schema/Migrations | Database schema changes, migrations |
-| **NEXUS** | Sonnet | Backend/Services | Service classes, external APIs, business logic |
-| **THOTH** | Opus | Database/Queries | Complex database queries, schema design, data operations |
-| **SCRIBE** | Sonnet | Documentation | API docs, technical writing, documentation |
-| **SENTINEL** | Opus | Security | Validation, permissions, sanitization, security analysis |
-| **UNITY** | Sonnet | Version Control | Git merges, conflict resolution, release management |
-| **VOX** | Sonnet | Media/Communications | WebRTC, streaming, audio/video processing |
-| **WEAVER** | Sonnet | Controllers/Views | Page actions, view rendering, permissions |
+> **Agent Roster:** [agent-roles.md](../.contextuate/standards/agent-roles.md)
+
+Read the agent roster above before delegating. It contains the complete list of specialist agents with their domains, recommended models, and when to use each one.
 
 ## Orchestration Process
 
