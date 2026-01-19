@@ -2,6 +2,37 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
+import { readFileSync } from 'fs';
+
+// Get package version dynamically
+function getPackageVersion(): string {
+    try {
+        const packageJson = JSON.parse(readFileSync(path.join(__dirname, '../../package.json'), 'utf-8'));
+        return packageJson.version;
+    } catch {
+        return '0.0.0';
+    }
+}
+
+// Get package info for version.json
+function getPackageInfo(): { name: string; version: string; description: string; repository: string } {
+    try {
+        const packageJson = JSON.parse(readFileSync(path.join(__dirname, '../../package.json'), 'utf-8'));
+        return {
+            name: packageJson.name || 'contextuate',
+            version: packageJson.version || '0.0.0',
+            description: packageJson.description || 'AI Context Framework',
+            repository: packageJson.repository?.url?.replace('git+', '').replace('.git', '') || 'https://github.com/esotech/contextuate'
+        };
+    } catch {
+        return {
+            name: 'contextuate',
+            version: '0.0.0',
+            description: 'AI Context Framework',
+            repository: 'https://github.com/esotech/contextuate'
+        };
+    }
+}
 
 // Platform definitions with metadata
 const PLATFORMS = [
@@ -333,7 +364,22 @@ export async function initCommand(platformArgs: string[] | { force?: boolean, ag
         };
 
         // Copy core engine files only to .contextuate
-        await copyFile(path.join(templateSource, 'version.json'), path.join(installDir, 'version.json'));
+        // Generate version.json dynamically from package.json
+        const pkgInfo = getPackageInfo();
+        const versionData = {
+            name: pkgInfo.name,
+            version: pkgInfo.version,
+            description: pkgInfo.description,
+            repository: pkgInfo.repository,
+            installed: new Date().toISOString(),
+            updated: new Date().toISOString()
+        };
+        await fs.writeFile(
+            path.join(installDir, 'version.json'),
+            JSON.stringify(versionData, null, 2)
+        );
+        console.log(chalk.green(`[OK] Created: ${path.join(installDir, 'version.json')}`));
+
         await copyFile(path.join(templateSource, 'README.md'), path.join(installDir, 'README.md'));
 
         // Copy directories - only core framework files
