@@ -60,10 +60,10 @@ async function discoverTemplates() {
             .filter(f => f.endsWith('.md'))
             .map(f => f.replace('.md', ''));
     }
-    // Discover skills
-    const skillsDir = path_1.default.join(templateSource, 'skills');
-    if (fs_extra_1.default.existsSync(skillsDir)) {
-        const files = await fs_extra_1.default.readdir(skillsDir);
+    // Discover skills (stored in commands/ directory)
+    const commandsDir = path_1.default.join(templateSource, 'commands');
+    if (fs_extra_1.default.existsSync(commandsDir)) {
+        const files = await fs_extra_1.default.readdir(commandsDir);
         result.skills = files
             .filter(f => f.endsWith('.md'))
             .map(f => f.replace('.md', ''));
@@ -188,7 +188,7 @@ async function installTools(names, force) {
     return installed;
 }
 // Install skills (slash commands)
-// Skills are installed to docs/ai/skills/ and symlinked to docs/ai/commands/ for Claude Code
+// Skills are installed directly to docs/ai/commands/ for Claude Code
 async function installSkills(names, force) {
     const templateSource = getTemplateSource();
     const templates = await discoverTemplates();
@@ -197,26 +197,10 @@ async function installSkills(names, force) {
         const normalized = name.toLowerCase().trim().replace(/^\//, ''); // Remove leading slash if present
         const matched = templates.skills.find(s => s.toLowerCase() === normalized);
         if (matched) {
-            const src = path_1.default.join(templateSource, 'skills', `${matched}.md`);
-            const skillDest = path_1.default.join('docs/ai/skills', `${matched}.md`);
-            const commandDest = path_1.default.join('docs/ai/commands', `${matched}.md`);
-            // Install skill file to skills/
-            if (await copyFile(src, skillDest, force)) {
+            const src = path_1.default.join(templateSource, 'commands', `${matched}.md`);
+            const dest = path_1.default.join('docs/ai/commands', `${matched}.md`);
+            if (await copyFile(src, dest, force)) {
                 installed++;
-                // Create symlink in commands/ for Claude Code to pick up
-                await fs_extra_1.default.ensureDir(path_1.default.dirname(commandDest));
-                const symlinkTarget = path_1.default.relative(path_1.default.dirname(commandDest), skillDest);
-                if (fs_extra_1.default.existsSync(commandDest)) {
-                    if (force) {
-                        await fs_extra_1.default.remove(commandDest);
-                    }
-                    else {
-                        console.log(chalk_1.default.yellow(`[SKIP] Symlink already exists: ${commandDest}`));
-                        continue;
-                    }
-                }
-                await fs_extra_1.default.symlink(symlinkTarget, commandDest);
-                console.log(chalk_1.default.green(`[OK] Symlinked: ${commandDest} -> ${symlinkTarget}`));
             }
         }
         else {

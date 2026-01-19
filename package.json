@@ -11,7 +11,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc && mkdir -p dist/templates && cp -r src/templates/* dist/templates/ && mkdir -p dist/monitor/hooks && cp src/monitor/hooks/emit-event.js dist/monitor/hooks/ && chmod +x dist/index.js dist/monitor/hooks/emit-event.js dist/monitor/daemon/cli.js dist/monitor/server/cli.js",
+    "build": "tsc && rm -rf dist/templates && mkdir -p dist/templates && cp -r src/templates/* dist/templates/ && mkdir -p dist/monitor/hooks && cp src/monitor/hooks/emit-event.js dist/monitor/hooks/ && chmod +x dist/index.js dist/monitor/hooks/emit-event.js dist/monitor/daemon/cli.js dist/monitor/server/cli.js",
     "build:monitor-ui": "cd src/monitor/ui && npm install && npm run build",
     "build:all": "npm run build && npm run build:monitor-ui",
     "prepublishOnly": "npm run build:all"

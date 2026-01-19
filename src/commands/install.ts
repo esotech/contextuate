@@ -74,10 +74,10 @@ async function discoverTemplates(): Promise<{
             .map(f => f.replace('.md', ''));
     }
 
-    // Discover skills
-    const skillsDir = path.join(templateSource, 'skills');
-    if (fs.existsSync(skillsDir)) {
-        const files = await fs.readdir(skillsDir);
+    // Discover skills (stored in commands/ directory)
+    const commandsDir = path.join(templateSource, 'commands');
+    if (fs.existsSync(commandsDir)) {
+        const files = await fs.readdir(commandsDir);
         result.skills = files
             .filter(f => f.endsWith('.md'))
             .map(f => f.replace('.md', ''));
@@ -221,7 +221,7 @@ async function installTools(names: string[], force: boolean): Promise<number> {
 }
 
 // Install skills (slash commands)
-// Skills are installed to docs/ai/skills/ and symlinked to docs/ai/commands/ for Claude Code
+// Skills are installed directly to docs/ai/commands/ for Claude Code
 async function installSkills(names: string[], force: boolean): Promise<number> {
     const templateSource = getTemplateSource();
     const templates = await discoverTemplates();
@@ -232,29 +232,10 @@ async function installSkills(names: string[], force: boolean): Promise<number> {
         const matched = templates.skills.find(s => s.toLowerCase() === normalized);
 
         if (matched) {
-            const src = path.join(templateSource, 'skills', `${matched}.md`);
-            const skillDest = path.join('docs/ai/skills', `${matched}.md`);
-            const commandDest = path.join('docs/ai/commands', `${matched}.md`);
-
-            // Install skill file to skills/
-            if (await copyFile(src, skillDest, force)) {
+            const src = path.join(templateSource, 'commands', `${matched}.md`);
+            const dest = path.join('docs/ai/commands', `${matched}.md`);
+            if (await copyFile(src, dest, force)) {
                 installed++;
-
-                // Create symlink in commands/ for Claude Code to pick up
-                await fs.ensureDir(path.dirname(commandDest));
-                const symlinkTarget = path.relative(path.dirname(commandDest), skillDest);
-
-                if (fs.existsSync(commandDest)) {
-                    if (force) {
-                        await fs.remove(commandDest);
-                    } else {
-                        console.log(chalk.yellow(`[SKIP] Symlink already exists: ${commandDest}`));
-                        continue;
-                    }
-                }
-
-                await fs.symlink(symlinkTarget, commandDest);
-                console.log(chalk.green(`[OK] Symlinked: ${commandDest} -> ${symlinkTarget}`));
             }
         } else {
             console.log(chalk.yellow(`[WARN] Skill "${name}" not found. Use --list to see available skills.`));
