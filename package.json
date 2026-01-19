@@ -1,6 +1,6 @@
 {
   "name": "@esotech/contextuate",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "**Standardized AI Context for Software Projects**",
   "main": "dist/index.js",
   "bin": {
