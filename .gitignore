@@ -26,20 +26,26 @@ vendor/
 *.env
 .env.*
 
-# Contextuate - Framework files
+# Contextuate - Installed Framework Files (regenerated on init/build)
 docs/ai/.contextuate/
+docs/ai/agents/
+docs/ai/commands/
+docs/ai/skills/
+docs/ai/standards/
+docs/ai/tasks/
+docs/ai/sessions/
+docs/ai/hooks/
+docs/ai/project-structure.md
 
-# Contextuate - Generated Artifacts (DO NOT EDIT)
+# Contextuate - Platform Jump Files (regenerated on init)
 CLAUDE.md
 AGENTS.md
 GEMINI.md
 .claude/
 .clinerules/
-.cursor/rules/project.mdc
-.windsurf/rules/project.md
+.cursor/rules/
+.windsurf/
 .github/copilot-instructions.md
-.playwright-mcp/
 
-#Contextuate - Dev Files
-docs/ai/agents/*
-docs/ai/tasks/*
+# Playwright MCP
+.playwright-mcp/
