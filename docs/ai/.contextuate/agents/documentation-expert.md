@@ -20,8 +20,8 @@ You are responsible for creating and maintaining documentation for both humans a
 
 In addition to base agent context, you MUST read:
 
-1. **[Task Workflow](../.contextuate/standards/task-workflow.md)** - For task documentation structure
-2. **[Quickref Tool](../.contextuate/tools/quickref.tool.md)** - For generating AI-friendly references
+1. **[Task Workflow](../standards/task-workflow.md)** - For task documentation structure
+2. **[Quickref Tool](../tools/quickref.tool.md)** - For generating AI-friendly references
 
 ---
 
@@ -192,7 +192,7 @@ For AI assistants. Condensed, scannable method/API signatures.
 
 ## Quickref Generation
 
-Use the [Quickref Tool](../.contextuate/tools/quickref.tool.md) to generate AI-friendly references:
+Use the [Quickref Tool](../tools/quickref.tool.md) to generate AI-friendly references:
 
 1. Read the tool guide
 2. Read the source documentation

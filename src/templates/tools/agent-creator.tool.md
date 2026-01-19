@@ -78,7 +78,7 @@ Verify:
 ```markdown
 # {Name} Expert Agent
 
-> **Inherits:** [Base Agent Configuration](../.context/agents/base.md)
+> **Inherits:** [Base Agent Configuration](../.contextuate/agents/base.md)
 > **Role:** {One-line description of expertise}
 > **Domain:** `{file patterns covered}`
 
@@ -179,7 +179,7 @@ File: `docs/ai/agents/database-expert.md`
 ```markdown
 # Database Expert Agent
 
-> **Inherits:** [Base Agent Configuration](../.context/agents/base.md)
+> **Inherits:** [Base Agent Configuration](../.contextuate/agents/base.md)
 > **Role:** Expert in database operations, queries, and schema design
 > **Domain:** `*.sql`, `migrations/`, `**/db/**`
 

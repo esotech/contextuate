@@ -24,9 +24,9 @@ Guides that AI assistants follow to perform tasks.
 
 | Tool | Purpose | Guide |
 |------|---------|-------|
-| Quickref Generator | Generate condensed references from docs | [quickref.tool.md](../.contextuate/tools/quickref.tool.md) |
-| Standards Detector | Analyze code to detect coding standards | [standards-detector.tool.md](../.contextuate/tools/standards-detector.tool.md) |
-| Agent Creator | Create new AI agent definitions | [agent-creator.tool.md](../.contextuate/tools/agent-creator.tool.md) |
+| Quickref Generator | Generate condensed references from docs | [quickref.tool.md](../tools/quickref.tool.md) |
+| Standards Detector | Analyze code to detect coding standards | [standards-detector.tool.md](../tools/standards-detector.tool.md) |
+| Agent Creator | Create new AI agent definitions | [agent-creator.tool.md](../tools/agent-creator.tool.md) |
 
 ### Framework Scripts (`docs/ai/.contextuate/bin/`)
 
