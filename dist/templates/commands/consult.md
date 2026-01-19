@@ -6,7 +6,7 @@ Activate the PYTHIA agent for strategic planning, research, and specification be
 
 **IMPORTANT:** Before proceeding, read and adopt the PYTHIA agent persona:
 
-**Agent Definition:** [agents/pythia.md](../agents/pythia.md)
+**Agent Definition:** [../agents/pythia.md](../agents/pythia.md)
 
 Read the agent file above, then follow its guidelines for research, synthesis, and specification creation.
 

@@ -11,7 +11,7 @@ provider:
 
 # Echo (Frontend/JavaScript)
 
-> **Inherits:** [Base Agent](../.contextuate/agents/base.md)
+> **Inherits:** [../.contextuate/agents/base.md](../.contextuate/agents/base.md)
 
 **Role**: Expert in JavaScript, frontend interactions, and UI components
 **Domain**: Client-side functionality, AJAX interactions, UI components

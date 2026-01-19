@@ -11,7 +11,7 @@ provider:
 
 # PYTHIA - Strategic Planning Oracle
 
-> **Inherits:** [Base Agent](../.contextuate/agents/base.md)
+> **Inherits:** [../.contextuate/agents/base.md](../.contextuate/agents/base.md)
 > **Role:** Pre-implementation planning, research synthesis, and abstract ideation
 > **Domain:** Strategic thinking, web research, concept synthesis, architectural planning
 

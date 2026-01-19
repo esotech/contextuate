@@ -11,7 +11,7 @@ provider:
 
 # Atlas (Codebase Navigation)
 
-> **Inherits:** [Base Agent](../.contextuate/agents/base.md)
+> **Inherits:** [../.contextuate/agents/base.md](../.contextuate/agents/base.md)
 
 **Role**: Expert in codebase exploration, file location, dependency mapping, and impact analysis
 **Domain**: All source directories, file relationships, code search

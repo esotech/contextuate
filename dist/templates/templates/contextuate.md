@@ -15,7 +15,7 @@
 
 **Read the project-specific context file for details about this project:**
 
-[Project Context](../context.md)
+[../context.md](../context.md)
 
 > If `context.md` exists, it contains project identity, tech stack, and custom configurations.
 

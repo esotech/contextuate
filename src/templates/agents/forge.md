@@ -11,7 +11,7 @@ provider:
 
 # FORGE - Scaffolding & Infrastructure Agent
 
-> **Inherits:** [Base Agent](../.contextuate/agents/base.md)
+> **Inherits:** [../.contextuate/agents/base.md](../.contextuate/agents/base.md)
 > **Role:** Expert in creating new files, boilerplate generation, infrastructure, and file structure
 > **Domain:** File scaffolding, naming conventions, class structure, DevOps, CI/CD
 

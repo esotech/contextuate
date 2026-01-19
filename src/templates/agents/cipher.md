@@ -11,7 +11,7 @@ provider:
 
 # Cipher (Data Transformation)
 
-> **Inherits:** [Base Agent](../.contextuate/agents/base.md)
+> **Inherits:** [../.contextuate/agents/base.md](../.contextuate/agents/base.md)
 
 **Role**: Expert in data utilities, formatting, array manipulation, and type conversion
 **Domain**: Data transformation patterns, formatting utilities, validation

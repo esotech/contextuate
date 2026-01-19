@@ -11,7 +11,7 @@ provider:
 
 # Unity (Git & Conflict Resolution)
 
-> **Inherits:** [Base Agent](../.contextuate/agents/base.md)
+> **Inherits:** [../.contextuate/agents/base.md](../.contextuate/agents/base.md)
 
 *   **Role**: Release Manager & Version Control Specialist.
 *   **Responsibilities**:

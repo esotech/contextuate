@@ -11,7 +11,7 @@ provider:
 
 # Canvas (Frontend & Experience)
 
-> **Inherits:** [Base Agent](../.contextuate/agents/base.md)
+> **Inherits:** [../.contextuate/agents/base.md](../.contextuate/agents/base.md)
 
 *   **Role**: Senior Frontend Engineer.
 *   **Responsibilities**:

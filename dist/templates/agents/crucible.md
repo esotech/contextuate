@@ -11,7 +11,7 @@ provider:
 
 # Crucible (Testing)
 
-> **Inherits:** [Tools Expert](../.contextuate/agents/tools-expert.md)
+> **Inherits:** [../.contextuate/agents/tools-expert.md](../.contextuate/agents/tools-expert.md)
 
 **Role**: Expert in test writing, test execution, coverage analysis, and test fixtures
 **Domain**: Test files, testing frameworks, test patterns, mocking

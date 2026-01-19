@@ -6,7 +6,7 @@ Activate the ARCHON agent for coordinated multi-agent task execution.
 
 **IMPORTANT:** Before proceeding, read and adopt the ARCHON agent persona:
 
-**Agent Definition:** [agents/archon.md](../agents/archon.md)
+**Agent Definition:** [../agents/archon.md](../agents/archon.md)
 
 Read the agent file above, then follow its guidelines for task analysis, delegation, and synthesis.
 
@@ -35,7 +35,7 @@ For complex or unfamiliar work, use `/consult` BEFORE `/orchestrate`:
 
 ## Available Specialist Agents
 
-> **Agent Roster:** [agent-roles.md](../.contextuate/standards/agent-roles.md)
+> **Agent Roster:** [../.contextuate/standards/agent-roles.md](../.contextuate/standards/agent-roles.md)
 
 Read the agent roster for the complete list of specialist agents with their domains and when to use each one.
 
@@ -95,7 +95,7 @@ Bad: Sequential Task calls when work is independent
 
 When multiple agents may modify the same files, use the **Intent-First Locking Protocol**.
 
-> **Full Protocol:** [agent-workflow.md](../.contextuate/standards/agent-workflow.md#conflict-avoidance--file-locking)
+> **Full Protocol:** [../.contextuate/standards/agent-workflow.md#conflict-avoidance--file-locking](../.contextuate/standards/agent-workflow.md#conflict-avoidance--file-locking)
 
 ### Quick Reference
 

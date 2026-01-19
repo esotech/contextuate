@@ -11,7 +11,7 @@ provider:
 
 # LEDGER - Task Management Agent
 
-> **Inherits:** [Base Agent](../.contextuate/agents/base.md)
+> **Inherits:** [../.contextuate/agents/base.md](../.contextuate/agents/base.md)
 > **Role:** Task planning, progress tracking, session continuity, and work logging
 > **Domain:** TodoWrite tool, task directory structure, session handoffs
 

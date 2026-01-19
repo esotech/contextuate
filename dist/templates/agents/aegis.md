@@ -11,7 +11,7 @@ provider:
 
 # Aegis (Code Review & Quality)
 
-> **Inherits:** [Base Agent](../.contextuate/agents/base.md)
+> **Inherits:** [../.contextuate/agents/base.md](../.contextuate/agents/base.md)
 
 **Role**: Expert in code review, quality assessment, best practices, and bug analysis
 **Domain**: Code quality, patterns, anti-patterns, technical debt

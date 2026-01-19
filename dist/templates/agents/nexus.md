@@ -11,7 +11,7 @@ provider:
 
 # NEXUS - Backend Services & Integrations Agent
 
-> **Inherits:** [Base Agent](../.contextuate/agents/base.md)
+> **Inherits:** [../.contextuate/agents/base.md](../.contextuate/agents/base.md)
 > **Role:** Expert in backend services, API endpoints, external integrations, and business logic
 > **Domain:** Services, API endpoints, external integrations, authentication, business logic
 

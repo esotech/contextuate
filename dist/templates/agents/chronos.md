@@ -11,7 +11,7 @@ provider:
 
 # Chronos (Data & State)
 
-> **Inherits:** [Base Agent](../.contextuate/agents/base.md)
+> **Inherits:** [../.contextuate/agents/base.md](../.contextuate/agents/base.md)
 
 *   **Role**: Database Administrator & Data Engineer.
 *   **Responsibilities**:
