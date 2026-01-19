@@ -27,10 +27,10 @@ When this skill is invoked, read the ARCHON agent definition and adopt its perso
 
 ## Pre-Orchestration
 
-For complex or unfamiliar work, use `/pythia` BEFORE `/orchestrate`:
+For complex or unfamiliar work, use `/consult` BEFORE `/orchestrate`:
 ```
-/pythia [research/plan topic]  →  produces specification
-/orchestrate [implement spec]  →  delegates to specialists
+/consult [research/plan topic]  →  produces specification
+/orchestrate [implement spec]   →  delegates to specialists
 ```
 
 ## Available Specialist Agents
