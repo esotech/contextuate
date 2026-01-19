@@ -61,8 +61,8 @@ async function discoverTemplates(): Promise<{
     if (fs.existsSync(standardsDir)) {
         const files = await fs.readdir(standardsDir);
         result.standards = files
-            .filter(f => f.endsWith('.standards.md'))
-            .map(f => f.replace('.standards.md', ''));
+            .filter(f => f.endsWith('.md'))
+            .map(f => f.replace('.md', ''));
     }
 
     // Discover tools
@@ -70,8 +70,8 @@ async function discoverTemplates(): Promise<{
     if (fs.existsSync(toolsDir)) {
         const files = await fs.readdir(toolsDir);
         result.tools = files
-            .filter(f => f.endsWith('.tool.md'))
-            .map(f => f.replace('.tool.md', ''));
+            .filter(f => f.endsWith('.md'))
+            .map(f => f.replace('.md', ''));
     }
 
     // Discover skills
@@ -183,8 +183,8 @@ async function installStandards(names: string[], force: boolean): Promise<number
         const matched = templates.standards.find(s => s.toLowerCase() === normalized);
 
         if (matched) {
-            const src = path.join(templateSource, 'templates/standards', `${matched}.standards.md`);
-            const dest = path.join('docs/ai/standards', `${matched}.standards.md`);
+            const src = path.join(templateSource, 'templates/standards', `${matched}.md`);
+            const dest = path.join('docs/ai/standards', `${matched}.md`);
             if (await copyFile(src, dest, force)) {
                 installed++;
             }
@@ -207,8 +207,8 @@ async function installTools(names: string[], force: boolean): Promise<number> {
         const matched = templates.tools.find(t => t.toLowerCase() === normalized);
 
         if (matched) {
-            const src = path.join(templateSource, 'tools', `${matched}.tool.md`);
-            const dest = path.join('docs/ai/.contextuate/tools', `${matched}.tool.md`);
+            const src = path.join(templateSource, 'tools', `${matched}.md`);
+            const dest = path.join('docs/ai/.contextuate/tools', `${matched}.md`);
             if (await copyFile(src, dest, force)) {
                 installed++;
             }

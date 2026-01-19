@@ -49,16 +49,16 @@ async function discoverTemplates() {
     if (fs_extra_1.default.existsSync(standardsDir)) {
         const files = await fs_extra_1.default.readdir(standardsDir);
         result.standards = files
-            .filter(f => f.endsWith('.standards.md'))
-            .map(f => f.replace('.standards.md', ''));
+            .filter(f => f.endsWith('.md'))
+            .map(f => f.replace('.md', ''));
     }
     // Discover tools
     const toolsDir = path_1.default.join(templateSource, 'tools');
     if (fs_extra_1.default.existsSync(toolsDir)) {
         const files = await fs_extra_1.default.readdir(toolsDir);
         result.tools = files
-            .filter(f => f.endsWith('.tool.md'))
-            .map(f => f.replace('.tool.md', ''));
+            .filter(f => f.endsWith('.md'))
+            .map(f => f.replace('.md', ''));
     }
     // Discover skills
     const skillsDir = path_1.default.join(templateSource, 'skills');
@@ -154,8 +154,8 @@ async function installStandards(names, force) {
         const normalized = name.toLowerCase().trim();
         const matched = templates.standards.find(s => s.toLowerCase() === normalized);
         if (matched) {
-            const src = path_1.default.join(templateSource, 'templates/standards', `${matched}.standards.md`);
-            const dest = path_1.default.join('docs/ai/standards', `${matched}.standards.md`);
+            const src = path_1.default.join(templateSource, 'templates/standards', `${matched}.md`);
+            const dest = path_1.default.join('docs/ai/standards', `${matched}.md`);
             if (await copyFile(src, dest, force)) {
                 installed++;
             }
@@ -175,8 +175,8 @@ async function installTools(names, force) {
         const normalized = name.toLowerCase().trim();
         const matched = templates.tools.find(t => t.toLowerCase() === normalized);
         if (matched) {
-            const src = path_1.default.join(templateSource, 'tools', `${matched}.tool.md`);
-            const dest = path_1.default.join('docs/ai/.contextuate/tools', `${matched}.tool.md`);
+            const src = path_1.default.join(templateSource, 'tools', `${matched}.md`);
+            const dest = path_1.default.join('docs/ai/.contextuate/tools', `${matched}.md`);
             if (await copyFile(src, dest, force)) {
                 installed++;
             }
