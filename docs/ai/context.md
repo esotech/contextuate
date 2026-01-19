@@ -12,21 +12,38 @@ Contextuate is a CLI tool and framework that provides standardized AI context fo
 
 **This repository IS the Contextuate framework itself** - both the CLI tool source code and the framework templates it installs.
 
-### Important: Dogfooding Notice
+### CRITICAL: This IS the Contextuate Framework Project
 
-This project uses Contextuate for its own AI context. However:
+**⚠️ DO NOT MODIFY FILES IN `docs/ai/` ⚠️**
 
-- **DO NOT** modify files in `docs/ai/.contextuate/` - these are installed copies
-- **DO** modify source templates in `src/templates/` instead
-- Installed files are overwritten when running `npm run build`
-- The source templates (`src/templates/`) are the source of truth
+This repository is the Contextuate framework source code. The `docs/ai/` folder exists only for dogfooding (testing the framework on itself). These files are **installed copies** that get overwritten.
 
-| Location | Purpose | Edit? |
-|----------|---------|-------|
-| `src/templates/` | Source templates (framework code) | Yes |
-| `docs/ai/.contextuate/` | Installed copies (for dogfooding) | No |
-| `docs/ai/context.md` | This file (project-specific) | Yes |
-| `docs/ai/agents/` | User agents (installed from templates) | Modify source |
+**The ONLY editable files are in `src/`:**
+
+| Location | Purpose | Editable? |
+|----------|---------|-----------|
+| `src/templates/agents/` | Agent definitions (source) | ✅ YES |
+| `src/templates/standards/` | Standards (source) | ✅ YES |
+| `src/templates/skills/` | Skills (source) | ✅ YES |
+| `src/templates/tools/` | Tool guides (source) | ✅ YES |
+| `src/commands/` | CLI commands | ✅ YES |
+| `docs/ai/` | Installed copies | ❌ NO |
+| `docs/ai/.contextuate/` | Installed copies | ❌ NO |
+| `docs/ai/agents/` | Installed copies | ❌ NO |
+| `docs/ai/commands/` | Installed copies | ❌ NO |
+| `docs/ai/context.md` | Project-specific context | ✅ YES (this file only) |
+
+**Workflow for making changes:**
+1. Edit source files in `src/templates/`
+2. Run `npm run build` to compile to `dist/`
+3. The `dist/` folder is used by the installer (`npm link` or published package)
+4. To test changes locally, re-run `contextuate init` or manually copy from `dist/templates/`
+
+**Why this matters:**
+- `docs/ai/` files are overwritten by the installer
+- Changes made directly to `docs/ai/` will be lost
+- Other projects installing Contextuate won't get your changes
+- The `src/templates/` → `dist/templates/` → install pipeline is the only way changes propagate
 
 ---
 
@@ -140,18 +157,68 @@ contextuate/
 
 ## Development Notes
 
+### Markdown Link Formatting
+
+**IMPORTANT:** When creating links in markdown files, follow these rules:
+
+1. **Use relative paths** - Always prefer relative pathing over absolute paths
+2. **Description matches path** - The link text must be the same as the relative path
+
+```markdown
+# Correct
+> **Context:** [../.contextuate/standards/task-workflow.md](../.contextuate/standards/task-workflow.md)
+
+# Incorrect
+> **Context:** [Task Workflow](../.contextuate/standards/task-workflow.md)
+```
+
+**Why this matters:**
+- This project uses symlinks that need to maintain correct references
+- AI tools (Claude Code, etc.) read the link description text to determine file paths, not the actual href
+- Using descriptive text like "Task Workflow" causes AI to fail to find the file
+- Matching description to path ensures AI can navigate correctly regardless of symlink resolution
+
+### Commands vs Agents
+
+**Commands should be minimal.** They exist only to invoke agents.
+
+| Component | Purpose | Contains |
+|-----------|---------|----------|
+| **Commands** (`src/templates/commands/`) | Invoke agents | Just the invocation, usage examples |
+| **Agents** (`src/templates/agents/`) | Define behavior | All rules, decision trees, processes |
+
+**Example:**
+- `/orchestrate` command → Just says "read and adopt ARCHON agent"
+- ARCHON agent → Contains all orchestration rules, LEDGER-first requirement, parallel execution, etc.
+
+**Why this separation matters:**
+- Commands are user-facing entry points, keep them simple
+- Agents are reusable definitions with complete behavioral specifications
+- Duplicating rules in commands leads to inconsistency
+- When behavior needs to change, update the agent (single source of truth)
+
 ### Build Process
 - `npm run build` - Compiles TypeScript and copies `src/templates/` to `dist/templates/`
 - `npm run build:monitor-ui` - Builds the Vue.js monitor dashboard
 - `npm run build:all` - Full build including UI
 
 ### Template Development
-When modifying framework templates (agents, standards, tools, skills):
-1. Edit files in `src/templates/`
-2. Run `npm run build`
-3. Copy updated files to `docs/ai/.contextuate/` for testing (or re-run init)
 
-**Never edit `docs/ai/.contextuate/` directly** - changes will be lost on next build.
+**Source → Build → Install Pipeline:**
+
+```
+src/templates/     →  npm run build  →  dist/templates/  →  contextuate init  →  target project
+     ↑                                        ↑
+  EDIT HERE                              INSTALLER USES THIS
+```
+
+**To modify agents, standards, skills, or tools:**
+1. Find the source file in `src/templates/`
+2. Make your changes there
+3. Run `npm run build`
+4. Test by running `contextuate init` in a target project (or this project)
+
+**NEVER edit files in `docs/ai/` directly** - they are installed copies and will be overwritten.
 
 ---
 
