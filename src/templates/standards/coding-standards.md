@@ -123,13 +123,12 @@ ORDER BY column_name;
 
 ## Version Control
 
-### Commits
-- Write clear, descriptive commit messages
-- Use present tense: "Add feature" not "Added feature"
-- Reference issues/tickets when applicable
+For comprehensive git conventions (commits, branches, PRs, merges), see: [Git Conventions](git-conventions.md)
 
-### Branches
-- Use descriptive branch names
+Key points:
+- Write clear, descriptive commit messages in imperative mood
+- Use conventional commit types (`feat`, `fix`, `docs`, etc.)
+- Reference issues/tickets when applicable
 - Follow project branching strategy
 
 ---

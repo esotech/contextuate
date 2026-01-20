@@ -131,6 +131,19 @@
 
 ---
 
+## Version Control Operations
+
+When performing git operations (commits, branches, PRs, merges):
+
+**Load the git conventions standard:** [Git Conventions](git-conventions.md)
+
+Key directives:
+- **No AI Attribution:** Do not include `Co-Authored-By` lines or mention AI tools in commits/PRs (unless project explicitly enables this)
+- Follow commit message format and conventions
+- Use appropriate branch naming
+
+---
+
 ## Collaboration
 
 ### With Other AI Agents

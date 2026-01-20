@@ -41,7 +41,28 @@ The `.contextuate/` folder contains immutable framework definitions that bootstr
 
 ---
 
-## 3. Resources
+## 3. Project Preferences
+
+Configuration options that customize AI assistant behavior for this project.
+
+### Git & Version Control
+
+| Setting | Value | Description |
+|---------|-------|-------------|
+| `ai_attribution` | `false` | Include AI co-author lines in commits (`true`/`false`) |
+| `commit_style` | `conventional` | Commit message format (`conventional`, `simple`, `custom`) |
+
+> **Note:** By default, AI assistants will NOT include `Co-Authored-By` lines or mention AI tools in commits. Set `ai_attribution: true` above to enable this.
+
+### Code Style
+
+| Setting | Value | Description |
+|---------|-------|-------------|
+| `indentation` | `tabs` | Indentation style (`tabs`, `2-spaces`, `4-spaces`) |
+
+---
+
+## 4. Resources
 
 - **Repository:** {URL}
 - **Issue Tracker:** {URL}
