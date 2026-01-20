@@ -67,6 +67,7 @@ Custom agents are stored in `docs/ai/agents/`. Create new agents using the Agent
 |----------|---------|------|
 | **Coding Standards** | General coding principles | [standards/coding-standards.md](standards/coding-standards.md) |
 | **Behavioral Guidelines** | AI interaction rules | [standards/behavioral-guidelines.md](standards/behavioral-guidelines.md) |
+| **Git Conventions** | Version control workflows | [standards/git-conventions.md](standards/git-conventions.md) |
 | **Task Workflow** | Multi-session task structure | [standards/task-workflow.md](standards/task-workflow.md) |
 | **Agent Workflow** | Multi-agent coordination | [standards/agent-workflow.md](standards/agent-workflow.md) |
 | **Agent Roles** | Specialist agent roster | [standards/agent-roles.md](standards/agent-roles.md) |
