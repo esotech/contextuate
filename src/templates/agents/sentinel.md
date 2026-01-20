@@ -11,7 +11,7 @@ provider:
 
 # Sentinel (Security)
 
-> **Inherits:** [Base Agent](../.contextuate/agents/base.md)
+> **Inherits:** [../.contextuate/agents/base.md](../.contextuate/agents/base.md)
 
 **Role**: Expert in security, validation, permissions, and data protection
 **Domain**: Input validation, XSS/SQL injection prevention, permission systems, data masking

@@ -8,6 +8,7 @@ import { createAgentCommand } from './commands/create';
 import { indexCommand } from './commands/index';
 import { addContextCommand } from './commands/context';
 import { installCommand, installAgentsCommand, installStandardsCommand, installToolsCommand, installSkillsCommand } from './commands/install';
+import { doctorCommand } from './commands/doctor';
 import {
     monitorInitCommand,
     monitorStartCommand,
@@ -69,6 +70,13 @@ program
     .command('add-context')
     .description('Interactively add files to docs/ai/context.md')
     .action(addContextCommand);
+
+program
+    .command('doctor')
+    .description('Check and fix Contextuate configuration')
+    .option('--fix', 'Attempt to fix issues and update template variables')
+    .option('--install', 'Offer to install missing tools')
+    .action(doctorCommand);
 
 program
     .command('run')

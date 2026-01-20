@@ -11,7 +11,7 @@ provider:
 
 # Meridian (Schema/Migrations)
 
-> **Inherits:** [Base Agent](../.contextuate/agents/base.md)
+> **Inherits:** [../.contextuate/agents/base.md](../.contextuate/agents/base.md)
 
 **Role**: Expert in database schema, migrations, and data structure changes
 **Domain**: Database schemas, migrations, data model consistency

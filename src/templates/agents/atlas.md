@@ -11,7 +11,7 @@ provider:
 
 # Atlas (Codebase Navigation)
 
-> **Inherits:** [Base Agent](../.contextuate/agents/base.md)
+> **Inherits:** [../.contextuate/agents/base.md](../.contextuate/agents/base.md)
 
 **Role**: Expert in codebase exploration, file location, dependency mapping, and impact analysis
 **Domain**: All source directories, file relationships, code search
@@ -82,25 +82,25 @@ Feature: Authentication
 **Exact Match Search**
 ```bash
 # Find specific class
-grep -r "class UserService" src/
+{grep} -r "class UserService" src/
 
 # Find specific method
-grep -r "function getUsers" src/
+{grep} -r "function getUsers" src/
 
 # Find specific usage
-grep -r "userService.getUsers" src/
+{grep} -r "userService.getUsers" src/
 ```
 
 **Pattern Search**
 ```bash
 # Find all database queries for users table
-grep -r "from.*users\|query.*users" src/
+{grep} -r "from.*users\|query.*users" src/
 
 # Find all permission checks
-grep -r "authorize\|checkPermission\|can(" src/
+{grep} -r "authorize\|checkPermission\|can(" src/
 
 # Find all API endpoints
-grep -r "router\.\(get\|post\|put\|delete\)" src/api/
+{grep} -r "router\.\(get\|post\|put\|delete\)" src/api/
 ```
 
 **File Pattern Search**
@@ -128,13 +128,13 @@ import { logger } from '../utils/logger'                // → logging utility
 **Reverse Dependencies (What uses this?)**
 ```bash
 # Who imports/uses user service?
-grep -r "from.*user.service\|require.*user.service" src/
+{grep} -r "from.*user.service\|require.*user.service" src/
 
 # Who uses email service?
-grep -r "emailService\|from.*email.service" src/
+{grep} -r "emailService\|from.*email.service" src/
 
 # Who queries users table?
-grep -r "from.*users\|query.*users" src/
+{grep} -r "from.*users\|query.*users" src/
 ```
 
 ### 5. Impact Analysis
@@ -186,29 +186,29 @@ grep -r "from.*users\|query.*users" src/
 
 ```bash
 # Authentication
-grep -rl "auth\|login\|session\|jwt" src/
+{grep} -rl "auth\|login\|session\|jwt" src/
 
 # A specific entity (e.g., orders)
-grep -rl "order" src/  # May need refinement
+{grep} -rl "order" src/  # May need refinement
 
 # Database table
-grep -rl "from.*users\|query.*users" src/
+{grep} -rl "from.*users\|query.*users" src/
 
 # External API integration
-grep -rl "fetch\|axios\|request" src/
+{grep} -rl "fetch\|axios\|request" src/
 ```
 
 ### "What depends on X?"
 
 ```bash
 # Dependencies on user model
-grep -rl "UserModel\|from.*user.model" src/
+{grep} -rl "UserModel\|from.*user.model" src/
 
 # Dependencies on email service
-grep -rl "EmailService\|from.*email.service" src/
+{grep} -rl "EmailService\|from.*email.service" src/
 
 # Dependencies on specific method
-grep -r "getUsers\|\.getUsers(" src/
+{grep} -r "getUsers\|\.getUsers(" src/
 ```
 
 ## Navigation Workflows

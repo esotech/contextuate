@@ -126,7 +126,7 @@ docs/ai/standards/
 ```
 
 These user standards take priority over framework defaults in `docs/ai/.context/templates/standards/`.
-See [coding-standards.md](../standards/coding-standards.md) for resolution order.
+See [../standards/coding-standards.md](../standards/coding-standards.md) for resolution order.
 
 ---
 

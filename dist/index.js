@@ -9,6 +9,7 @@ const create_1 = require("./commands/create");
 const index_1 = require("./commands/index");
 const context_1 = require("./commands/context");
 const install_1 = require("./commands/install");
+const doctor_1 = require("./commands/doctor");
 const monitor_1 = require("./commands/monitor");
 const claude_1 = require("./commands/claude");
 const fs_1 = require("fs");
@@ -54,6 +55,12 @@ program
     .command('add-context')
     .description('Interactively add files to docs/ai/context.md')
     .action(context_1.addContextCommand);
+program
+    .command('doctor')
+    .description('Check and fix Contextuate configuration')
+    .option('--fix', 'Attempt to fix issues and update template variables')
+    .option('--install', 'Offer to install missing tools')
+    .action(doctor_1.doctorCommand);
 program
     .command('run')
     .description('Run an agent definition')

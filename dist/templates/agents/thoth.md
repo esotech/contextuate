@@ -11,7 +11,7 @@ provider:
 
 # THOTH - Database Query Agent
 
-> **Inherits:** [Base Agent](../.contextuate/agents/base.md)
+> **Inherits:** [../.contextuate/agents/base.md](../.contextuate/agents/base.md)
 
 **Role**: Expert in database queries, ORM patterns, and data operations
 **Domain**: Query design, database optimization, ORM usage

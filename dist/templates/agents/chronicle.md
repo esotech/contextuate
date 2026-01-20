@@ -11,7 +11,7 @@ provider:
 
 # Chronicle (Documentation)
 
-> **Inherits:** [Documentation Expert](../.contextuate/agents/documentation-expert.md)
+> **Inherits:** [../.contextuate/agents/documentation-expert.md](../.contextuate/agents/documentation-expert.md)
 
 **Role**: Expert in documentation, code comments, changelogs, and technical writing
 **Domain**: Documentation files, code comments, README files, API documentation

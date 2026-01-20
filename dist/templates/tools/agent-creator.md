@@ -78,7 +78,7 @@ Verify:
 ```markdown
 # {Name} Expert Agent
 
-> **Inherits:** [Base Agent Configuration](../.contextuate/agents/base.md)
+> **Inherits:** [../.contextuate/agents/base.md](../.contextuate/agents/base.md)
 > **Role:** {One-line description of expertise}
 > **Domain:** `{file patterns covered}`
 
@@ -179,7 +179,7 @@ File: `docs/ai/agents/database-expert.md`
 ```markdown
 # Database Expert Agent
 
-> **Inherits:** [Base Agent Configuration](../.contextuate/agents/base.md)
+> **Inherits:** [../.contextuate/agents/base.md](../.contextuate/agents/base.md)
 > **Role:** Expert in database operations, queries, and schema design
 > **Domain:** `*.sql`, `migrations/`, `**/db/**`
 
@@ -193,8 +193,8 @@ You are an expert in database operations. Your role is to:
 
 ## Required Context
 
-1. **[Database Documentation](../../database.md)** - Schema and conventions
-2. **[Database Quickref](../quickrefs/database.quickref.md)** - API reference
+1. **[../../database.md](../../database.md)** - Schema and conventions
+2. **[../quickrefs/database.quickref.md](../quickrefs/database.quickref.md)** - API reference
 ```
 
 ---

@@ -11,7 +11,7 @@ provider:
 
 # Vox (Media & Communications)
 
-> **Inherits:** [Base Agent](../.contextuate/agents/base.md)
+> **Inherits:** [../.contextuate/agents/base.md](../.contextuate/agents/base.md)
 
 *   **Role**: Media Streaming & Communications Specialist.
 *   **Responsibilities**:

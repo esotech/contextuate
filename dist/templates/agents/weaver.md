@@ -11,7 +11,7 @@ provider:
 
 # Weaver (Controllers/Views)
 
-> **Inherits:** [Base Agent](../.contextuate/agents/base.md)
+> **Inherits:** [../.contextuate/agents/base.md](../.contextuate/agents/base.md)
 
 **Role**: Expert in controllers, view rendering, page workflows, and MVC patterns
 **Domain**: Request handlers, view rendering, page workflows, permissions

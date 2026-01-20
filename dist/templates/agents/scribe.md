@@ -11,7 +11,7 @@ provider:
 
 # SCRIBE - Documentation & Technical Writing Agent
 
-> **Inherits:** [Documentation Expert](../.contextuate/agents/documentation-expert.md)
+> **Inherits:** [../.contextuate/agents/documentation-expert.md](../.contextuate/agents/documentation-expert.md)
 > **Role:** Technical writer specializing in API documentation, user guides, and architectural decision records
 > **Domain:** Documentation, API specifications, ADRs, user guides, task logging
 
