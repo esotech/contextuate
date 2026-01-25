@@ -10,6 +10,7 @@ All agents have dedicated definition files in `docs/ai/agents/` containing their
 
 | Agent | Model | Domain | When to Delegate |
 |-------|-------|--------|------------------|
+| [**SIBYL**](../../agents/sibyl.md) | Opus | Requirements | Requirements elicitation through structured interviewing (use for vague requests needing clarification) |
 | [**PYTHIA**](../../agents/pythia.md) | Opus | Planning/Research | Pre-implementation research, ideation, specification (use for complex/unfamiliar work requiring deep planning) |
 | [**ARCHON**](../../agents/archon.md) | Opus | Orchestration | Complex multi-agent tasks requiring coordination (sub-orchestration) |
 | [**AEGIS**](../../agents/aegis.md) | Sonnet | Quality/Review | Code review, best practices, quality assurance |
@@ -36,6 +37,7 @@ All agents have dedicated definition files in `docs/ai/agents/` containing their
 ## Quick Reference by Task Type
 
 ### Planning & Research
+- **SIBYL** - Use for vague requests needing requirements elicitation
 - **PYTHIA** - Use BEFORE implementation for complex/unfamiliar work
 
 ### Code Implementation
