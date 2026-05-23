@@ -1,5 +1,5 @@
 # Contextuate
 
-> **Context:** [docs/ai/.contextuate/contextuate.md](docs/ai/.contextuate/contextuate.md)
+@AGENTS.md
 
-Always read the context file above before starting any task.
+Gemini compatibility entry point. The canonical project instructions live in `AGENTS.md`.

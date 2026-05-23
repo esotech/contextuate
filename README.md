@@ -54,13 +54,16 @@ contextuate init
 The interactive installer will guide you through:
 1. Selecting which AI platforms to configure (Claude Code, Cursor, Copilot, Windsurf, etc.)
 2. Creating the `docs/ai/` directory structure with framework files
-3. Generating platform-specific configuration files
-4. Setting up symlinks for supported platforms (e.g., `.claude/` for Claude Code)
+3. Creating `AGENTS.md` as the primary root instruction file
+4. Generating platform-specific configuration files and compatibility links
+5. Setting up symlinks for supported platforms (e.g., `.claude/` for Claude Code)
 
 ## What is Contextuate?
 
 Contextuate is a directory structure and set of conventions that helps AI agents work more effectively. It turns implicit project knowledge into explicit, structured context.
 
+- **`AGENTS.md`**: The primary root instruction file for AI coding agents.
+- **`CLAUDE.md` / `GEMINI.md`**: Compatibility links to `AGENTS.md` when those platforms are selected.
 - **`docs/ai/.contextuate/contextuate.md`**: The framework bootstrap file. It links to everything else.
 - **`docs/ai/context.md`**: Your project-specific context (Identity, Tech Stack).
 - **`docs/ai/project-structure.md`**: Auto-generated file tree map (created by `contextuate index`).
@@ -76,6 +79,8 @@ Contextuate is a directory structure and set of conventions that helps AI agents
 2. **Specialization**: If acting as a specific agent, it reads `docs/ai/agents/<name>.md` to load specific capabilities and rules.
 3. **Execution**: The AI follows the linked standards in `docs/ai/standards/` and uses `docs/ai/quickrefs/` for technical lookups.
 4. **Memory**: If working on a long-running task, it tracks state in `docs/ai/tasks/<task-name>/` to maintain context across sessions.
+
+Root adapter files point the assistant to the same framework entry point through `AGENTS.md`, so selected AI harnesses share one instruction source instead of diverging per tool.
 
 When using the `contextuate run` command, this context loading is automated based on the agent definition.
 

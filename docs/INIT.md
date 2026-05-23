@@ -86,9 +86,11 @@ Platform arguments support fuzzy matching for convenience:
     *   `docs/ai/standards`: Coding standards and best practices.
     *   `docs/ai/context.md`: The main context file for LLMs.
     *   `docs/ai/project-structure.md`: (Optional) Auto-generated map of your codebase.
-3.  **Jump File Generation**: Creates optimization files for your selected platforms (e.g., `.cursor/rules/project.mdc` or `.clinerules`). These "jump files" point the AI tools to your `docs/ai` folder.
-4.  **Template Installation**: Copies default templates to get you started immediately.
-5.  **Git Integration**: Updates `.gitignore` to ensure generated files (or library files) are handled correctly.
+3.  **Primary Instruction File**: Creates `AGENTS.md` as the root source of instructions for AI coding agents.
+4.  **Jump File Generation**: Creates optimization files for your selected platforms (e.g., `.cursor/rules/project.mdc` or `.clinerules`). These "jump files" point the AI tools to your `docs/ai` folder.
+    *   For Claude Code and Gemini, `CLAUDE.md` and `GEMINI.md` are compatibility symlinks to `AGENTS.md`.
+5.  **Template Installation**: Copies default templates to get you started immediately.
+6.  **Git Integration**: Updates `.gitignore` to ensure generated files (or library files) are handled correctly.
 
 ## Interactive Flow
 

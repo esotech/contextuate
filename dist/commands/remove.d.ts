@@ -1,3 +1,3 @@
-export declare function removeCommand(options: {
+export declare function removeCommand(options?: {
     force?: boolean;
 }): Promise<void>;

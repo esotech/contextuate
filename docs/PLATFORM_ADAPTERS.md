@@ -8,47 +8,55 @@ agents, memories, plans, artifacts, or assistant behavior in this repository.
 Update the shared source first, then check every platform adapter. Do not update
 only the AI tool you are currently using.
 
+In this repository, the editable source lives under `src/templates/`. In an
+installed project, the canonical AI context bundle lives under `docs/ai/`, with
+root-level and tool-specific files acting as thin adapters.
+
 ## Shared Sources
 
-| Asset | Canonical path |
+| Asset | Source path in this repo | Installed project path |
 |---|---|
-| Skills | `./contextuate/skills/` |
-| Rules | `./contextuate/rules/` |
-| Commands | `./contextuate/commands/` |
-| Agents | `./contextuate/agents/` |
-| Hooks | `./contextuate/hooks/` |
-| Memories | `./contextuate/memories/` |
-| Plans | `./contextuate/plans/` |
-| Artifacts | `./contextuate/artifacts/` |
+| Root instructions | `src/templates/templates/platforms/AGENTS.md` | `AGENTS.md` |
+| Framework bootstrap | `src/templates/templates/contextuate.md` | `docs/ai/.contextuate/contextuate.md` |
+| Commands / slash skills | `src/templates/commands/` | `docs/ai/commands/` |
+| Platform-native skills | future source under `src/templates/skills/` | `docs/ai/skills/` |
+| Agents | `src/templates/agents/` | `docs/ai/agents/` |
+| Framework agents | `src/templates/framework-agents/` | `docs/ai/.contextuate/agents/` |
+| Standards / rules | `src/templates/standards/` and `src/templates/templates/standards/` | `docs/ai/.contextuate/standards/` and `docs/ai/standards/` |
+| Tool guides | `src/templates/tools/` | `docs/ai/.contextuate/tools/` |
+| Hooks | `src/monitor/hooks/` and future AI hook templates | `docs/ai/hooks/` or platform hook config |
+| Plans / task memory | user-created | `docs/ai/tasks/` |
 
 ## Adapter Checklist
 
 | Platform | Check |
 |---|---|
-| Claude Code | `CLAUDE.md` points to `AGENTS.md`; `.claude/skills` should resolve to `./contextuate/skills`. |
-| Codex | `AGENTS.md` is the primary instruction file; `.codex/skills` should resolve to `./contextuate/skills`. |
-| Cursor | `AGENTS.md` is the primary workspace instruction file; `.cursor/skills` should resolve to `./contextuate/skills`; `.cursor/rules` should resolve to `./contextuate/rules`. |
-| Gemini | `GEMINI.md` should be a relative symlink to `AGENTS.md`; `.gemini/skills` should resolve to `./contextuate/skills`. |
-| Antigravity | `AGENTS.md` and `GEMINI.md` are workspace context files; `.agents/skills` should resolve to `./contextuate/skills`; `.agents/plugins/contextuate-shared/` should hold thin plugin adapters for rules, agents, hooks, or MCP config. |
-| Grok | `AGENTS.md`/`Agents.md` is discovered as project instructions; `.grok/skills` should resolve to `./contextuate/skills`; `.grok/config.toml` should remain a thin tool-specific config file. |
+| Claude Code | `CLAUDE.md` should be a relative symlink to `AGENTS.md`; `.claude/commands`, `.claude/agents`, `.claude/hooks`, `.claude/skills`, and `.claude/.contextuate` should resolve to `docs/ai/...`. |
+| Codex | `AGENTS.md` is the primary instruction file. If adding `.codex/skills`, keep it as a symlink or generated adapter to `docs/ai/skills`. |
+| Cursor | `AGENTS.md` is the simple root instruction file; `.cursor/rules/project.mdc` should remain a thin pointer to `docs/ai/.contextuate/contextuate.md`. If adding `.cursor/skills`, link it to `docs/ai/skills`. |
+| Gemini | `GEMINI.md` should be a relative symlink to `AGENTS.md`. If symlinks are not available, use a tiny `GEMINI.md` with `@AGENTS.md`. |
+| Antigravity | `AGENTS.md` and `GEMINI.md` are workspace context files; workspace skills should live under `.agents/skills`; plugins can live under `.agents/plugins/<plugin-name>/` when rules, agents, hooks, or MCP config need Antigravity-specific packaging. |
+| Grok | Treat as unverified until current official docs are checked; prefer `AGENTS.md` as the root instruction source and keep any `.grok/` files thin. |
 
 ## Verification
 
 After changing shared AI assets, run basic path checks from the repo root:
 
 ```sh
-test -e .claude/skills/acli-jira/SKILL.md
-test -e .codex/skills/acli-jira/SKILL.md
-test -e .cursor/rules/repo-bound-state.mdc
-test -e .gemini/skills/acli-jira/SKILL.md
-test -e .agents/skills/acli-jira/SKILL.md
-test -e .agents/plugins/contextuate-shared/rules/repo-bound-state.md
-test "$(readlink .agents/skills)" = ".././contextuate/skills"
-test "$(readlink .agents/plugins/contextuate-shared/rules/repo-bound-state.md)" = "../../../.././contextuate/rules/repo-bound-state.mdc"
-test -e .grok/skills/acli-jira/SKILL.md
+test -e AGENTS.md
 test "$(readlink CLAUDE.md)" = "AGENTS.md"
 test "$(readlink GEMINI.md)" = "AGENTS.md"
-grok inspect | rg "Project Instructions|Agents\\.md|AGENTS\\.md"
+test "$(readlink .claude/commands)" = "../docs/ai/commands"
+test "$(readlink .claude/agents)" = "../docs/ai/agents"
+test "$(readlink .claude/hooks)" = "../docs/ai/hooks"
+test "$(readlink .claude/skills)" = "../docs/ai/skills"
+test "$(readlink .claude/.contextuate)" = "../docs/ai/.contextuate"
+test -e .claude/commands/interview.md
+test -e .claude/agents/archon.md
+test -e .cursor/rules/project.mdc
+test -e docs/ai/.contextuate/contextuate.md
+# Optional when Grok CLI is installed:
+# grok inspect | rg "Project Instructions|Agents\\.md|AGENTS\\.md"
 ```
 
 ## Antigravity Notes

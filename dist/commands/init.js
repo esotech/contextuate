@@ -41,13 +41,14 @@ function getPackageInfo() {
     }
 }
 // Platform definitions with metadata
+const PRIMARY_PLATFORM_FILE = { src: 'templates/platforms/AGENTS.md', dest: 'AGENTS.md' };
 const PLATFORMS = [
-    { id: 'agents', name: 'Agents.ai', src: 'templates/platforms/AGENTS.md', dest: 'AGENTS.md' },
+    { id: 'agents', name: 'AGENTS.md', src: PRIMARY_PLATFORM_FILE.src, dest: PRIMARY_PLATFORM_FILE.dest },
     { id: 'antigravity', name: 'Antigravity', src: 'templates/platforms/GEMINI.md', dest: '.gemini/rules.md', ensureDir: '.gemini' },
-    { id: 'claude', name: 'Claude Code', src: 'templates/platforms/CLAUDE.md', dest: 'CLAUDE.md', symlinks: true },
+    { id: 'claude', name: 'Claude Code', dest: 'CLAUDE.md', instructionAlias: true, symlinks: true },
     { id: 'cline', name: 'Cline', src: 'templates/platforms/clinerules.md', dest: '.clinerules/cline-memory-bank.md', ensureDir: '.clinerules' },
     { id: 'cursor', name: 'Cursor IDE', src: 'templates/platforms/cursor.mdc', dest: '.cursor/rules/project.mdc', ensureDir: '.cursor/rules' },
-    { id: 'gemini', name: 'Google Gemini', src: 'templates/platforms/GEMINI.md', dest: 'GEMINI.md' },
+    { id: 'gemini', name: 'Google Gemini', dest: 'GEMINI.md', instructionAlias: true },
     { id: 'copilot', name: 'GitHub Copilot', src: 'templates/platforms/copilot.md', dest: '.github/copilot-instructions.md', ensureDir: '.github' },
     { id: 'windsurf', name: 'Windsurf IDE', src: 'templates/platforms/windsurf.md', dest: '.windsurf/rules/project.md', ensureDir: '.windsurf/rules' },
 ];
@@ -287,6 +288,10 @@ async function initCommand(platformArgs, options) {
                 console.log(chalk_1.default.yellow(`[PRESERVE] Kept existing: ${dest}`));
                 return;
             }
+            if (fs_extra_1.default.existsSync(dest) && !opts.force) {
+                console.log(chalk_1.default.yellow(`[SKIP] Already exists: ${dest}`));
+                return;
+            }
             let content = await fs_extra_1.default.readFile(src, 'utf-8');
             // Process template variables if needed
             if (processTemplates && dest.endsWith('.md')) {
@@ -344,16 +349,23 @@ async function initCommand(platformArgs, options) {
         console.log('');
         // 7. Generate platform files
         console.log(chalk_1.default.blue('[INFO] Generating platform files...'));
+        await copyFile(path_1.default.join(templateSource, PRIMARY_PLATFORM_FILE.src), PRIMARY_PLATFORM_FILE.dest);
         for (const platform of selectedPlatforms) {
             if (platform.ensureDir) {
                 await fs_extra_1.default.ensureDir(platform.ensureDir);
             }
-            await copyFile(path_1.default.join(templateSource, platform.src), platform.dest);
+            if (platform.dest === PRIMARY_PLATFORM_FILE.dest || platform.instructionAlias) {
+                continue;
+            }
+            if (platform.src && platform.dest) {
+                await copyFile(path_1.default.join(templateSource, platform.src), platform.dest);
+            }
         }
         console.log('');
         // 8. Create symlinks for platforms that need them
+        const instructionAliases = selectedPlatforms.filter(p => p.instructionAlias && p.dest);
         const platformsWithSymlinks = selectedPlatforms.filter(p => p.symlinks);
-        if (platformsWithSymlinks.length > 0) {
+        if (instructionAliases.length > 0 || platformsWithSymlinks.length > 0) {
             console.log(chalk_1.default.blue('[INFO] Creating platform symlinks...'));
             const createSymlink = async (target, linkPath) => {
                 const linkDir = path_1.default.dirname(linkPath);
@@ -369,12 +381,21 @@ async function initCommand(platformArgs, options) {
                 }
                 catch {
                     if (fs_extra_1.default.existsSync(linkPath)) {
+                        if (!opts.force) {
+                            console.log(chalk_1.default.yellow(`[SKIP] Already exists: ${linkPath}`));
+                            return;
+                        }
                         await fs_extra_1.default.remove(linkPath);
                     }
                 }
                 await fs_extra_1.default.ensureSymlink(relativeTarget, linkPath);
                 console.log(chalk_1.default.green(`[OK] Symlink: ${linkPath} -> ${relativeTarget}`));
             };
+            for (const platform of instructionAliases) {
+                if (platform.dest) {
+                    await createSymlink(PRIMARY_PLATFORM_FILE.dest, platform.dest);
+                }
+            }
             // Claude Code symlinks
             if (selectedPlatforms.some(p => p.id === 'claude')) {
                 const symlinks = [

@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
 const assert = require('assert');
+const childProcess = require('child_process');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
@@ -28,6 +30,87 @@ function assertFilesMatch(source, generated) {
     read(source),
     `${generated} should match ${source}; run npm run build`
   );
+}
+
+function testInitUsesAgentsMdAsPrimaryPlatformFile() {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'contextuate-init-'));
+
+  try {
+    fs.writeFileSync(path.join(tmpDir, 'package.json'), '{"name":"fixture"}\n');
+
+    childProcess.execFileSync(
+      process.execPath,
+      [path.join(root, 'dist/index.js'), 'init', 'claude', 'gemini', '--force'],
+      {
+        cwd: tmpDir,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe'],
+      }
+    );
+
+    assert.strictEqual(
+      fs.readFileSync(path.join(tmpDir, 'AGENTS.md'), 'utf8'),
+      read('src/templates/templates/platforms/AGENTS.md'),
+      'init should install AGENTS.md from the primary platform template'
+    );
+    assert.strictEqual(
+      fs.readlinkSync(path.join(tmpDir, 'CLAUDE.md')),
+      'AGENTS.md',
+      'CLAUDE.md should be a relative symlink to AGENTS.md'
+    );
+    assert.strictEqual(
+      fs.readlinkSync(path.join(tmpDir, 'GEMINI.md')),
+      'AGENTS.md',
+      'GEMINI.md should be a relative symlink to AGENTS.md'
+    );
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+}
+
+function testRemoveCleansGeneratedPlatformSymlinks() {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'contextuate-remove-'));
+
+  try {
+    fs.writeFileSync(path.join(tmpDir, 'package.json'), '{"name":"fixture"}\n');
+
+    childProcess.execFileSync(
+      process.execPath,
+      [path.join(root, 'dist/index.js'), 'init', 'claude', 'gemini', '--force'],
+      {
+        cwd: tmpDir,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe'],
+      }
+    );
+    childProcess.execFileSync(
+      process.execPath,
+      [path.join(root, 'dist/index.js'), 'remove'],
+      {
+        cwd: tmpDir,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe'],
+      }
+    );
+
+    for (const relativePath of [
+      'AGENTS.md',
+      'CLAUDE.md',
+      'GEMINI.md',
+      '.claude/commands',
+      '.claude/agents',
+      '.claude/hooks',
+      '.claude/skills',
+      '.claude/.contextuate',
+    ]) {
+      assert(
+        !fs.existsSync(path.join(tmpDir, relativePath)),
+        `remove should clean generated platform adapter ${relativePath}`
+      );
+    }
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
 }
 
 function testPackageVersionsMatch() {
@@ -105,6 +188,8 @@ function testFrameworkPathReferencesUseContextuate() {
 
 const tests = [
   testPackageVersionsMatch,
+  testInitUsesAgentsMdAsPrimaryPlatformFile,
+  testRemoveCleansGeneratedPlatformSymlinks,
   testInterviewTemplatesArePackaged,
   testInterviewDocumentationIsDiscoverable,
   testFrameworkPathReferencesUseContextuate,
