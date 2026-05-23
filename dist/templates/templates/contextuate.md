@@ -100,4 +100,4 @@ For complex tasks that span multiple sessions, follow the Task Workflow standard
 **Contextuate Framework** is a standardized AI context framework.
 
 - **Documentation:** https://contextuate.md
-- **Version:** Check `.contextuate/version.json`
+- **Version:** Check `docs/ai/.contextuate/contextuate.json`

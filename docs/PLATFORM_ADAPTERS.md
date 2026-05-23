@@ -10,7 +10,12 @@ only the AI tool you are currently using.
 
 In this repository, the editable source lives under `src/templates/`. In an
 installed project, the canonical AI context bundle lives under `docs/ai/`, with
-root-level and tool-specific files acting as thin adapters.
+`AGENTS.md` as the only root instruction file.
+
+If a project already has legacy bootstrap files such as `CLAUDE.md`,
+`GEMINI.md`, `.cursorrules`, `.windsurfrules`, or tool-specific instruction
+files, review them and merge any unique rules into `AGENTS.md`. Do not keep
+parallel instruction sources.
 
 ## Shared Sources
 
@@ -31,11 +36,11 @@ root-level and tool-specific files acting as thin adapters.
 
 | Platform | Check |
 |---|---|
-| Claude Code | `CLAUDE.md` should be a relative symlink to `AGENTS.md`; `.claude/commands`, `.claude/agents`, `.claude/hooks`, `.claude/skills`, and `.claude/.contextuate` should resolve to `docs/ai/...`. |
+| Claude Code | Do not create `CLAUDE.md` by default. Let Claude use `AGENTS.md`; `.claude/commands`, `.claude/agents`, `.claude/hooks`, `.claude/skills`, and `.claude/.contextuate` may resolve to `docs/ai/...` as non-instruction asset links. |
 | Codex | `AGENTS.md` is the primary instruction file. If adding `.codex/skills`, keep it as a symlink or generated adapter to `docs/ai/skills`. |
-| Cursor | `AGENTS.md` is the simple root instruction file; `.cursor/rules/project.mdc` should remain a thin pointer to `docs/ai/.contextuate/contextuate.md`. If adding `.cursor/skills`, link it to `docs/ai/skills`. |
-| Gemini | `GEMINI.md` should be a relative symlink to `AGENTS.md`. If symlinks are not available, use a tiny `GEMINI.md` with `@AGENTS.md`. |
-| Antigravity | `AGENTS.md` and `GEMINI.md` are workspace context files; workspace skills should live under `.agents/skills`; plugins can live under `.agents/plugins/<plugin-name>/` when rules, agents, hooks, or MCP config need Antigravity-specific packaging. |
+| Cursor | Use root `AGENTS.md`; do not create `.cursorrules` or `.cursor/rules/project.mdc` by default. Merge existing Cursor rules into `AGENTS.md`. |
+| Gemini | Do not create `GEMINI.md` by default. Let Gemini use `AGENTS.md`; merge any existing `GEMINI.md` rules into `AGENTS.md`. |
+| Antigravity | Prefer `AGENTS.md` as the shared workspace context. Only add `.agents/skills` or `.agents/plugins/<plugin-name>/` when Antigravity-specific skills, hooks, or MCP config are required. |
 | Grok | Treat as unverified until current official docs are checked; prefer `AGENTS.md` as the root instruction source and keep any `.grok/` files thin. |
 
 ## Verification
@@ -44,8 +49,8 @@ After changing shared AI assets, run basic path checks from the repo root:
 
 ```sh
 test -e AGENTS.md
-test "$(readlink CLAUDE.md)" = "AGENTS.md"
-test "$(readlink GEMINI.md)" = "AGENTS.md"
+test ! -e CLAUDE.md
+test ! -e GEMINI.md
 test "$(readlink .claude/commands)" = "../docs/ai/commands"
 test "$(readlink .claude/agents)" = "../docs/ai/agents"
 test "$(readlink .claude/hooks)" = "../docs/ai/hooks"
@@ -53,7 +58,7 @@ test "$(readlink .claude/skills)" = "../docs/ai/skills"
 test "$(readlink .claude/.contextuate)" = "../docs/ai/.contextuate"
 test -e .claude/commands/interview.md
 test -e .claude/agents/archon.md
-test -e .cursor/rules/project.mdc
+test ! -e .cursor/rules/project.mdc
 test -e docs/ai/.contextuate/contextuate.md
 # Optional when Grok CLI is installed:
 # grok inspect | rg "Project Instructions|Agents\\.md|AGENTS\\.md"
@@ -61,12 +66,11 @@ test -e docs/ai/.contextuate/contextuate.md
 
 ## Antigravity Notes
 
-As of the current Google Antigravity docs, workspace context is loaded from
+As of the current Google Antigravity docs, workspace context can include
 `GEMINI.md` and `AGENTS.md`, and workspace skills live under `.agents/skills`.
 Antigravity plugins can also contain `agents/`, `rules/`, `hooks.json`, and
-`mcp_config.json` inside `.agents/plugins/<plugin-name>/`. This repo uses
-`.agents/plugins/contextuate-shared/` for those Antigravity-specific plugin
-adapters.
+`mcp_config.json` inside `.agents/plugins/<plugin-name>/`. Keep those as
+Antigravity-specific adapters only when `AGENTS.md` cannot express the behavior.
 
 Do not create a repo-local `.antigravity/` adapter unless Google documents it or
 the local app creates one with a clear workspace contract. Google documents

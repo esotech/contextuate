@@ -47,14 +47,33 @@ function getPackageInfo(): { name: string; version: string; description: string;
 const PRIMARY_PLATFORM_FILE = { src: 'templates/platforms/AGENTS.md', dest: 'AGENTS.md' };
 
 const PLATFORMS = [
-    { id: 'agents', name: 'AGENTS.md', src: PRIMARY_PLATFORM_FILE.src, dest: PRIMARY_PLATFORM_FILE.dest },
-    { id: 'antigravity', name: 'Antigravity', src: 'templates/platforms/GEMINI.md', dest: '.gemini/rules.md', ensureDir: '.gemini' },
-    { id: 'claude', name: 'Claude Code', dest: 'CLAUDE.md', instructionAlias: true, symlinks: true },
-    { id: 'cline', name: 'Cline', src: 'templates/platforms/clinerules.md', dest: '.clinerules/cline-memory-bank.md', ensureDir: '.clinerules' },
-    { id: 'cursor', name: 'Cursor IDE', src: 'templates/platforms/cursor.mdc', dest: '.cursor/rules/project.mdc', ensureDir: '.cursor/rules' },
-    { id: 'gemini', name: 'Google Gemini', dest: 'GEMINI.md', instructionAlias: true },
-    { id: 'copilot', name: 'GitHub Copilot', src: 'templates/platforms/copilot.md', dest: '.github/copilot-instructions.md', ensureDir: '.github' },
-    { id: 'windsurf', name: 'Windsurf IDE', src: 'templates/platforms/windsurf.md', dest: '.windsurf/rules/project.md', ensureDir: '.windsurf/rules' },
+    { id: 'agents', name: 'AGENTS.md' },
+    { id: 'antigravity', name: 'Antigravity' },
+    { id: 'claude', name: 'Claude Code', symlinks: true },
+    { id: 'cline', name: 'Cline' },
+    { id: 'cursor', name: 'Cursor IDE' },
+    { id: 'gemini', name: 'Google Gemini' },
+    { id: 'copilot', name: 'GitHub Copilot' },
+    { id: 'windsurf', name: 'Windsurf IDE' },
+];
+
+const LEGACY_BOOTSTRAP_FILES = [
+    'CLAUDE.md',
+    'GEMINI.md',
+    'Agents.md',
+    '.cursorrules',
+    '.cursor/rules/project.mdc',
+    '.github/copilot-instructions.md',
+    '.windsurf/rules/project.md',
+    '.clinerules/cline-memory-bank.md',
+    '.gemini/rules.md',
+    '.aider.instruction.md',
+    'CONVENTIONS.md',
+    '.hermes.md',
+    'HERMES.md',
+    'KIMI.md',
+    'SOUL.md',
+    '.supermavenrules',
 ];
 
 // Fuzzy match platform names
@@ -126,6 +145,28 @@ async function discoverSkills(templateSource: string): Promise<string[]> {
     return files
         .filter(f => f.endsWith('.md'))
         .map(f => f.replace('.md', ''));
+}
+
+async function findLegacyBootstrapFiles(): Promise<string[]> {
+    const files: string[] = [];
+
+    for (const file of LEGACY_BOOTSTRAP_FILES) {
+        if (!fs.existsSync(file)) {
+            continue;
+        }
+
+        const stat = await fs.lstat(file);
+        if (stat.isSymbolicLink()) {
+            const target = await fs.readlink(file);
+            if (target === PRIMARY_PLATFORM_FILE.dest) {
+                continue;
+            }
+        }
+
+        files.push(file);
+    }
+
+    return files;
 }
 
 export async function initCommand(platformArgs: string[] | { force?: boolean }, options?: { force?: boolean }) {
@@ -405,30 +446,26 @@ export async function initCommand(platformArgs: string[] | { force?: boolean }, 
         await copyFile(path.join(templateSource, 'templates/context.md'), 'docs/ai/context.md');
         console.log('');
 
-        // 7. Generate platform files
-        console.log(chalk.blue('[INFO] Generating platform files...'));
+        // 7. Generate primary instruction file
+        console.log(chalk.blue('[INFO] Creating primary instruction file...'));
 
         await copyFile(path.join(templateSource, PRIMARY_PLATFORM_FILE.src), PRIMARY_PLATFORM_FILE.dest);
+        const legacyBootstrapFiles = await findLegacyBootstrapFiles();
 
-        for (const platform of selectedPlatforms) {
-            if (platform.ensureDir) {
-                await fs.ensureDir(platform.ensureDir);
+        if (legacyBootstrapFiles.length > 0) {
+            console.log(chalk.yellow('[WARN] Existing AI bootstrap files detected:'));
+            for (const file of legacyBootstrapFiles) {
+                console.log(chalk.yellow(`  - ${file}`));
             }
-            if (platform.dest === PRIMARY_PLATFORM_FILE.dest || platform.instructionAlias) {
-                continue;
-            }
-            if (platform.src && platform.dest) {
-                await copyFile(path.join(templateSource, platform.src), platform.dest);
-            }
+            console.log(chalk.yellow('[WARN] Review these files and merge any unique rules into AGENTS.md.'));
         }
         console.log('');
 
-        // 8. Create symlinks for platforms that need them
-        const instructionAliases = selectedPlatforms.filter(p => p.instructionAlias && p.dest);
+        // 8. Create symlinks for platform assets that need them
         const platformsWithSymlinks = selectedPlatforms.filter(p => p.symlinks);
 
-        if (instructionAliases.length > 0 || platformsWithSymlinks.length > 0) {
-            console.log(chalk.blue('[INFO] Creating platform symlinks...'));
+        if (platformsWithSymlinks.length > 0) {
+            console.log(chalk.blue('[INFO] Creating platform asset symlinks...'));
 
             const createSymlink = async (target: string, linkPath: string) => {
                 const linkDir = path.dirname(linkPath);
@@ -456,12 +493,6 @@ export async function initCommand(platformArgs: string[] | { force?: boolean }, 
                 await fs.ensureSymlink(relativeTarget, linkPath);
                 console.log(chalk.green(`[OK] Symlink: ${linkPath} -> ${relativeTarget}`));
             };
-
-            for (const platform of instructionAliases) {
-                if (platform.dest) {
-                    await createSymlink(PRIMARY_PLATFORM_FILE.dest, platform.dest);
-                }
-            }
 
             // Claude Code symlinks
             if (selectedPlatforms.some(p => p.id === 'claude')) {
@@ -502,9 +533,12 @@ export async function initCommand(platformArgs: string[] | { force?: boolean }, 
         console.log(chalk.green('║     Installation Complete!             ║'));
         console.log(chalk.green('╚════════════════════════════════════════╝'));
         console.log('');
+        console.log(`Primary instruction file: ${chalk.cyan(PRIMARY_PLATFORM_FILE.dest)}`);
+        console.log('');
         console.log('Installed platforms:');
         for (const platform of selectedPlatforms) {
-            console.log(`  - ${chalk.cyan(platform.name)} (${platform.dest})`);
+            const details = platform.symlinks ? 'shared AGENTS.md + platform assets' : 'shared AGENTS.md';
+            console.log(`  - ${chalk.cyan(platform.name)} (${details})`);
         }
         console.log('');
         console.log(`Installed: ${chalk.cyan(availableAgents.length)} agents, ${chalk.cyan(availableSkills.length)} skills`);

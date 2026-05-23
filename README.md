@@ -55,15 +55,14 @@ The interactive installer will guide you through:
 1. Selecting which AI platforms to configure (Claude Code, Cursor, Copilot, Windsurf, etc.)
 2. Creating the `docs/ai/` directory structure with framework files
 3. Creating `AGENTS.md` as the primary root instruction file
-4. Generating platform-specific configuration files and compatibility links
-5. Setting up symlinks for supported platforms (e.g., `.claude/` for Claude Code)
+4. Warning when legacy bootstrap files should be reviewed and merged into `AGENTS.md`
+5. Setting up supported platform asset links when needed (e.g., `.claude/commands` for Claude Code)
 
 ## What is Contextuate?
 
 Contextuate is a directory structure and set of conventions that helps AI agents work more effectively. It turns implicit project knowledge into explicit, structured context.
 
 - **`AGENTS.md`**: The primary root instruction file for AI coding agents.
-- **`CLAUDE.md` / `GEMINI.md`**: Compatibility links to `AGENTS.md` when those platforms are selected.
 - **`docs/ai/.contextuate/contextuate.md`**: The framework bootstrap file. It links to everything else.
 - **`docs/ai/context.md`**: Your project-specific context (Identity, Tech Stack).
 - **`docs/ai/project-structure.md`**: Auto-generated file tree map (created by `contextuate index`).
@@ -80,7 +79,7 @@ Contextuate is a directory structure and set of conventions that helps AI agents
 3. **Execution**: The AI follows the linked standards in `docs/ai/standards/` and uses `docs/ai/quickrefs/` for technical lookups.
 4. **Memory**: If working on a long-running task, it tracks state in `docs/ai/tasks/<task-name>/` to maintain context across sessions.
 
-Root adapter files point the assistant to the same framework entry point through `AGENTS.md`, so selected AI harnesses share one instruction source instead of diverging per tool.
+Selected AI harnesses share one instruction source through `AGENTS.md`. If a project already has `CLAUDE.md`, `GEMINI.md`, `.cursorrules`, or another tool-specific bootstrap file, merge any unique rules into `AGENTS.md` instead of keeping parallel instruction files.
 
 When using the `contextuate run` command, this context loading is automated based on the agent definition.
 

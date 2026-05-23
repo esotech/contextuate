@@ -32,13 +32,61 @@ function assertFilesMatch(source, generated) {
   );
 }
 
-function testInitUsesAgentsMdAsPrimaryPlatformFile() {
+function testInitUsesAgentsMdAsOnlyRootBootstrapFile() {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'contextuate-init-'));
 
   try {
     fs.writeFileSync(path.join(tmpDir, 'package.json'), '{"name":"fixture"}\n');
 
     childProcess.execFileSync(
+      process.execPath,
+      [path.join(root, 'dist/index.js'), 'init', 'all', '--force'],
+      {
+        cwd: tmpDir,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe'],
+      }
+    );
+
+    const agentsMd = fs.readFileSync(path.join(tmpDir, 'AGENTS.md'), 'utf8');
+    assert.strictEqual(
+      agentsMd,
+      read('src/templates/templates/platforms/AGENTS.md'),
+      'init should install AGENTS.md from the primary platform template'
+    );
+
+    for (const relativePath of [
+      'CLAUDE.md',
+      'GEMINI.md',
+      '.gemini/rules.md',
+      '.clinerules/cline-memory-bank.md',
+      '.cursor/rules/project.mdc',
+      '.github/copilot-instructions.md',
+      '.windsurf/rules/project.md',
+    ]) {
+      assert(
+        !fs.existsSync(path.join(tmpDir, relativePath)),
+        `init should not create ${relativePath}; AGENTS.md is the master file`
+      );
+    }
+    assert(
+      agentsMd.includes('merge any unique') && agentsMd.includes('instructions into this AGENTS.md file'),
+      'AGENTS.md should tell agents to consolidate legacy bootstrap instructions'
+    );
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+}
+
+function testInitPreservesExistingBootstrapFilesAndWarnsToMerge() {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'contextuate-merge-'));
+
+  try {
+    fs.writeFileSync(path.join(tmpDir, 'package.json'), '{"name":"fixture"}\n');
+    fs.writeFileSync(path.join(tmpDir, 'CLAUDE.md'), 'Use pnpm for package scripts.\n');
+    fs.writeFileSync(path.join(tmpDir, 'GEMINI.md'), 'Prefer small pull requests.\n');
+
+    const output = childProcess.execFileSync(
       process.execPath,
       [path.join(root, 'dist/index.js'), 'init', 'claude', 'gemini', '--force'],
       {
@@ -49,26 +97,29 @@ function testInitUsesAgentsMdAsPrimaryPlatformFile() {
     );
 
     assert.strictEqual(
-      fs.readFileSync(path.join(tmpDir, 'AGENTS.md'), 'utf8'),
-      read('src/templates/templates/platforms/AGENTS.md'),
-      'init should install AGENTS.md from the primary platform template'
+      fs.readFileSync(path.join(tmpDir, 'CLAUDE.md'), 'utf8'),
+      'Use pnpm for package scripts.\n',
+      'init should preserve existing CLAUDE.md for manual consolidation'
     );
     assert.strictEqual(
-      fs.readlinkSync(path.join(tmpDir, 'CLAUDE.md')),
-      'AGENTS.md',
-      'CLAUDE.md should be a relative symlink to AGENTS.md'
+      fs.readFileSync(path.join(tmpDir, 'GEMINI.md'), 'utf8'),
+      'Prefer small pull requests.\n',
+      'init should preserve existing GEMINI.md for manual consolidation'
     );
-    assert.strictEqual(
-      fs.readlinkSync(path.join(tmpDir, 'GEMINI.md')),
-      'AGENTS.md',
-      'GEMINI.md should be a relative symlink to AGENTS.md'
+    assert(
+      output.includes('Existing AI bootstrap files detected'),
+      'init output should flag existing bootstrap files'
+    );
+    assert(
+      output.includes('merge any unique rules into AGENTS.md'),
+      'init output should instruct agents/users to merge legacy rules into AGENTS.md'
     );
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
 }
 
-function testRemoveCleansGeneratedPlatformSymlinks() {
+function testRemoveCleansGeneratedAndLegacyPlatformAdapters() {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'contextuate-remove-'));
 
   try {
@@ -83,6 +134,8 @@ function testRemoveCleansGeneratedPlatformSymlinks() {
         stdio: ['ignore', 'pipe', 'pipe'],
       }
     );
+    fs.symlinkSync('AGENTS.md', path.join(tmpDir, 'CLAUDE.md'));
+    fs.symlinkSync('AGENTS.md', path.join(tmpDir, 'GEMINI.md'));
     childProcess.execFileSync(
       process.execPath,
       [path.join(root, 'dist/index.js'), 'remove'],
@@ -188,8 +241,9 @@ function testFrameworkPathReferencesUseContextuate() {
 
 const tests = [
   testPackageVersionsMatch,
-  testInitUsesAgentsMdAsPrimaryPlatformFile,
-  testRemoveCleansGeneratedPlatformSymlinks,
+  testInitUsesAgentsMdAsOnlyRootBootstrapFile,
+  testInitPreservesExistingBootstrapFilesAndWarnsToMerge,
+  testRemoveCleansGeneratedAndLegacyPlatformAdapters,
   testInterviewTemplatesArePackaged,
   testInterviewDocumentationIsDiscoverable,
   testFrameworkPathReferencesUseContextuate,

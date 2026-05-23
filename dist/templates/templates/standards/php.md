@@ -1,181 +1,103 @@
-# PHP Coding Standards
+# PHP Standards (Esotech / TLDCRM House Style)
 
 > **Language:** PHP
-> **Generated:** {DATE}
+> **Intent:** These are Esotech defaults. Optimize for consistency across a long-lived codebase.
 
 ---
 
-## Formatting
+## Non‑Negotiables
 
-### Indentation
-- **Style:** {tabs|spaces}
-- **Size:** {2|4} {spaces|tabs}
+- **Indentation:** Tabs (display width 4)
+- **Spaces inside parentheses:** `fn( $arg )`, `if ( $cond )`
+- **No space** between function name and `(`
+- **Type casts:** space after cast: `(int) $value`
+- **Array access:** no spaces: `$arr['key']`
 
-### Braces
-- **Classes/Functions:** {same-line|next-line}
-- **Control structures:** {same-line|next-line}
+---
 
-### Spacing
-- **Inside parentheses:** {yes|no} - `function( $param )` vs `function($param)`
-- **After keywords:** {yes|no} - `if ( $x )` vs `if($x)`
-- **Array brackets:** {no-spaces} - `$arr['key']`
+## Indentation & Spacing
+- **Indentation:** Tabs (4-space width)
+- **Spacing:** Spaces inside parentheses around function parameters
+  - ✅ `function myFunction( $param )`
+  - ❌ `function myFunction($param)`
+- **No space** between function name and opening parenthesis
+- **Type casts:** Space after cast: `$var = (int) $value;`
+- **Array access:** No spaces: `$array['key']`
 
 ---
 
 ## Naming Conventions
 
-### Classes
-- **Style:** PascalCase
-- **Example:** `UserService`, `PaymentController`
-
-### Methods
-- **Style:** camelCase
-- **Example:** `getUserById()`, `processPayment()`
-
-### Variables
-- **Style:** {camelCase|snake_case}
-- **Example:** `$userName` or `$user_name`
-
-### Constants
-- **Style:** UPPER_SNAKE_CASE
-- **Example:** `MAX_RETRY_COUNT`, `API_VERSION`
-
-### Properties
-- **Style:** {camelCase|snake_case}
-- **Visibility prefix:** {none|underscore for private}
+| Element | Convention | Example |
+|---------|------------|---------|
+| Classes | CamelCase | `LeadService` |
+| Methods | camelCase | `getLeadById()` |
+| Variables | snake_case | `$lead_data` |
+| Properties | snake_case | `$this->account_id` |
+| Constants | UPPER_SNAKE | `MAX_RETRIES` |
 
 ---
 
-## Structure
-
-### File Organization
+## Arrays
 ```php
-<?php
-// 1. Strict types declaration (if used)
-declare( strict_types=1 );
+// Single-line: spaces inside brackets
+$arr = [ 'key' => 'value' ];
 
-// 2. Namespace
-namespace App\Services;
+// Multi-line: each pair on own line
+$arr = [
+    'key1' => 'value1',
+    'key2' => 'value2',
+];
 
-// 3. Use statements (alphabetized)
-use App\Models\User;
-use Exception;
+// Access: no spaces
+$value = $arr['key'];
+```
 
-// 4. Class definition
-class UserService {
-    // 5. Constants
-    // 6. Properties
-    // 7. Constructor
-    // 8. Public methods
-    // 9. Protected methods
-    // 10. Private methods
+---
+
+## Control Structures
+```php
+// Opening braces on same line
+if ( $condition ) {
+    // statement
 }
-```
 
-### Method Length
-- **Guideline:** {max lines per method}
-- **Complexity:** {max cyclomatic complexity}
-
----
-
-## Type Hints
-
-### Parameters
-```php
-// {Required|Optional}
-public function process( string $name, int $count ): void
-```
-
-### Return Types
-```php
-// {Required|Optional}
-public function getData(): array
-```
-
-### Property Types (PHP 7.4+)
-```php
-// {Required|Optional}
-private string $name;
-private User|null $user = null;
-```
-
----
-
-## Documentation
-
-### Class DocBlocks
-```php
-/**
- * {Required|Optional}
- * Brief description of the class.
- */
-class MyClass
-```
-
-### Method DocBlocks
-```php
-/**
- * {Required|Optional|Only for complex methods}
- *
- * @param string $name Description
- * @return array Description
- * @throws Exception When condition
- */
-```
-
----
-
-## Error Handling
-
-### Exceptions
-- **Custom exceptions:** {yes|no}
-- **Base exception class:** {name if applicable}
-
-### Try/Catch
-```php
-try {
-    // code
-} catch( SpecificException $e ){
-    // handle
-} catch( Exception $e ){
-    // fallback
+// Always use braces, even for single lines
+if ( $condition ) {
+    return true;
 }
+
+// Single-line returns are acceptable
+if ( $x ) return 'ok';
 ```
 
 ---
 
-## Common Patterns
-
-### Dependency Injection
+## Closures
 ```php
-// {Constructor injection|Setter injection|Container}
-public function __construct( private UserRepository $repo )
+$my_closure = function ( $x ) {
+    return $x * 2;
+};
 ```
 
-### Null Handling
+---
+
+## Ternary Operators
 ```php
-// Preferred: {null coalescing|ternary|early return}
-$value = $data['key'] ?? 'default';
+// Simple: single line
+$value = $condition ? $true_value : $false_value;
+
+// Complex: multi-line with indentation
+$value = $condition
+    ? ( $condition2 ? $true_value : $alt_value )
+    : $default_value;
 ```
 
 ---
 
-## Anti-Patterns
+## TODO (Refinement Targets)
 
-```php
-// BAD: {description}
-{bad example}
-
-// GOOD: {description}
-{good example}
-```
-
----
-
-## Framework-Specific
-
-{Add any framework-specific conventions here}
-
----
-
-*This file should be customized for your project. Replace placeholders with actual values.*
+- Decide on `declare( strict_types=1 );` default (yes/no)
+- Return types / parameter types policy (required vs pragmatic)
+- DocBlocks policy (public API only vs everywhere)
+- Framework specifics (Laravel/Symfony/none) if applicable
