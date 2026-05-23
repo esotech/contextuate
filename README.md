@@ -132,6 +132,7 @@ contextuate -V         # Short form for version
 | `index`        | Generate a project file tree             |
 | `add-context`  | Interactively add files to context       |
 | `remove`       | Clean up framework files                 |
+| `test-init`    | Recreate a local init fixture            |
 | `monitor`      | Real-time Claude Code session monitoring |
 
 ---
@@ -161,6 +162,20 @@ contextuate init claude --force
 - `-a, --agents <names...>` - Install specific agents (e.g., "base archon" or "all")
 
 **Available Platforms:** `agents`, `antigravity`, `claude`, `cline`, `cursor`, `gemini`, `copilot`, `windsurf`
+
+---
+
+### `contextuate test-init` / `contextuate-test`
+
+Development helper for testing the real init flow in a disposable local fixture. It deletes `./contextuate-test`, recreates it, adds a minimal `package.json`, and runs `contextuate init` inside that directory.
+
+```bash
+contextuate-test                 # Interactive init inside ./contextuate-test
+contextuate-test all --force     # Non-interactive fixture with all platforms
+contextuate test-init claude     # Same behavior through the main CLI
+```
+
+The `contextuate-test/` directory is gitignored.
 
 ---
 

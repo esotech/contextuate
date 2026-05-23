@@ -38,7 +38,7 @@ function testInitUsesAgentsMdAsOnlyRootBootstrapFile() {
   try {
     fs.writeFileSync(path.join(tmpDir, 'package.json'), '{"name":"fixture"}\n');
 
-    childProcess.execFileSync(
+    const output = childProcess.execFileSync(
       process.execPath,
       [path.join(root, 'dist/index.js'), 'init', 'all', '--force'],
       {
@@ -72,6 +72,10 @@ function testInitUsesAgentsMdAsOnlyRootBootstrapFile() {
     assert(
       agentsMd.includes('merge any unique') && agentsMd.includes('instructions into this AGENTS.md file'),
       'AGENTS.md should tell agents to consolidate legacy bootstrap instructions'
+    );
+    assert(
+      !output.includes('Existing AI bootstrap files detected'),
+      'init should not report the canonical AGENTS.md file as a legacy bootstrap file'
     );
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
@@ -166,6 +170,41 @@ function testRemoveCleansGeneratedAndLegacyPlatformAdapters() {
   }
 }
 
+function testContextuateTestBinRecreatesInitFixtureDirectory() {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'contextuate-test-bin-'));
+
+  try {
+    const fixtureDir = path.join(tmpDir, 'contextuate-test');
+    fs.mkdirSync(fixtureDir);
+    fs.writeFileSync(path.join(fixtureDir, 'stale.txt'), 'stale fixture content\n');
+
+    childProcess.execFileSync(
+      process.execPath,
+      [path.join(root, 'dist/test-init.js'), 'all', '--force'],
+      {
+        cwd: tmpDir,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe'],
+      }
+    );
+
+    assert(
+      fs.existsSync(path.join(fixtureDir, 'AGENTS.md')),
+      'contextuate-test should run init inside ./contextuate-test'
+    );
+    assert(
+      fs.existsSync(path.join(fixtureDir, 'docs/ai/.contextuate/contextuate.md')),
+      'contextuate-test should install framework files in the fixture'
+    );
+    assert(
+      !fs.existsSync(path.join(fixtureDir, 'stale.txt')),
+      'contextuate-test should delete stale fixture contents before running init'
+    );
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+}
+
 function testPackageVersionsMatch() {
   const packageJson = readJson('package.json');
   const packageLock = readJson('package-lock.json');
@@ -189,6 +228,16 @@ function testPackageVersionsMatch() {
     packageJson.files,
     ['dist'],
     'package files should publish the built dist output only'
+  );
+  assert.strictEqual(
+    packageJson.bin['contextuate-test'],
+    'dist/test-init.js',
+    'package should expose the development init fixture runner'
+  );
+  assert.strictEqual(
+    packageLock.packages[''].bin['contextuate-test'],
+    'dist/test-init.js',
+    'package-lock should expose the development init fixture runner'
   );
 }
 
@@ -237,6 +286,7 @@ function testFrameworkPathReferencesUseContextuate() {
     'src/templates/tools/standards-detector.md',
     'docs/ai/.contextuate/standards/'
   );
+  assertIncludes('.gitignore', 'contextuate-test/');
 }
 
 const tests = [
@@ -244,6 +294,7 @@ const tests = [
   testInitUsesAgentsMdAsOnlyRootBootstrapFile,
   testInitPreservesExistingBootstrapFilesAndWarnsToMerge,
   testRemoveCleansGeneratedAndLegacyPlatformAdapters,
+  testContextuateTestBinRecreatesInitFixtureDirectory,
   testInterviewTemplatesArePackaged,
   testInterviewDocumentationIsDiscoverable,
   testFrameworkPathReferencesUseContextuate,

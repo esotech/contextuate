@@ -151,7 +151,18 @@ async function findLegacyBootstrapFiles(): Promise<string[]> {
     const files: string[] = [];
 
     for (const file of LEGACY_BOOTSTRAP_FILES) {
-        if (!fs.existsSync(file)) {
+        const dir = path.dirname(file);
+        const basename = path.basename(file);
+        const parentDir = dir === '.' ? process.cwd() : dir;
+        let entries: string[];
+
+        try {
+            entries = await fs.readdir(parentDir);
+        } catch {
+            continue;
+        }
+
+        if (!entries.includes(basename)) {
             continue;
         }
 

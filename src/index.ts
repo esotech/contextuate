@@ -9,6 +9,7 @@ import { indexCommand } from './commands/index';
 import { addContextCommand } from './commands/context';
 import { installCommand, installAgentsCommand, installStandardsCommand, installToolsCommand, installSkillsCommand } from './commands/install';
 import { doctorCommand } from './commands/doctor';
+import { testInitCommand } from './commands/test-init';
 import {
     monitorInitCommand,
     monitorStartCommand,
@@ -77,6 +78,12 @@ program
     .option('--fix', 'Attempt to fix issues and update template variables')
     .option('--install', 'Offer to install missing tools')
     .action(doctorCommand);
+
+program
+    .command('test-init [platforms...]')
+    .description('Development helper: recreate ./contextuate-test and run init inside it')
+    .option('-f, --force', 'Pass --force to contextuate init')
+    .action(testInitCommand);
 
 program
     .command('run')

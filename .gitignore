@@ -47,5 +47,8 @@ GEMINI.md
 .windsurf/
 .github/copilot-instructions.md
 
+# Contextuate - local init fixture
+contextuate-test/
+
 # Playwright MCP
 .playwright-mcp/

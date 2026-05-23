@@ -10,6 +10,7 @@ const index_1 = require("./commands/index");
 const context_1 = require("./commands/context");
 const install_1 = require("./commands/install");
 const doctor_1 = require("./commands/doctor");
+const test_init_1 = require("./commands/test-init");
 const monitor_1 = require("./commands/monitor");
 const claude_1 = require("./commands/claude");
 const fs_1 = require("fs");
@@ -61,6 +62,11 @@ program
     .option('--fix', 'Attempt to fix issues and update template variables')
     .option('--install', 'Offer to install missing tools')
     .action(doctor_1.doctorCommand);
+program
+    .command('test-init [platforms...]')
+    .description('Development helper: recreate ./contextuate-test and run init inside it')
+    .option('-f, --force', 'Pass --force to contextuate init')
+    .action(test_init_1.testInitCommand);
 program
     .command('run')
     .description('Run an agent definition')

@@ -111,6 +111,26 @@ contextuate init -f                 # Force overwrite
 4. Create directory structure
 5. Copy templates and create symlinks
 
+### `test-init [platforms...]`
+
+**Handler:** `src/commands/test-init.ts`
+
+Development helper that recreates `./contextuate-test` from the current working
+directory and runs the real `init` command inside it.
+
+```bash
+contextuate-test                 # Interactive init fixture
+contextuate-test all --force     # Non-interactive fixture
+contextuate test-init claude     # Same behavior through the main CLI
+```
+
+**Flow:**
+1. Remove the existing `contextuate-test/` directory
+2. Recreate it with a minimal `package.json` project marker
+3. Change into the fixture directory
+4. Delegate to `initCommand` with the provided platform arguments
+5. Restore the original working directory
+
 ### `remove`
 
 **Handler:** `src/commands/remove.ts`

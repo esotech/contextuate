@@ -130,7 +130,17 @@ async function discoverSkills(templateSource) {
 async function findLegacyBootstrapFiles() {
     const files = [];
     for (const file of LEGACY_BOOTSTRAP_FILES) {
-        if (!fs_extra_1.default.existsSync(file)) {
+        const dir = path_1.default.dirname(file);
+        const basename = path_1.default.basename(file);
+        const parentDir = dir === '.' ? process.cwd() : dir;
+        let entries;
+        try {
+            entries = await fs_extra_1.default.readdir(parentDir);
+        }
+        catch {
+            continue;
+        }
+        if (!entries.includes(basename)) {
             continue;
         }
         const stat = await fs_extra_1.default.lstat(file);
