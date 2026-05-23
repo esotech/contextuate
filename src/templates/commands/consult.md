@@ -26,9 +26,15 @@ Use `/consult` when you need to:
 - Transform vague ideas into actionable specifications
 - Get strategic guidance before diving into implementation
 
+If the user need itself is still vague, run `/interview` first so SIBYL can produce clear requirements before PYTHIA evaluates technical approaches.
+
 ## Workflow
 
 ```
+/interview [vague feature request]  (optional, for requirements discovery)
+    |
+SIBYL clarifies requirements
+    |
 /consult [research/plan topic]
     |
 PYTHIA researches, synthesizes, produces spec

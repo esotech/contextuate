@@ -125,7 +125,7 @@ docs/ai/standards/
 └── {language}.standards.md # For other languages
 ```
 
-These user standards take priority over framework defaults in `docs/ai/.context/templates/standards/`.
+These user standards take priority over framework defaults in `docs/ai/.contextuate/standards/`.
 See [../standards/coding-standards.md](../standards/coding-standards.md) for resolution order.
 
 ---

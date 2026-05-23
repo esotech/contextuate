@@ -68,7 +68,7 @@ Contextuate is a directory structure and set of conventions that helps AI agents
 - **`docs/ai/standards/`**: Explicit coding standards and behavioral guidelines.
 - **`docs/ai/quickrefs/`**: Condensed documentation optimized for AI token limits.
 - **`docs/ai/tasks/`**: A workflow for managing multi-session AI tasks.
-- **`docs/ai/skills/`**: Slash commands that activate special behaviors (e.g., `/orchestrate`).
+- **`docs/ai/commands/`**: Slash commands that activate special behaviors (e.g., `/interview`, `/consult`, `/orchestrate`).
 
 ## How LLMs Use Contextuate
 
@@ -98,6 +98,14 @@ Once installed, you customize the framework for your project:
 2. Create custom agents in **`docs/ai/agents/`** (using the Agent Creator tool).
 3. Document coding standards in **`docs/ai/standards/`**.
 4. Generate quickrefs in **`docs/ai/quickrefs/`**.
+
+## Slash Command Workflow
+
+Contextuate installs slash command templates into **`docs/ai/commands/`** so AI assistants can adopt the right mode for the stage of work:
+
+1. **`/interview`** activates SIBYL for requirements elicitation when a request is vague or has multiple valid interpretations.
+2. **`/consult`** activates PYTHIA for technical research and planning once the requirements are clear enough to evaluate approaches.
+3. **`/orchestrate`** activates ARCHON for coordinated implementation after the requirements and approach are ready.
 
 ## CLI Usage
 
@@ -170,7 +178,8 @@ contextuate install --all
 contextuate install --agents archon base canvas
 contextuate install --standards php javascript
 contextuate install --tools quickref
-contextuate install --skills orchestrate
+contextuate install --skills interview
+contextuate install --skills interview consult orchestrate
 
 # Subcommand style
 contextuate install agents archon base
@@ -197,7 +206,7 @@ contextuate install agents --all --force
 - `install agents [names...]` - Install agent templates (also installs skills by default)
 - `install standards [names...]` - Install language standard templates
 - `install tools [names...]` - Install tool templates
-- `install skills [names...]` - Install skill templates (slash commands like `/orchestrate`)
+- `install skills [names...]` - Install skill templates (slash commands like `/interview`, `/consult`, `/orchestrate`)
 
 ---
 

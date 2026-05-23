@@ -25,10 +25,11 @@ When this skill is invoked:
 
 ## Pre-Orchestration
 
-For complex or unfamiliar work, use `/consult` BEFORE `/orchestrate`:
+For vague requirements, use `/interview` BEFORE `/orchestrate`. For complex or unfamiliar technical work, use `/consult` before implementation:
 ```
-/consult [research/plan topic]  →  produces specification
-/orchestrate [implement spec]   →  delegates to specialists
+/interview [feature request]     →  produces requirements
+/consult [research/plan topic]   →  produces specification
+/orchestrate [implement spec]    →  delegates to specialists
 ```
 
 ## Examples

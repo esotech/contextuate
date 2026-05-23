@@ -80,7 +80,40 @@ Creates new AI agent definitions following Contextuate patterns.
 
 ## Skills (Slash Commands)
 
-Skills are special commands that activate specific AI behaviors. Install them with `contextuate install skills`.
+Skills are special commands that activate specific AI behaviors. Install them with `contextuate install skills`. They are installed into `docs/ai/commands/`.
+
+### /interview
+
+Activates SIBYL requirements interview mode for structured discovery before planning.
+
+**How to use:** In a Claude Code session, run:
+> `/interview Build a customer reporting dashboard`
+
+**What it does:**
+1. Asks targeted questions for vague or incomplete requirements
+2. Tracks confidence across architecture, integrations, data model, business logic, and constraints
+3. Summarizes the emerging specification after each round
+4. Produces a requirements handoff for `/consult` or `/orchestrate`
+
+**File:** `docs/ai/commands/interview.md`
+
+---
+
+### /consult
+
+Activates PYTHIA planning mode for technical research and specification after requirements are clear.
+
+**How to use:** In a Claude Code session, run:
+> `/consult Research real-time sync approaches for the approved inventory requirements`
+
+**What it does:**
+1. Researches unfamiliar technologies, APIs, and trade-offs
+2. Synthesizes findings into a recommended approach
+3. Produces an implementation specification for `/orchestrate`
+
+**File:** `docs/ai/commands/consult.md`
+
+---
 
 ### /orchestrate
 
@@ -97,7 +130,7 @@ Activates ARCHON orchestrator mode for coordinated multi-agent task execution.
 
 **Available specialist agents:** aegis, atlas, canvas, chronicle, chronos, cipher, crucible, echo, forge, ledger, meridian, nexus, thoth, scribe, sentinel, unity, vox, weaver
 
-**File:** `docs/ai/skills/orchestrate.md`
+**File:** `docs/ai/commands/orchestrate.md`
 
 ---
 
@@ -105,14 +138,15 @@ Activates ARCHON orchestrator mode for coordinated multi-agent task execution.
 
 ```
 docs/ai/
-├── .context/           # Framework files (DO NOT MODIFY)
+├── .contextuate/       # Framework files (DO NOT MODIFY)
 │   ├── agents/         # Base agent definitions
 │   ├── standards/      # Default coding/behavioral standards
 │   ├── templates/      # Platform jump-files and standards templates
 │   ├── tools/          # AI tool guides
 │   └── bin/            # Install/update scripts
 ├── agents/             # Your custom agents (user-editable)
-├── skills/             # Slash commands (e.g., /orchestrate)
+├── commands/           # Slash commands (e.g., /interview, /consult, /orchestrate)
+├── skills/             # Optional platform-specific skill files
 ├── standards/          # Your project standards (user-editable)
 ├── quickrefs/          # Generated quick references
 ├── tasks/              # Task tracking (gitignored)
@@ -123,11 +157,11 @@ docs/ai/
 
 ## Standards Resolution
 
-When AI looks up coding standards for a language:
+When AI looks up coding standards:
 
-1. **User Standards (First):** `docs/ai/standards/{language}.standards.md`
-2. **Framework Standards (Fallback):** `docs/ai/.context/templates/standards/{language}.standards.md`
-3. **General Principles (Always):** `docs/ai/.context/standards/coding-standards.md`
+1. **Project Standards (First):** `docs/ai/standards/{language}.md`
+2. **Framework Principles (Always):** `docs/ai/.contextuate/standards/coding-standards.md`
+3. **Additional Templates:** install language templates with `contextuate install standards [language]`
 
 ---
 
@@ -150,7 +184,7 @@ curl -fsSL https://contextuate.md/install.sh | bash -s -- --force
 ### update.sh
 
 ```bash
-./docs/ai/.context/bin/update.sh
+./docs/ai/.contextuate/bin/update.sh
 ```
 
 Updates framework files while preserving your customizations.
@@ -163,11 +197,11 @@ Updates framework files while preserving your customizations.
 |------|---------|----------|
 | **Agent** | Persona with expertise, decision-making | `agents/*.md` |
 | **Tool** | Step-by-step process guide | `tools/*.md` |
-| **Skill** | Slash command that activates behaviors | `skills/*.md` |
+| **Skill** | Slash command that activates behaviors | `commands/*.md` |
 
 **Agents** define *who* the AI is acting as (e.g., "documentation expert").
 **Tools** define *how* to accomplish a specific task (e.g., "follow these steps to generate a quickref").
-**Skills** are slash commands that trigger specific modes or behaviors (e.g., `/orchestrate` activates multi-agent coordination).
+**Skills** are slash commands that trigger specific modes or behaviors (e.g., `/interview` activates requirements discovery).
 
 ---
 

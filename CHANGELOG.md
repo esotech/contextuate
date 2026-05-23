@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `contextuate install skills [names...]` - Install skill templates
   - `-k, --skills` flag for install command
   - Skills auto-install when installing agents
+- **`/interview` skill**: Activates SIBYL requirements interview mode before planning or implementation
+  - Guides iterative requirements elicitation for vague feature requests
+  - Tracks confidence across architecture, integrations, data model, business logic, and constraints
+  - Produces a structured requirements handoff for `/consult` or `/orchestrate`
 - **`/orchestrate` skill**: Activates ARCHON orchestrator mode for multi-agent coordination
   - Delegates tasks to specialist agents (chronicle, nexus, aegis, etc.)
   - Analyzes task domains and complexity
@@ -30,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Interactive mode defaults to user-level installation for convenience
 
 ### Changed
-- Updated documentation with skills section
+- Updated documentation with `/interview`, `/consult`, and `/orchestrate` workflow guidance
 - Interactive install now includes skills category
 - Monitor init command now defaults to user-level hook installation (was project-level)
 
